@@ -25,23 +25,23 @@ class CheckSuite:
             console.print(f"- {check.name}: ", end="")
             if result.result == ResultStatus.ERROR:
                 console.print("ERROR", style="bold red")
-                console.print(f"\t{result.message}", highlight=False, style="gray50 italic")
+                console.print(f"\t{result.message}", highlight=False, style="gray50")
             elif result.result == ResultStatus.WARNING:
                 console.print("WARNING", style="bold yellow")
-                console.print(f"\t{result.message}", style="gray50 italic")
+                console.print(f"\t{result.message}", style="gray50")
             else:
                 console.print("OK", style="bold green")
             results.append(result)
         return results
 
-    def run_all_json(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+    def run_all_silent(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
         results = []
         for check in self.checks:
             results.append(check.run(RasModel(ras_model)))
         return results
 
 
-check_suites = {
+CHECKSUITES = {
     "ffrd": CheckSuite(),
 }
 
@@ -49,8 +49,8 @@ check_suites = {
 def register_check(suite_names: List[str]):
     def decorator(check_class):
         for suite_name in suite_names:
-            if suite_name in check_suites:
-                check_suites[suite_name].add_check(check_class())
+            if suite_name in CHECKSUITES:
+                CHECKSUITES[suite_name].add_check(check_class())
             else:
                 raise ValueError(f"Suite '{suite_name}' not found")
         return check_class

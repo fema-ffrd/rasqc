@@ -1,5 +1,5 @@
 import rasqc.checkers
-from rasqc.checksuite import check_suites
+from rasqc.checksuite import CHECKSUITES
 from rasqc.result import RasqcResultEncoder, ResultStatus
 
 from rich.console import Console
@@ -19,14 +19,14 @@ _|    \__._| ____/ \__. | \___|
 """
 
 
-def run_console(ras_model: str) -> None:
+def run_console(ras_model: str, checksuite: str) -> None:
     console = Console()
     console.print(BANNER.strip("\n"))
     console.print(f"[bold]HEC-RAS Model[/bold]: [bright_blue]{ras_model}[/bright_blue]", highlight=False)
-    console.print(f"[bold]Checksuite[/bold]: [bright_blue]FFRD[/bright_blue]", highlight=False)
+    console.print(f"[bold]Checksuite[/bold]: [bright_blue]{checksuite}[/bright_blue]", highlight=False)
     console.print(f"[bold]Timestamp[/bold]: [bright_blue]{datetime.now(timezone.utc).isoformat()}[/bright_blue]", highlight=False)
     console.print(f"[bold]Checks[/bold]:")
-    results = check_suites["ffrd"].run_all(ras_model)
+    results = CHECKSUITES[checksuite].run_all(ras_model)
     error_count = len([result for result in results if result.result == ResultStatus.ERROR])
     warning_count = len([result for result in results if result.result == ResultStatus.WARNING])
     ok_count = len([result for result in results if result.result == ResultStatus.OK])
@@ -43,8 +43,8 @@ def run_console(ras_model: str) -> None:
     console.print(f"✔ All checks passed.")
 
 
-def run_json(ras_model: str) -> None:
-    results = check_suites["ffrd"].run_all_json(ras_model)
+def run_json(ras_model: str, checksuite: str) -> None:
+    results = CHECKSUITES[checksuite].run_all_silent(ras_model)
     results_dicts = [asdict(result) for result in results]
     output = {
         "model": ras_model,
@@ -58,14 +58,14 @@ def run_json(ras_model: str) -> None:
 def main():
     parser = argparse.ArgumentParser(description='rasqc: Automated HEC-RAS Model Quality Control Checks')
     parser.add_argument('ras_model', type=str, help='HEC-RAS model .prj file')
-    parser.add_argument('--checksuite', type=str, default='ffrd', choices=check_suites.keys(),
+    parser.add_argument('--checksuite', type=str, default='ffrd', choices=CHECKSUITES.keys(),
                         help='Checksuite to run. Default: ffrd')
     parser.add_argument('--json', action='store_true', help='Output results as JSON')
     args = parser.parse_args()
     if args.json:
-        run_json(args.ras_model)
+        run_json(args.ras_model, args.checksuite)
     else:
-        run_console(args.ras_model)
+        run_console(args.ras_model, args.checksuite)
 
 
 if __name__ == "__main__":

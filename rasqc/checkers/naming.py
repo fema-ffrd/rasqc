@@ -57,6 +57,7 @@ class PlanTitleNaming(RasqcChecker):
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
 
+
 @register_check(["ffrd"])
 class UnsteadyFlowTitleNaming(RasqcChecker):
     name = "Unsteady flow title naming"
