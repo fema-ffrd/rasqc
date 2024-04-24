@@ -35,18 +35,21 @@ class GeomProjection(RasqcChecker):
         geom_hdf_path = geom_path.with_suffix(geom_path.suffix + ".hdf")
         geom_hdf = RasGeomHdf(geom_hdf_path)
         projection = geom_hdf.projection()
+        filename = geom_hdf_path.name
         if not projection:
             return RasqcResult(
                 name=self.name,
+                filename=filename,
                 result=ResultStatus.WARNING,
                 message="HEC-RAS geometry HDF file does not have a projection defined."
             )
         if projection != FFRD_CRS:
             return RasqcResult(
                 name=self.name,
+                filename=filename,
                 result=ResultStatus.ERROR,
                 message=(f"HEC-RAS geometry HDF file projection '{projection.to_wkt()}'"
                          " does not match the expected projection for FFRD models.")
             )
-        return RasqcResult(name=self.name, result=ResultStatus.OK)
+        return RasqcResult(name=self.name, result=ResultStatus.OK, filename=filename)
 

@@ -21,4 +21,5 @@ class RasqcResultEncoder(JSONEncoder):
 class RasqcResult:
     result: ResultStatus
     name: str
+    filename: str
     message: Optional[str] = None
