@@ -56,4 +56,21 @@ class PlanTitleNaming(RasqcChecker):
                          f" naming convention 'MonYEAR Event' ({plan_file.path.name})")
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
+
+@register_check(["ffrd"])
+class UnsteadyFlowTitleNaming(RasqcChecker):
+    name = "Unsteady flow title naming"
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        flow_file = ras_model.unsteady_flow_file()
+        flow_title = flow_file.title()
+        match = re.match(r"(\w{3})(\d{4})", flow_title)
+        if not match:
+            return RasqcResult(
+                name=self.name,
+                result=ResultStatus.ERROR,
+                message=(f"HEC-RAS unsteady flow file title '{flow_title}' does not follow the"
+                         f" naming convention 'MonYEAR' ({flow_file.path.name})")
+            )
+        return RasqcResult(name=self.name, result=ResultStatus.OK)
         

@@ -19,7 +19,7 @@ _|    \__._| ____/ \__. | \___|
 """
 
 
-def console_output(ras_model: str) -> None:
+def run_console(ras_model: str) -> None:
     console = Console()
     console.print(BANNER.strip("\n"))
     console.print(f"[bold]HEC-RAS Model[/bold]: [bright_blue]{ras_model}[/bright_blue]", highlight=False)
@@ -35,15 +35,15 @@ def console_output(ras_model: str) -> None:
     console.print(f"- Warnings: [bold yellow]{warning_count}[/bold yellow]")
     console.print(f"- OK: [bold green]{ok_count}[/bold green]")
     if error_count > 0:
-        console.print(f"Finished with [bold red]errors[/bold red].", style="italic")
+        console.print(f"❌ Finished with [bold red]errors[/bold red].")
         sys.exit(1)
     if warning_count > 0:
-        console.print(f"Finished with [bold yellow]warnings[/bold yellow].", style="italic")
+        console.print(f"⚠ Finished with [bold yellow]warnings[/bold yellow].")
         sys.exit(0)
-    console.print(f"Finished with [bold green]no errors or warnings[/bold green].", style="italic")
+    console.print(f"✔ All checks passed.")
 
 
-def json_output(ras_model: str) -> None:
+def run_json(ras_model: str) -> None:
     results = check_suites["ffrd"].run_all_json(ras_model)
     results_dicts = [asdict(result) for result in results]
     output = {
@@ -56,14 +56,16 @@ def json_output(ras_model: str) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='rasqc: Automated HEC-RAS Model Quality Control')
+    parser = argparse.ArgumentParser(description='rasqc: Automated HEC-RAS Model Quality Control Checks')
     parser.add_argument('ras_model', type=str, help='HEC-RAS model .prj file')
+    parser.add_argument('--checksuite', type=str, default='ffrd', choices=check_suites.keys(),
+                        help='Checksuite to run. Default: ffrd')
     parser.add_argument('--json', action='store_true', help='Output results as JSON')
     args = parser.parse_args()
     if args.json:
-        json_output(args.ras_model)
+        run_json(args.ras_model)
     else:
-        console_output(args.ras_model)
+        run_console(args.ras_model)
 
 
 if __name__ == "__main__":

@@ -28,3 +28,6 @@ class RasModel:
 
     def plan_file(self) -> RasModelFile:
         return RasModelFile(self.prj_file.path.with_suffix(".p01"))
+
+    def unsteady_flow_file(self) -> RasModelFile:
+        return RasModelFile(self.prj_file.path.with_suffix(".u01"))
