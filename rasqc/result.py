@@ -1,12 +1,20 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from json import JSONEncoder
+from typing import Any, Optional
 
 
 class ResultStatus(Enum):
-    OK = 1
-    WARNING = 2
-    ERROR = 3
+    OK = "ok"
+    WARNING = "warning"
+    ERROR = "error"
+
+
+class RasqcResultEncoder(JSONEncoder):
+    def default(self, obj: Any) -> Any:
+        if isinstance(obj, Enum):
+            return obj.value
+        return super().default(obj)
 
 
 @dataclass

@@ -1,8 +1,11 @@
 from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult
+from rasqc.result import RasqcResult, ResultStatus
+
+from rich.console import Console
 
 import os
 from typing import List
+from time import sleep
 
 
 class CheckSuite:
@@ -16,10 +19,25 @@ class CheckSuite:
 
     def run_all(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
         results = []
+        console = Console()
         for check in self.checks:
             result = check.run(RasModel(ras_model))
-            print(result)
+            console.print(f"- {check.name}: ", end="")
+            if result.result == ResultStatus.ERROR:
+                console.print("ERROR", style="bold red")
+                console.print(f"\t{result.message}", highlight=False, style="gray50 italic")
+            elif result.result == ResultStatus.WARNING:
+                console.print("WARNING", style="bold yellow")
+                console.print(f"\t{result.message}", style="gray50 italic")
+            else:
+                console.print("OK", style="bold green")
             results.append(result)
+        return results
+
+    def run_all_json(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+        results = []
+        for check in self.checks:
+            results.append(check.run(RasModel(ras_model)))
         return results
 
 

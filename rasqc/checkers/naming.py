@@ -7,16 +7,53 @@ import re
 
 
 @register_check(["ffrd"])
-class PrjNaming(RasqcChecker):
+class PrjFileNaming(RasqcChecker):
     name = "Project file naming"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
-        filename = ras_model.prj_file.name
-        if not re.match(r"\w*\d{4}\w*\.prj", filename):
+        filename = ras_model.prj_file.path.name
+        if not re.match(r"\w*_\d{4}_\w*\.prj", filename):
             return RasqcResult(
                 name=self.name,
                 result=ResultStatus.ERROR,
-                message=f"HEC-RAS project file '{filename}' does not follow the naming convention 'Basin_Name_<HUC4-ID>_Subbasin_name.prj' where <HUC4-ID> is a 4-digit HUC number.",
+                message=(f"HEC-RAS project file '{filename}' does not follow the"
+                         " naming convention 'Basin_Name_<HUC4-ID>_Subbasin_name.prj',"
+                         " where <HUC4-ID> is a 4-digit HUC number.")
+            )
+        return RasqcResult(name=self.name, result=ResultStatus.OK)
+
+
+@register_check(["ffrd"])
+class GeometryTitleNaming(RasqcChecker):
+    name = "Geometry title naming"
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        geom_file = ras_model.geometry_file()
+        geom_title = geom_file.title()
+        if not re.match(r"\w* FFRD$", geom_title):
+            return RasqcResult(
+                name=self.name,
+                result=ResultStatus.ERROR,
+                message=(f"HEC-RAS geometry file title '{geom_title}' does not follow the"
+                         f" naming convention 'Watershed Name FFRD' ({geom_file.path.name})")
+            )
+        return RasqcResult(name=self.name, result=ResultStatus.OK)
+
+
+@register_check(["ffrd"])
+class PlanTitleNaming(RasqcChecker):
+    name = "Plan title naming"
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        plan_file = ras_model.plan_file()
+        plan_title = plan_file.title()
+        match = re.match(r"(\w{3})(\d{4}) .*$", plan_title)
+        if not match:
+            return RasqcResult(
+                name=self.name,
+                result=ResultStatus.ERROR,
+                message=(f"HEC-RAS plan file title '{plan_title}' does not follow the"
+                         f" naming convention 'MonYEAR Event' ({plan_file.path.name})")
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
         
