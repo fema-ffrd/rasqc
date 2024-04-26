@@ -11,7 +11,7 @@ FFRD_PROJECTION_WKT = """
 PROJCS["USA_Contiguous_Albers_Equal_Area_Conic_USGS_version",
     GEOGCS["GCS_North_American_1983",
         DATUM["D_North_American_1983",
-          SPHEROID["GRS_1980",6378137.0,298.257222101]],
+            SPHEROID["GRS_1980",6378137.0,298.257222101]],
         PRIMEM["Greenwich",0.0],
         UNIT["Degree",0.0174532925199433]],
     PROJECTION["Albers"],
