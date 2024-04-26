@@ -48,8 +48,9 @@ class GeomProjection(RasqcChecker):
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS geometry HDF file projection '{projection.to_wkt()}'"
-                         " does not match the expected projection for FFRD models.")
+                message=(f"HEC-RAS geometry HDF file projection '{projection.name}'"
+                         " does not match the expected projection for FFRD models."
+                         f" ({filename})")
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK, filename=filename)
 
