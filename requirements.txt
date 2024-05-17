@@ -11,7 +11,7 @@ pyogrio==0.7.2
 pyproj==3.6.1
 python-dateutil==2.9.0.post0
 pytz==2024.1
-rashdf==0.1.0b1
+rashdf==0.1.1
 rich==13.7.1
 shapely==2.0.4
 six==1.16.0

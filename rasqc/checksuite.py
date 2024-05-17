@@ -5,7 +5,6 @@ from rich.console import Console
 
 import os
 from typing import List
-from time import sleep
 
 
 class CheckSuite:
