@@ -23,3 +23,4 @@ class RasqcResult:
     name: str
     filename: str
     message: Optional[str] = None
+    # geojson: TODO

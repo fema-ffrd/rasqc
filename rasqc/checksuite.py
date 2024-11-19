@@ -4,7 +4,18 @@ from rasqc.result import RasqcResult, ResultStatus
 from rich.console import Console
 
 import os
+import re
 from typing import List
+
+
+def bold_single_quotes(text: str) -> str:
+    # Regex to find text within single quotes
+    pattern = re.compile(r"'(.*?)'")
+    
+    # Replace matches with bold tags
+    formatted_text = pattern.sub(r"[bold cyan]'\1'[/bold cyan]", text)
+    
+    return formatted_text
 
 
 class CheckSuite:
@@ -21,13 +32,15 @@ class CheckSuite:
         console = Console()
         for check in self.checks:
             result = check.run(RasModel(ras_model))
+            if result.message:
+                message = bold_single_quotes(result.message)
             console.print(f"- {check.name}: ", end="")
             if result.result == ResultStatus.ERROR:
                 console.print("ERROR", style="bold red")
-                console.print(f"\t{result.message}", highlight=False, style="gray50")
+                console.print(f"    {message}", highlight=False, style="gray50")
             elif result.result == ResultStatus.WARNING:
                 console.print("WARNING", style="bold yellow")
-                console.print(f"\t{result.message}", style="gray50")
+                console.print(f"    {message}", style="gray50")
             else:
                 console.print("OK", style="bold green")
             results.append(result)
@@ -42,6 +55,7 @@ class CheckSuite:
 
 CHECKSUITES = {
     "ffrd": CheckSuite(),
+    "asdf": CheckSuite()
 }
 
 

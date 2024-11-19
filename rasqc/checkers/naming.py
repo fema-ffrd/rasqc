@@ -6,7 +6,7 @@ from rasqc.result import RasqcResult, ResultStatus
 import re
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "asdf"])
 class PrjFileNaming(RasqcChecker):
     name = "Project file naming"
 

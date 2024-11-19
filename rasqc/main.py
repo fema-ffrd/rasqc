@@ -43,7 +43,7 @@ def run_console(ras_model: str, checksuite: str) -> None:
     console.print(f"✔ All checks passed.")
 
 
-def run_json(ras_model: str, checksuite: str) -> None:
+def run_json(ras_model: str, checksuite: str) -> dict:
     results = CHECKSUITES[checksuite].run_all_silent(ras_model)
     results_dicts = [asdict(result) for result in results]
     output = {
@@ -53,6 +53,7 @@ def run_json(ras_model: str, checksuite: str) -> None:
         "checks": results_dicts
     }
     print(json.dumps(output, cls=RasqcResultEncoder))
+    return output
 
 
 def main():
