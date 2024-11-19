@@ -1,3 +1,5 @@
+from geopandas import GeoDataFrame
+
 from dataclasses import dataclass
 from enum import Enum
 from json import JSONEncoder
@@ -14,6 +16,8 @@ class RasqcResultEncoder(JSONEncoder):
     def default(self, obj: Any) -> Any:
         if isinstance(obj, Enum):
             return obj.value
+        if isinstance(obj, GeoDataFrame):
+            return obj.to_json()
         return super().default(obj)
 
 
@@ -23,4 +27,4 @@ class RasqcResult:
     name: str
     filename: str
     message: Optional[str] = None
-    # geojson: TODO
+    gdf: Optional[GeoDataFrame] = None
