@@ -15,7 +15,11 @@ class RasModelFile:
             The absolute path to the RAS file.
         """
         self.path = Path(path)
-        self.hdf_path = self.path.with_suffix(self.path.suffix + ".hdf")
+        self.hdf_path = (
+            None
+            if self.path.suffix == ".prj"
+            else self.path.with_suffix(self.path.suffix + ".hdf")
+        )
 
     @property
     def title(self):
@@ -45,9 +49,7 @@ class RasModel:
         with open(self.prj_file.path, "r") as f:
             match = re.search(r"(?m)Current Plan\s*=\s*(.+)$", f.read())
             current_plan_ext = match.group(1)
-            return RasModelFile(
-                self.prj_file.path.with_suffix(f".{current_plan_ext}")
-            )
+            return RasModelFile(self.prj_file.path.with_suffix(f".{current_plan_ext}"))
 
     @property
     def geometries(self) -> list[RasModelFile]:
@@ -60,11 +62,11 @@ class RasModel:
     @property
     def geometry_paths(self) -> list[Path]:
         return list(x.path for x in self.geometries)
-    
+
     @property
     def geometry_hdf_paths(self) -> list[Path]:
         return list(x.hdf_path for x in self.geometries)
-    
+
     @property
     def geometry_titles(self) -> list[str]:
         return list(x.title for x in self.geometries)
@@ -80,7 +82,7 @@ class RasModel:
     @property
     def plan_paths(self) -> list[Path]:
         return list(x.path for x in self.plans)
-    
+
     @property
     def plan_hdf_paths(self) -> list[Path]:
         return list(x.hdf_path for x in self.plans)
@@ -100,11 +102,11 @@ class RasModel:
     @property
     def unsteady_paths(self) -> list[Path]:
         return list(x.path for x in self.unsteadies)
-    
+
     @property
     def unsteady_hdf_paths(self) -> list[Path]:
         return list(x.hdf_path for x in self.unsteadies)
-    
+
     @property
     def unsteady_titles(self) -> list[str]:
         return list(x.title for x in self.unsteadies)
