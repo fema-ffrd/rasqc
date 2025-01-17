@@ -48,7 +48,7 @@ def run_json(ras_model: str, checksuite: str) -> dict:
     results_dicts = [asdict(result) for result in results]
     output = {
         "model": ras_model,
-        "checksuite": "ffrd",
+        "checksuite": checksuite,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "checks": results_dicts
     }

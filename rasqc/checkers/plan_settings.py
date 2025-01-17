@@ -5,7 +5,7 @@ from rasqc.result import RasqcResult, ResultStatus
 
 from rashdf import RasPlanHdf
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "ble"])
 class EquationSet2D(RasqcChecker):
     name = "2D Equation Set"
 

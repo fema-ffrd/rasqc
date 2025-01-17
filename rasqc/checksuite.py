@@ -55,7 +55,8 @@ class CheckSuite:
 
 CHECKSUITES = {
     "ffrd": CheckSuite(),
-    "asdf": CheckSuite()
+    "asdf": CheckSuite(),
+    "ble": CheckSuite()
 }
 
 
