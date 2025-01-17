@@ -40,16 +40,17 @@ class GeomProjection(RasqcChecker):
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.WARNING,
-                message="HEC-RAS geometry HDF file does not have a projection defined."
+                message="HEC-RAS geometry HDF file does not have a projection defined.",
             )
         if projection != FFRD_CRS:
             return RasqcResult(
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS geometry HDF file projection '{projection.name}'"
-                         " does not match the expected projection for FFRD models."
-                         f" ({filename})")
+                message=(
+                    f"HEC-RAS geometry HDF file projection '{projection.name}'"
+                    " does not match the expected projection for FFRD models."
+                    f" ({filename})"
+                ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK, filename=filename)
-

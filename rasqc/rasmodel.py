@@ -50,14 +50,14 @@ class RasModel:
             match = re.search(r"(?m)Current Plan\s*=\s*(.+)$", f.read())
             current_plan_ext = match.group(1)
             return RasModelFile(self.prj_file.path.with_suffix(f".{current_plan_ext}"))
-        
+
     @property
     def current_geometry(self) -> RasModelFile:
         with open(self.current_plan.path, "r") as f:
             match = re.search(r"(?m)Geom File\s*=\s*(.+)$", f.read())
             current_geom_ext = match.group(1)
             return RasModelFile(self.prj_file.path.with_suffix(f".{current_geom_ext}"))
-        
+
     @property
     def current_unsteady(self) -> RasModelFile:
         with open(self.current_plan.path, "r") as f:

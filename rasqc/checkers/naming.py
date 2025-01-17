@@ -17,9 +17,11 @@ class PrjFileNaming(RasqcChecker):
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS project file '{filename}' does not follow the"
-                         " naming convention 'Basin_Name_<HUC4-ID>_Subbasin_name.prj',"
-                         " where <HUC4-ID> is a 4-digit HUC number.")
+                message=(
+                    f"HEC-RAS project file '{filename}' does not follow the"
+                    " naming convention 'Basin_Name_<HUC4-ID>_Subbasin_name.prj',"
+                    " where <HUC4-ID> is a 4-digit HUC number."
+                ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
 
@@ -36,8 +38,10 @@ class GeometryTitleNaming(RasqcChecker):
                 name=self.name,
                 filename=geom_file.path.name,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS geometry file title '{geom_title}' does not follow the"
-                         f" naming convention 'Watershed Name FFRD' ({geom_file.path.name})")
+                message=(
+                    f"HEC-RAS geometry file title '{geom_title}' does not follow the"
+                    f" naming convention 'Watershed Name FFRD' ({geom_file.path.name})"
+                ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
 
@@ -55,8 +59,10 @@ class PlanTitleNaming(RasqcChecker):
                 name=self.name,
                 filename=plan_file.path.name,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS plan file title '{plan_title}' does not follow the"
-                         f" naming convention 'MonYEAR Event' ({plan_file.path.name})")
+                message=(
+                    f"HEC-RAS plan file title '{plan_title}' does not follow the"
+                    f" naming convention 'MonYEAR Event' ({plan_file.path.name})"
+                ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
 
@@ -74,8 +80,9 @@ class UnsteadyFlowTitleNaming(RasqcChecker):
                 name=self.name,
                 filename=flow_file.path.name,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS unsteady flow file title '{flow_title}' does not follow the"
-                         f" naming convention 'MonYEAR' ({flow_file.path.name})")
+                message=(
+                    f"HEC-RAS unsteady flow file title '{flow_title}' does not follow the"
+                    f" naming convention 'MonYEAR' ({flow_file.path.name})"
+                ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK)
-        
