@@ -29,8 +29,8 @@ class GeometryTitleNaming(RasqcChecker):
     name = "Geometry title naming"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
-        geom_file = ras_model.geometry_file()
-        geom_title = geom_file.title()
+        geom_file = ras_model.current_geometry
+        geom_title = geom_file.title
         if not re.match(r"\w* FFRD$", geom_title):
             return RasqcResult(
                 name=self.name,
@@ -47,8 +47,8 @@ class PlanTitleNaming(RasqcChecker):
     name = "Plan title naming"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
-        plan_file = ras_model.plan_file()
-        plan_title = plan_file.title()
+        plan_file = ras_model.current_plan
+        plan_title = plan_file.title
         match = re.match(r"(\w{3})(\d{4}) .*$", plan_title)
         if not match:
             return RasqcResult(
@@ -66,8 +66,8 @@ class UnsteadyFlowTitleNaming(RasqcChecker):
     name = "Unsteady flow title naming"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
-        flow_file = ras_model.unsteady_flow_file()
-        flow_title = flow_file.title()
+        flow_file = ras_model.current_unsteady
+        flow_title = flow_file.title
         match = re.match(r"(\w{3})(\d{4})", flow_title)
         if not match:
             return RasqcResult(

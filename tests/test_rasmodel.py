@@ -51,3 +51,6 @@ def test_RasModel():
         "PMF with Multi 2D Areas",
         "1972 Flood Event - 2D to 2D Run"
     ]
+    assert rmf.current_plan.path.name == "BaldEagleDamBrk.p18"
+    assert rmf.current_geometry.path.name == "BaldEagleDamBrk.g11"
+    assert rmf.current_unsteady.path.name == "BaldEagleDamBrk.u10"

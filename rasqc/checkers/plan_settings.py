@@ -10,12 +10,11 @@ class EquationSet2D(RasqcChecker):
     name = "2D Equation Set"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
-        plan_path = ras_model.plan_file().path
-        plan_hdf_path = plan_path.with_suffix(plan_path.suffix + ".hdf")
+        plan_hdf_path = ras_model.current_plan.hdf_path
         filename = plan_hdf_path.name
         plan_hdf = RasPlanHdf(plan_hdf_path)
         plan_params = plan_hdf.get_plan_param_attrs()
-        equation_set = plan_params["2D Equation Set"]
+        equation_set = plan_params["2D Equation Set"] if isinstance(plan_params["2D Equation Set"], str) else plan_params["2D Equation Set"][0] # handle geometries with single or multiple 2D areas
         if equation_set != "Diffusion Wave":
             return RasqcResult(
                 name=self.name,
