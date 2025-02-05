@@ -28,11 +28,10 @@ FFRD_CRS = CRS.from_wkt(FFRD_PROJECTION_WKT)
 
 @register_check(["ffrd"])
 class GeomProjection(RasqcChecker):
-    name = "Geometry projection"
+    name = "Geometry Projection"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
-        geom_path = ras_model.geometry_file().path
-        geom_hdf_path = geom_path.with_suffix(geom_path.suffix + ".hdf")
+        geom_hdf_path = ras_model.current_geometry.hdf_path
         geom_hdf = RasGeomHdf(geom_hdf_path)
         projection = geom_hdf.projection()
         filename = geom_hdf_path.name
@@ -41,16 +40,17 @@ class GeomProjection(RasqcChecker):
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.WARNING,
-                message="HEC-RAS geometry HDF file does not have a projection defined."
+                message="HEC-RAS geometry HDF file does not have a projection defined.",
             )
         if projection != FFRD_CRS:
             return RasqcResult(
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.ERROR,
-                message=(f"HEC-RAS geometry HDF file projection '{projection.name}'"
-                         " does not match the expected projection for FFRD models."
-                         f" ({filename})")
+                message=(
+                    f"HEC-RAS geometry HDF file projection '{projection.name}'"
+                    " does not match the expected projection for FFRD models."
+                    f" ({filename})"
+                ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK, filename=filename)
-

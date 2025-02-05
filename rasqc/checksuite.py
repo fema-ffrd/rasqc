@@ -11,15 +11,15 @@ from typing import List
 def bold_single_quotes(text: str) -> str:
     # Regex to find text within single quotes
     pattern = re.compile(r"'(.*?)'")
-    
+
     # Replace matches with bold tags
     formatted_text = pattern.sub(r"[bold cyan]'\1'[/bold cyan]", text)
-    
+
     return formatted_text
 
 
 class CheckSuite:
-    checks: List 
+    checks: List
 
     def __init__(self):
         self.checks = []
@@ -46,7 +46,9 @@ class CheckSuite:
             results.append(result)
         return results
 
-    def run_all_silent(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+    def run_all_silent(
+        self, ras_model: str | os.PathLike | RasModel
+    ) -> List[RasqcResult]:
         results = []
         for check in self.checks:
             results.append(check.run(RasModel(ras_model)))
@@ -68,4 +70,5 @@ def register_check(suite_names: List[str]):
             else:
                 raise ValueError(f"Suite '{suite_name}' not found")
         return check_class
+
     return decorator

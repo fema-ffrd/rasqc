@@ -22,13 +22,26 @@ _|    \__._| ____/ \__. | \___|
 def run_console(ras_model: str, checksuite: str) -> None:
     console = Console()
     console.print(BANNER.strip("\n"))
-    console.print(f"[bold]HEC-RAS Model[/bold]: [bright_blue]{ras_model}[/bright_blue]", highlight=False)
-    console.print(f"[bold]Checksuite[/bold]: [bright_blue]{checksuite}[/bright_blue]", highlight=False)
-    console.print(f"[bold]Timestamp[/bold]: [bright_blue]{datetime.now(timezone.utc).isoformat()}[/bright_blue]", highlight=False)
+    console.print(
+        f"[bold]HEC-RAS Model[/bold]: [bright_blue]{ras_model}[/bright_blue]",
+        highlight=False,
+    )
+    console.print(
+        f"[bold]Checksuite[/bold]: [bright_blue]{checksuite}[/bright_blue]",
+        highlight=False,
+    )
+    console.print(
+        f"[bold]Timestamp[/bold]: [bright_blue]{datetime.now(timezone.utc).isoformat()}[/bright_blue]",
+        highlight=False,
+    )
     console.print(f"[bold]Checks[/bold]:")
     results = CHECKSUITES[checksuite].run_all(ras_model)
-    error_count = len([result for result in results if result.result == ResultStatus.ERROR])
-    warning_count = len([result for result in results if result.result == ResultStatus.WARNING])
+    error_count = len(
+        [result for result in results if result.result == ResultStatus.ERROR]
+    )
+    warning_count = len(
+        [result for result in results if result.result == ResultStatus.WARNING]
+    )
     ok_count = len([result for result in results if result.result == ResultStatus.OK])
     console.print("Results:", style="bold white")
     console.print(f"- Errors: [bold red]{error_count}[/bold red]")
@@ -50,18 +63,25 @@ def run_json(ras_model: str, checksuite: str) -> dict:
         "model": ras_model,
         "checksuite": checksuite,
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "checks": results_dicts
+        "checks": results_dicts,
     }
     print(json.dumps(output, cls=RasqcResultEncoder))
     return output
 
 
 def main():
-    parser = argparse.ArgumentParser(description='rasqc: Automated HEC-RAS Model Quality Control Checks')
-    parser.add_argument('ras_model', type=str, help='HEC-RAS model .prj file')
-    parser.add_argument('--checksuite', type=str, default='ffrd', choices=CHECKSUITES.keys(),
-                        help='Checksuite to run. Default: ffrd')
-    parser.add_argument('--json', action='store_true', help='Output results as JSON')
+    parser = argparse.ArgumentParser(
+        description="rasqc: Automated HEC-RAS Model Quality Control Checks"
+    )
+    parser.add_argument("ras_model", type=str, help="HEC-RAS model .prj file")
+    parser.add_argument(
+        "--checksuite",
+        type=str,
+        default="ffrd",
+        choices=CHECKSUITES.keys(),
+        help="Checksuite to run. Default: ffrd",
+    )
+    parser.add_argument("--json", action="store_true", help="Output results as JSON")
     args = parser.parse_args()
     if args.json:
         run_json(args.ras_model, args.checksuite)
