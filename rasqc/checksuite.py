@@ -55,11 +55,7 @@ class CheckSuite:
         return results
 
 
-CHECKSUITES = {
-    "ffrd": CheckSuite(),
-    "asdf": CheckSuite(),
-    "ble": CheckSuite()
-}
+CHECKSUITES = {"ffrd": CheckSuite(), "asdf": CheckSuite(), "ble": CheckSuite()}
 
 
 def register_check(suite_names: List[str]):
