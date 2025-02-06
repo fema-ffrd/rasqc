@@ -11,7 +11,7 @@ import json
 import sys
 
 
-BANNER = """
+BANNER = r"""
   __|   _` |   __|   _` |   __| 
  |     (   | \__ \  (   |  (    
 _|    \__._| ____/ \__. | \___| 
@@ -57,6 +57,7 @@ def run_console(ras_model: str, checksuite: str) -> None:
 
 
 def run_json(ras_model: str, checksuite: str) -> dict:
+    print(BANNER.strip("\n"))
     results = CHECKSUITES[checksuite].run_all_silent(ras_model)
     results_dicts = [asdict(result) for result in results]
     output = {
@@ -65,7 +66,7 @@ def run_json(ras_model: str, checksuite: str) -> dict:
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "checks": results_dicts,
     }
-    print(json.dumps(output, cls=RasqcResultEncoder))
+    print(json.dumps(output, cls=RasqcResultEncoder, indent=4))
     return output
 
 

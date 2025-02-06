@@ -3,13 +3,14 @@ from geopandas import GeoDataFrame
 from dataclasses import dataclass
 from enum import Enum
 from json import JSONEncoder
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 
 class ResultStatus(Enum):
     OK = "ok"
     WARNING = "warning"
     ERROR = "error"
+    NOTE = "note"
 
 
 class RasqcResultEncoder(JSONEncoder):
@@ -25,6 +26,6 @@ class RasqcResultEncoder(JSONEncoder):
 class RasqcResult:
     result: ResultStatus
     name: str
-    filename: str
-    message: Optional[str] = None
+    filename: Union[str, list[str]]
+    message: Optional[Union[str, list[str]]] = None
     gdf: Optional[GeoDataFrame] = None

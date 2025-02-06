@@ -1,10 +1,14 @@
 from pathlib import Path
+import json
+from dataclasses import asdict
 from rasqc.rasmodel import RasModel
-from rasqc.checkers.plan_settings import EquationSet2D
+from rasqc.checkers.plan_settings import EquationSet2D, EquationSet2DNote
+from rasqc.result import RasqcResultEncoder
+
 
 TEST_DATA = Path("./tests/data")
-BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
-MUNCIE_PRJ = TEST_DATA / "ras/Muncie.prj"
+BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagle/BaldEagleDamBrk.prj"
+MUNCIE_PRJ = TEST_DATA / "ras/Muncie/Muncie.prj"
 
 
 def test_EquationSet2D_a():
@@ -18,4 +22,14 @@ def test_EquationSet2D_b():
     assert (
         EquationSet2D().run(RasModel(MUNCIE_PRJ)).__dict__.__str__()
         == "{'result': <ResultStatus.OK: 'ok'>, 'name': '2D Equation Set', 'filename': 'Muncie.p03.hdf', 'message': None, 'gdf': None}"
+    )
+
+
+def test_EquationSet2DNote():
+    assert (
+        json.dumps(
+            asdict(EquationSet2DNote().run(RasModel(BALDEAGLE_PRJ))),
+            cls=RasqcResultEncoder,
+        )
+        == '{"result": "note", "name": "2D Equation Set", "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"], "message": ["2D Equation Set(s): \'[\'Diffusion Wave\', \'Diffusion Wave\', \'Diffusion Wave\']\'", "2D Equation Set(s): \'[\'Diffusion Wave\', \'Diffusion Wave\']\'"], "gdf": null}'
     )

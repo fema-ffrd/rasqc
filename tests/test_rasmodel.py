@@ -2,7 +2,7 @@ from pathlib import Path
 from rasqc.rasmodel import RasModel, RasModelFile
 
 TEST_DATA = Path("./tests/data")
-BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
+BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagle/BaldEagleDamBrk.prj"
 
 
 def test_RasModelFile():

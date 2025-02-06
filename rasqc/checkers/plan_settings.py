@@ -6,7 +6,7 @@ from rasqc.result import RasqcResult, ResultStatus
 from rashdf import RasPlanHdf
 
 
-@register_check(["ffrd", "ble"])
+@register_check(["ffrd"])
 class EquationSet2D(RasqcChecker):
     name = "2D Equation Set"
 
@@ -33,3 +33,23 @@ class EquationSet2D(RasqcChecker):
                     ),
                 )
         return RasqcResult(name=self.name, result=ResultStatus.OK, filename=filename)
+
+
+@register_check(["ble"])
+class EquationSet2DNote(RasqcChecker):
+    name = "2D Equation Set"
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        filenames = []
+        messages = []
+        for plan_hdf_path in ras_model.plan_hdf_paths:
+            filenames.append(plan_hdf_path.name)
+            plan_hdf = RasPlanHdf(plan_hdf_path)
+            plan_params = plan_hdf.get_plan_param_attrs()
+            messages.append(f"2D Equation Set(s): '{plan_params["2D Equation Set"]}'")
+        return RasqcResult(
+            name=self.name,
+            filename=filenames,
+            result=ResultStatus.NOTE,
+            message=messages,
+        )
