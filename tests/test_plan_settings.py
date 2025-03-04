@@ -39,17 +39,10 @@ def test_CompSettings():
     assert asdict(CompSettings().run(RasModel(BALDEAGLE_PRJ))) == {
         "result": ResultStatus.NOTE,
         "name": "Computational Timestep Settings",
-        "filename": [
-            "BaldEagleDamBrk.p13.hdf",
-            "BaldEagleDamBrk.p18.hdf"
-        ],
+        "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"],
         "message": [
-            {
-                "Computation Time Step Base": "30SEC"
-            },
-            {
-                "Computation Time Step Base": "20SEC"
-            }
+            {"Computation Time Step Base": "30SEC"},
+            {"Computation Time Step Base": "20SEC"},
         ],
         "gdf": None,
     }
