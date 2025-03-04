@@ -27,5 +27,5 @@ class RasqcResult:
     result: ResultStatus
     name: str
     filename: Union[str, list[str]]
-    message: Optional[Union[str, list[str]]] = None
+    message: Optional[Union[str, dict, list[str], list[dict]]] = None
     gdf: Optional[GeoDataFrame] = None

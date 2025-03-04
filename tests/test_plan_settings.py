@@ -2,8 +2,8 @@ from pathlib import Path
 import json
 from dataclasses import asdict
 from rasqc.rasmodel import RasModel
-from rasqc.checkers.plan_settings import EquationSet2D, EquationSet2DNote
-from rasqc.result import RasqcResultEncoder
+from rasqc.checkers.plan_settings import EquationSet2D, EquationSet2DNote, CompSettings
+from rasqc.result import RasqcResultEncoder, ResultStatus
 
 
 TEST_DATA = Path("./tests/data")
@@ -33,3 +33,23 @@ def test_EquationSet2DNote():
         )
         == '{"result": "note", "name": "2D Equation Set", "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"], "message": ["2D Equation Set(s): \'[\'Diffusion Wave\', \'Diffusion Wave\', \'Diffusion Wave\']\'", "2D Equation Set(s): \'[\'Diffusion Wave\', \'Diffusion Wave\']\'"], "gdf": null}'
     )
+
+
+def test_CompSettings():
+    assert asdict(CompSettings().run(RasModel(BALDEAGLE_PRJ))) == {
+        "result": ResultStatus.NOTE,
+        "name": "Computational Timestep Settings",
+        "filename": [
+            "BaldEagleDamBrk.p13.hdf",
+            "BaldEagleDamBrk.p18.hdf"
+        ],
+        "message": [
+            {
+                "Computation Time Step Base": "30SEC"
+            },
+            {
+                "Computation Time Step Base": "20SEC"
+            }
+        ],
+        "gdf": None,
+    }

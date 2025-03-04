@@ -1,3 +1,4 @@
+import json
 from rasqc.checkers.base_checker import RasqcChecker
 from rasqc.checksuite import register_check
 from rasqc.rasmodel import RasModel
@@ -50,6 +51,38 @@ class EquationSet2DNote(RasqcChecker):
                 messages.append(
                     f"2D Equation Set(s): '{plan_params["2D Equation Set"]}'"
                 )
+        return RasqcResult(
+            name=self.name,
+            filename=filenames,
+            result=ResultStatus.NOTE,
+            message=messages,
+        )
+
+
+@register_check(["ble"])
+class CompSettings(RasqcChecker):
+    name = "Computational Timestep Settings"
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        settings = [
+            "Computation Time Step Base",
+            "Computation Time Courant Method",
+            "Computation Time Step Max Courant",
+            "Computation Time Step Min Courant",
+            "Computation Time Step Count To Double",
+            "Computation Time Step Max Doubling",
+            "Computation Time Step Max Halving"            
+        ]
+        filenames = []
+        messages = []
+        for plan_hdf_path in ras_model.plan_hdf_paths:
+            if plan_hdf_path.exists():
+                filenames.append(plan_hdf_path.name)
+                plan_hdf = RasPlanHdf(plan_hdf_path)
+                plan_info = plan_hdf.get_plan_info_attrs()
+                messages.append(
+                    {setting: plan_info[setting] for setting in settings if setting in plan_info}
+                )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
         return RasqcResult(
             name=self.name,
             filename=filenames,
