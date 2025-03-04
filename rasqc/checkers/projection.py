@@ -76,5 +76,5 @@ class GeomProjectionNote(RasqcChecker):
             name=self.name,
             filename=filename,
             result=ResultStatus.NOTE,
-            message=(f"HEC-RAS geometry HDF file projection: '{projection.name}'"),
+            message=projection.name,
         )

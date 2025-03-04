@@ -48,9 +48,7 @@ class EquationSet2DNote(RasqcChecker):
                 filenames.append(plan_hdf_path.name)
                 plan_hdf = RasPlanHdf(plan_hdf_path)
                 plan_params = plan_hdf.get_plan_param_attrs()
-                messages.append(
-                    f"2D Equation Set(s): '{plan_params["2D Equation Set"]}'"
-                )
+                messages.append(plan_params["2D Equation Set"])
         return RasqcResult(
             name=self.name,
             filename=filenames,

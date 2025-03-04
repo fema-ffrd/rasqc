@@ -26,13 +26,16 @@ def test_EquationSet2D_b():
 
 
 def test_EquationSet2DNote():
-    assert (
-        json.dumps(
-            asdict(EquationSet2DNote().run(RasModel(BALDEAGLE_PRJ))),
-            cls=RasqcResultEncoder,
-        )
-        == '{"result": "note", "name": "2D Equation Set", "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"], "message": ["2D Equation Set(s): \'[\'Diffusion Wave\', \'Diffusion Wave\', \'Diffusion Wave\']\'", "2D Equation Set(s): \'[\'Diffusion Wave\', \'Diffusion Wave\']\'"], "gdf": null}'
-    )
+    assert asdict(EquationSet2DNote().run(RasModel(BALDEAGLE_PRJ))) == {
+        "result": ResultStatus.NOTE,
+        "name": "2D Equation Set",
+        "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"],
+        "message": [
+            ["Diffusion Wave", "Diffusion Wave", "Diffusion Wave"],
+            ["Diffusion Wave", "Diffusion Wave"],
+        ],
+        "gdf": None,
+    }
 
 
 def test_CompSettings():

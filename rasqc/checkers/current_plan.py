@@ -11,7 +11,8 @@ class CurrentPlan(RasqcChecker):
             name="Current Saved Plan",
             filename=ras_model.prj_file.path.name,
             result=ResultStatus.NOTE,
-            message=(
-                f"Current saved plan: '{ras_model.current_plan.path.name}' - '{ras_model.current_plan.title}'"
-            ),
+            message={
+                "File": ras_model.current_plan.path.name,
+                "Title": ras_model.current_plan.title,
+            },
         )

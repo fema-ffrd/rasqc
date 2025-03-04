@@ -22,5 +22,5 @@ def test_GeomProjectionNote():
             asdict(GeomProjectionNote().run(RasModel(BALDEAGLE_PRJ))),
             cls=RasqcResultEncoder,
         )
-        == '{"result": "note", "name": "Geometry Projection", "filename": "BaldEagleDamBrk.g11.hdf", "message": "HEC-RAS geometry HDF file projection: \'NAD83 / Pennsylvania North (ftUS)\'", "gdf": null}'
+        == '{"result": "note", "name": "Geometry Projection", "filename": "BaldEagleDamBrk.g11.hdf", "message": "NAD83 / Pennsylvania North (ftUS)", "gdf": null}'
     )
