@@ -70,6 +70,7 @@ class CompSettings(RasqcChecker):
             "Computation Time Step Count To Double",
             "Computation Time Step Max Doubling",
             "Computation Time Step Max Halving",
+            "Time Window",
         ]
         filenames = []
         messages = []

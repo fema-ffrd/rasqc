@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from enum import Enum
 from json import JSONEncoder
 from typing import Any, Optional, Union
+from datetime import datetime
 
 
 class ResultStatus(Enum):
@@ -19,6 +20,8 @@ class RasqcResultEncoder(JSONEncoder):
             return obj.value
         if isinstance(obj, GeoDataFrame):
             return obj.to_json()
+        if isinstance(obj, datetime):
+            return obj.isoformat()
         return super().default(obj)
 
 

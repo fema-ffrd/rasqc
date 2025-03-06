@@ -1,9 +1,9 @@
 from pathlib import Path
-import json
 from dataclasses import asdict
 from rasqc.rasmodel import RasModel
 from rasqc.checkers.plan_settings import EquationSet2D, EquationSet2DNote, CompSettings
-from rasqc.result import RasqcResultEncoder, ResultStatus
+from rasqc.result import ResultStatus
+from datetime import datetime
 
 
 TEST_DATA = Path("./tests/data")
@@ -44,8 +44,20 @@ def test_CompSettings():
         "name": "Computational Timestep Settings",
         "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"],
         "message": [
-            {"Computation Time Step Base": "30SEC"},
-            {"Computation Time Step Base": "20SEC"},
+            {
+                "Computation Time Step Base": "30SEC",
+                "Time Window": [
+                    datetime(1999, 1, 1, 12, 0),
+                    datetime(1999, 1, 2, 0, 0)
+                ]
+            },
+            {
+                "Computation Time Step Base": "20SEC",
+                "Time Window": [
+                    datetime(1999, 1, 1, 12, 0),
+                    datetime(1999, 1, 2, 0, 0)
+                ]
+            }
         ],
         "gdf": None,
     }
