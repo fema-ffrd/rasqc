@@ -48,16 +48,16 @@ def test_CompSettings():
                 "Computation Time Step Base": "30SEC",
                 "Time Window": [
                     datetime(1999, 1, 1, 12, 0),
-                    datetime(1999, 1, 2, 0, 0)
-                ]
+                    datetime(1999, 1, 2, 0, 0),
+                ],
             },
             {
                 "Computation Time Step Base": "20SEC",
                 "Time Window": [
                     datetime(1999, 1, 1, 12, 0),
-                    datetime(1999, 1, 2, 0, 0)
-                ]
-            }
+                    datetime(1999, 1, 2, 0, 0),
+                ],
+            },
         ],
         "gdf": None,
     }
