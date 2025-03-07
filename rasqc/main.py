@@ -1,6 +1,6 @@
-import rasqc.checkers
 from rasqc.checksuite import CHECKSUITES
 from rasqc.result import RasqcResultEncoder, ResultStatus
+from rasqc.log.writer import to_file
 
 from rich.console import Console
 
@@ -9,6 +9,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 import json
 import sys
+import webbrowser
 
 
 BANNER = r"""
@@ -68,6 +69,19 @@ def run_json(ras_model: str, checksuite: str) -> dict:
     }
     print(json.dumps(output, cls=RasqcResultEncoder, indent=4))
     return output
+
+
+def run_files(ras_model: str, checksuite: str) -> None:
+    print(BANNER.strip("\n"))
+    results = CHECKSUITES[checksuite].run_all_silent(ras_model)
+    for res in results:
+        res.gdf_to_shp(ras_model=ras_model)
+    log_file = to_file(
+        model_path=ras_model,
+        checksuite=checksuite,
+        checks=results,
+    )
+    webbrowser.open(log_file)
 
 
 def main():
