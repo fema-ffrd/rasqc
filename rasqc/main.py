@@ -1,6 +1,6 @@
 from rasqc.checksuite import CHECKSUITES
 from rasqc.result import RasqcResultEncoder, ResultStatus
-from rasqc.log.writer import to_file
+from rasqc.log.writer import to_file, ColorTheme
 
 from rich.console import Console
 
@@ -71,7 +71,11 @@ def run_json(ras_model: str, checksuite: str) -> dict:
     return output
 
 
-def run_files(ras_model: str, checksuite: str) -> None:
+def run_files(
+    ras_model: str,
+    checksuite: str,
+    theme: ColorTheme = ColorTheme.NINETIES,
+) -> None:
     print(BANNER.strip("\n"))
     results = CHECKSUITES[checksuite].run_all_silent(ras_model)
     for res in results:
@@ -80,6 +84,8 @@ def run_files(ras_model: str, checksuite: str) -> None:
         model_path=ras_model,
         checksuite=checksuite,
         checks=results,
+        tool_version="version 1.0",
+        theme=theme,
     )
     webbrowser.open(log_file)
 
@@ -97,9 +103,16 @@ def main():
         help="Checksuite to run. Default: ffrd",
     )
     parser.add_argument("--json", action="store_true", help="Output results as JSON")
+    parser.add_argument(
+        "--files",
+        action="store_true",
+        help="Output results to disk as HTML log and ESRI Shapefiles",
+    )
     args = parser.parse_args()
     if args.json:
         run_json(args.ras_model, args.checksuite)
+    elif args.files:
+        run_files(args.ras_model, args.checksuite)
     else:
         run_console(args.ras_model, args.checksuite)
 

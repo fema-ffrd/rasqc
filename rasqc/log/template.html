@@ -20,10 +20,10 @@
 
 <body style="font-family: -apple-system, 'Segoe UI', arial, Tahoma, Helvetica, sans-serif; background-color:{{background}}">
 
-    <div><span style="font-weight:600; font-size:50px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{{version}}</span></div>
+    <div><span style="font-weight:600; font-size:50px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{{tool_version}}</span></div>
 
     <div style="margin:10px 0; display:inline-block; border-radius:7px; background:{{background}}; box-shadow:1px 1px 4px {{shadow}}; overflow:hidden;">
-        <div style="background-color:{{background}}; border-bottom:1px solid {{body}}; font-size:larger; padding:10px;">
+        <div style="background-color:{{background}}; border-bottom:1px solid {{shadow}}; font-size:larger; padding:10px;">
             <span style="font-weight:600; font-size:20px; color:{{heading2}}; vertical-align:middle;">tool execution details</span>
         </div>
         <table role="presentation" class="summary-table" style="border-spacing:0; margin-left:10px; padding:5px 10px; color:{{body}};">
@@ -58,14 +58,14 @@
             <table class="log-items" style="line-height:1em; border-spacing:0; color:{{body}};">
                 {%if isinstance(check.filename, str)%}
                     <tr>
-                        <td valign="top">{{check.filename}}</td>
-                        <td>:  {{check.message}}</td>
+                        <td valign="top">{{check.filename}} :</td>
+                        <td>{{dumps(check.message, cls=RasqcResultEncoder, indent=4)}}</td>
                     </tr>
                 {%elif isinstance(check.filename, list)%}
                     {%for i, filename in enumerate(check.filename)%}
                         <tr>
-                            <td valign="top">{{filename}}</td>
-                            <td>:  {{check.message[i]}}</td>
+                            <td valign="top">{{filename}} :</td>
+                            <td>{{dumps(check.message[i], cls=RasqcResultEncoder, indent=4)}}</td>
                         </tr>
                     {%endfor%}
                 {%endif%}

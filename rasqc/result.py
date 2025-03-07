@@ -44,5 +44,5 @@ class RasqcResult:
 
 def to_snake_case(text: str) -> str:
     text = re.sub(r"[-]", " ", text)
-    text = ''.join([' ' + c.lower() if c.isupper() else c for c in text]).lstrip()
+    text = "".join([" " + c.lower() if c.isupper() else c for c in text]).lstrip()
     return re.sub(r"\s+", "_", text)
