@@ -2,10 +2,9 @@ from jinja2 import Environment, FileSystemLoader
 from enum import Enum
 from pathlib import Path
 import subprocess
-from json import dumps
 from bs4 import BeautifulSoup
 
-from rasqc.result import RasqcResultEncoder, RasqcResult, to_snake_case
+from rasqc.result import RasqcResult, to_snake_case
 from rasqc.rasmodel import RasModel
 
 
@@ -33,10 +32,6 @@ def to_file(
     ).with_suffix(".html")
     env = Environment(loader=FileSystemLoader(Path(__file__).parent.resolve()))
     env.globals.update(
-        isinstance=isinstance,
-        str=str,
-        list=list,
-        enumerate=enumerate,
         res_to_dict=res_to_dict,
         dict_to_html_table=dict_to_html_table,
     )
@@ -59,7 +54,7 @@ def to_file(
         **theme.value,
     }
     with open(log_path, mode="w", encoding="utf-8") as log_file:
-        log_file.write(BeautifulSoup(template.render(subs), 'html.parser').prettify())
+        log_file.write(BeautifulSoup(template.render(subs), "html.parser").prettify())
     return log_path
 
 
@@ -67,7 +62,7 @@ def res_to_dict(res: RasqcResult) -> dict:
     if isinstance(res.filename, str):
         return {res.filename: res.message}
     elif isinstance(res.filename, list):
-        return {n:m for n,m in zip(res.filename, res.message)}
+        return {n: m for n, m in zip(res.filename, res.message)}
 
 
 def dict_to_html_table(data: dict, html_color_str: str = "rgb(170, 170, 170)") -> str:
@@ -82,7 +77,9 @@ def dict_to_html_table(data: dict, html_color_str: str = "rgb(170, 170, 170)") -
             for item in value:
                 html += "<tr>"
                 if isinstance(item, dict):
-                    html += f"<td valign='top' align='left'>{dict_to_html_table(item)}</td>"
+                    html += (
+                        f"<td valign='top' align='left'>{dict_to_html_table(item)}</td>"
+                    )
                 else:
                     html += f"<td valign='top' align='left'>{item}</td>"
                 html += "</tr>"
