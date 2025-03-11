@@ -3,6 +3,7 @@ from enum import Enum
 from pathlib import Path
 import subprocess
 from json import dumps
+from bs4 import BeautifulSoup
 
 from rasqc.result import RasqcResultEncoder, RasqcResult, to_snake_case
 from rasqc.rasmodel import RasModel
@@ -36,8 +37,8 @@ def to_file(
         str=str,
         list=list,
         enumerate=enumerate,
-        dumps=dumps,
-        RasqcResultEncoder=RasqcResultEncoder,
+        res_to_dict=res_to_dict,
+        dict_to_html_table=dict_to_html_table,
     )
     template = env.get_template("template.html")
     details = (
@@ -47,6 +48,7 @@ def to_file(
     )
     subs = {
         "model_path": model_path,
+        "model_title": RasModel(model_path).prj_file.title,
         "checksuite": checksuite,
         "checks": checks,
         "tool_version": tool_version,
@@ -57,5 +59,36 @@ def to_file(
         **theme.value,
     }
     with open(log_path, mode="w", encoding="utf-8") as log_file:
-        log_file.write(template.render(subs))
+        log_file.write(BeautifulSoup(template.render(subs), 'html.parser').prettify())
     return log_path
+
+
+def res_to_dict(res: RasqcResult) -> dict:
+    if isinstance(res.filename, str):
+        return {res.filename: res.message}
+    elif isinstance(res.filename, list):
+        return {n:m for n,m in zip(res.filename, res.message)}
+
+
+def dict_to_html_table(data: dict, html_color_str: str = "rgb(170, 170, 170)") -> str:
+    html = f'<table border="0" style="line-height:1em; border-spacing:0; color:{html_color_str};">'
+    for key, value in data.items():
+        html += "<tr>"
+        html += f"<th valign='top' align='left'>{key} :</th>"
+        if isinstance(value, dict):
+            html += f"<td valign='top' align='left'>{dict_to_html_table(value)}</td>"
+        elif isinstance(value, list):
+            html += f"<td valign='top' align='left'><table border='0'>"
+            for item in value:
+                html += "<tr>"
+                if isinstance(item, dict):
+                    html += f"<td valign='top' align='left'>{dict_to_html_table(item)}</td>"
+                else:
+                    html += f"<td valign='top' align='left'>{item}</td>"
+                html += "</tr>"
+            html += "</table></td>"
+        else:
+            html += f"<td valign='top' align='left'>{value}</td>"
+        html += "</tr>"
+    html += "</table>"
+    return html

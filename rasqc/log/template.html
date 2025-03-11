@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>rasqc</title>
+    <title>rasqc - {{model_title}}</title>
     <style>
 
         .summary-table td:nth-child(1) { padding-right: 10px; }
@@ -20,13 +20,13 @@
 
 <body style="font-family: -apple-system, 'Segoe UI', arial, Tahoma, Helvetica, sans-serif; background-color:{{background}}">
 
-    <div><span style="font-weight:600; font-size:50px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{{tool_version}}</span></div>
+    <div><span style="font-weight:600; font-size:75px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{{tool_version}}</span></div>
 
     <div style="margin:10px 0; display:inline-block; border-radius:7px; background:{{background}}; box-shadow:1px 1px 4px {{shadow}}; overflow:hidden;">
         <div style="background-color:{{background}}; border-bottom:1px solid {{shadow}}; font-size:larger; padding:10px;">
-            <span style="font-weight:600; font-size:20px; color:{{heading2}}; vertical-align:middle;">tool execution details</span>
+            <span style="font-weight:600; font-size:25px; color:{{heading2}}; vertical-align:middle;">tool execution details</span>
         </div>
-        <table role="presentation" class="summary-table" style="border-spacing:0; margin-left:10px; padding:5px 10px; color:{{body}};">
+        <table role="presentation" style="border-spacing:0; margin-left:10px; padding:5px 10px; color:{{body}};">
             <tr>
                 <td>user:</td>
                 <td><span style="font-weight: normal; color:{{body}};">{{username}}</span></td>
@@ -44,34 +44,27 @@
                 <td><span style="font-weight: normal; color:{{body}};">{{model_path}}</span></td>
             </tr>
             <tr>
+                <td>title:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{model_title}}</span></td>
+            </tr>
+            <tr>
                 <td>checksuite:</td>
                 <td><span style="font-weight: normal; color:{{body}};">{{checksuite}}</span></td>
             </tr>
         </table>
     </div>
 
-    <div><span style="font-weight:600; font-size:30px; color:{{heading1}};">checks</span></div>
-    <table class="log-items" style="line-height:1em; border-spacing:0; color:{{body}};">
+    <div><span style="font-weight:600; font-size:40px; color:{{heading1}};">checks</span></div>
 
+    <table>
         {%for check in checks%}
-            <div><span style="font-weight:600; font-size:18px; color:{{heading2}};">{{check.name}}</span></div>
-            <table class="log-items" style="line-height:1em; border-spacing:0; color:{{body}};">
-                {%if isinstance(check.filename, str)%}
-                    <tr>
-                        <td valign="top">{{check.filename}} :</td>
-                        <td>{{dumps(check.message, cls=RasqcResultEncoder, indent=4)}}</td>
-                    </tr>
-                {%elif isinstance(check.filename, list)%}
-                    {%for i, filename in enumerate(check.filename)%}
-                        <tr>
-                            <td valign="top">{{filename}} :</td>
-                            <td>{{dumps(check.message[i], cls=RasqcResultEncoder, indent=4)}}</td>
-                        </tr>
-                    {%endfor%}
-                {%endif%}
+            <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{check.name.lower()}}</span></div>
+            <table>
+                {{dict_to_html_table(res_to_dict(check))}}
             </table>
             <br>
         {%endfor%}
+    </table>
 
     <div style="border-bottom:1px solid {{shadow}};margin:5px 0;"></div>
 
@@ -80,7 +73,7 @@
    __|   _` |   __|   _` |   __| 
   |     (   | \__ \  (   |  (    
  _|    \__._| ____/ \__. | \___| 
-                       _|       
+                        _|       
         </span>
     </pre>
 
