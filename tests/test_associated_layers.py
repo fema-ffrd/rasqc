@@ -15,14 +15,14 @@ def test_AssociatedLayers():
         "filename": ["BaldEagleDamBrk.g06.hdf", "BaldEagleDamBrk.g11.hdf"],
         "message": [
             {
-                "Terrain": ".\\Terrain\\Terrain50.hdf",
-                "Land Cover": None,
-                "Infiltration": None,
+                "terrain": ".\\Terrain\\Terrain50.hdf",
+                "land cover": None,
+                "infiltration": None,
             },
             {
-                "Terrain": ".\\Terrain\\Terrain50.hdf",
-                "Land Cover": ".\\Land Classification\\LandCover.hdf",
-                "Infiltration": None,
+                "terrain": ".\\Terrain\\Terrain50.hdf",
+                "land cover": ".\\Land Classification\\LandCover.hdf",
+                "infiltration": None,
             },
         ],
         "gdf": None,

@@ -19,13 +19,13 @@ class AssociatedLayers(RasqcChecker):
             geom_attrs = geom_hdf.get_geom_attrs()
             messages.append(
                 {
-                    "Terrain": geom_attrs["Terrain Filename"]
+                    "terrain": geom_attrs["Terrain Filename"]
                     if "Terrain Filename" in geom_attrs
                     else None,
-                    "Land Cover": geom_attrs["Land Cover Filename"]
+                    "land cover": geom_attrs["Land Cover Filename"]
                     if "Land Cover Filename" in geom_attrs
                     else None,
-                    "Infiltration": geom_attrs["Infiltration Filename"]
+                    "infiltration": geom_attrs["Infiltration Filename"]
                     if "Infiltration Filename" in geom_attrs
                     else None,
                 }
