@@ -1,7 +1,8 @@
 import rasqc.checkers
 from rasqc.checksuite import CHECKSUITES
-from rasqc.result import RasqcResultEncoder, ResultStatus
+from rasqc.result import RasqcResultEncoder, ResultStatus, to_snake_case
 from rasqc.log.writer import to_file, ColorTheme
+from rasqc.rasmodel import RasModel
 
 from rich.console import Console
 
@@ -12,6 +13,8 @@ import json
 import sys
 import webbrowser
 from pathlib import Path
+import pandas as pd
+import geopandas as gpd
 
 
 BANNER = r"""
@@ -86,8 +89,15 @@ def run_files(
 ) -> None:
     print(BANNER.strip("\n"), f"version {VERSION}")
     results = CHECKSUITES[checksuite].run_all_silent(ras_model)
+    gdfs = []
     for res in results:
-        res.gdf_to_shp(ras_model=ras_model)
+        if res.gdf is not None:
+            res.gdf_to_shp(ras_model=ras_model)
+            res.gdf["check"] = res.name 
+            gdfs.append(res.gdf)
+    out_dir = Path(ras_model).parent / "rasqc"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    gpd.GeoDataFrame(pd.concat(gdfs, axis=1)).to_file((out_dir / f"rasqc_{to_snake_case(RasModel(ras_model).prj_file.title)}").with_suffix(".shp")) if gdfs else None
     log_file = to_file(
         model_path=ras_model,
         checksuite=checksuite,

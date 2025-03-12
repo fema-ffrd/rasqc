@@ -16,19 +16,19 @@ class BreaklineEnforcement(RasqcChecker):
         with RasGeomHdf(geom_hdf_path) as geom_hdf:
             mesh_faces = geom_hdf.mesh_cell_faces()
             bls = geom_hdf.breaklines()
-            flags_all = bls.overlay(mesh_faces.buffer(1).to_frame(), how="difference", keep_geom_type=True).explode()
+            flags_all = bls.overlay(mesh_faces.buffer(5).to_frame(), how="difference", keep_geom_type=True).explode()
             flags_filtered = flags_all[flags_all["geometry"].length >= 10]
         if flags_filtered.empty:
             return RasqcResult(
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.OK,
-                message="No breakline enforcement flags found.",
+                message="no breakline enforcement flags found",
             )
         return RasqcResult(
             name=self.name,
             filename=filename,
             result=ResultStatus.WARNING,
-            message="No breakline enforcement flags found.",
+            message=f"{flags_filtered.shape[0]} breakline enforcement flags found",
             gdf=flags_filtered,
         )

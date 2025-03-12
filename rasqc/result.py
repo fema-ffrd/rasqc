@@ -37,7 +37,7 @@ class RasqcResult:
 
     def gdf_to_shp(self, ras_model: str) -> None:
         if self.gdf is not None:
-            out_dir = Path(ras_model).parent / "rasqc"
+            out_dir = Path(ras_model).parent / "rasqc" / "shapes"
             out_dir.mkdir(parents=True, exist_ok=True)
             self.gdf.to_file((out_dir / to_snake_case(self.name)).with_suffix(".shp"))
 

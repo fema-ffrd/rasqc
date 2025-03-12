@@ -28,7 +28,7 @@ def to_file(
     out_dir = Path(model_path).parent / "rasqc"
     out_dir.mkdir(parents=True, exist_ok=True)
     log_path = (
-        out_dir / f"rasqc_{to_snake_case(RasModel(model_path).prj_file.title)}"
+        out_dir / f"log_rasqc_{to_snake_case(RasModel(model_path).prj_file.title)}"
     ).with_suffix(".html")
     env = Environment(loader=FileSystemLoader(Path(__file__).parent.resolve()))
     env.globals.update(
