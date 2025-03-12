@@ -1,11 +1,13 @@
 from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult, ResultStatus
+from rasqc.result import RasqcResult, ResultStatus, RasqcResultEncoder
+from rasqc.log.writer import res_to_dict
 
 from rich.console import Console
 
 import os
 import re
 from typing import List
+from json import dumps
 
 
 def bold_single_quotes(text: str) -> str:
@@ -32,10 +34,15 @@ class CheckSuite:
         console = Console()
         for check in self.checks:
             result = check.run(RasModel(ras_model))
-            if result.message:
-                message = bold_single_quotes(result.message)
+            if result.message and isinstance(result.message, str):
+                message = result.filename + ": " + bold_single_quotes(result.message)
+            else:
+                message = dumps(res_to_dict(result), cls=RasqcResultEncoder, indent=4)
             console.print(f"- {check.name}: ", end="")
-            if result.result == ResultStatus.ERROR:
+            if result.result == ResultStatus.NOTE:
+                console.print("NOTE", style="bold purple")
+                console.print(f"    {message}", highlight=False, style="gray50")
+            elif result.result == ResultStatus.ERROR:
                 console.print("ERROR", style="bold red")
                 console.print(f"    {message}", highlight=False, style="gray50")
             elif result.result == ResultStatus.WARNING:

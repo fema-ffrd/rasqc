@@ -1,4 +1,3 @@
-import json
 from rasqc.checkers.base_checker import RasqcChecker
 from rasqc.checksuite import register_check
 from rasqc.rasmodel import RasModel
@@ -48,7 +47,16 @@ class EquationSet2DNote(RasqcChecker):
                 filenames.append(plan_hdf_path.name)
                 plan_hdf = RasPlanHdf(plan_hdf_path)
                 plan_params = plan_hdf.get_plan_param_attrs()
-                messages.append(plan_params["2D Equation Set"])
+                messages.append(
+                    {
+                        n: e
+                        for n, e in zip(
+                            plan_params["2D Names"], plan_params["2D Equation Set"]
+                        )
+                    }
+                    if not isinstance(plan_params["2D Names"], (str, int, float))
+                    else plan_params["2D Equation Set"]
+                )
         return RasqcResult(
             name=self.name,
             filename=filenames,
@@ -59,7 +67,7 @@ class EquationSet2DNote(RasqcChecker):
 
 @register_check(["ble"])
 class CompSettings(RasqcChecker):
-    name = "Computational Timestep Settings"
+    name = "Computation Settings"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
         settings = [
@@ -81,7 +89,7 @@ class CompSettings(RasqcChecker):
                 plan_info = plan_hdf.get_plan_info_attrs()
                 messages.append(
                     {
-                        setting: plan_info[setting]
+                        setting.lower(): plan_info[setting]
                         for setting in settings
                         if setting in plan_info
                     }

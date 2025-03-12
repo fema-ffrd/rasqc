@@ -5,6 +5,8 @@ from enum import Enum
 from json import JSONEncoder
 from typing import Any, Optional, Union
 from datetime import datetime
+from pathlib import Path
+import re
 
 
 class ResultStatus(Enum):
@@ -32,3 +34,15 @@ class RasqcResult:
     filename: Union[str, list[str]]
     message: Optional[Union[str, dict, list[str], list[dict]]] = None
     gdf: Optional[GeoDataFrame] = None
+
+    def gdf_to_shp(self, ras_model: str) -> None:
+        if self.gdf is not None:
+            out_dir = Path(ras_model).parent / "rasqc" / "shapes"
+            out_dir.mkdir(parents=True, exist_ok=True)
+            self.gdf.to_file((out_dir / to_snake_case(self.name)).with_suffix(".shp"))
+
+
+def to_snake_case(text: str) -> str:
+    text = re.sub(r"[-]", " ", text)
+    text = "".join([" " + c.lower() if c.isupper() else c for c in text]).lstrip()
+    return re.sub(r"\s+", "_", text)

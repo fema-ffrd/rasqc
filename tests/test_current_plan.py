@@ -13,6 +13,6 @@ def test_CurrentPlan():
         "result": ResultStatus.NOTE,
         "name": "Current Saved Plan",
         "filename": "BaldEagleDamBrk.prj",
-        "message": {"File": "BaldEagleDamBrk.p18", "Title": "2D to 2D Run"},
+        "message": {"file": "BaldEagleDamBrk.p18", "title": "2D to 2D Run"},
         "gdf": None,
     }

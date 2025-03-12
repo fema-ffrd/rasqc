@@ -6,15 +6,15 @@ from rasqc.result import RasqcResult, ResultStatus
 
 @register_check(["ble"])
 class FileStructure(RasqcChecker):
+    name = "File Structure"
+
     def run(self, ras_model: RasModel) -> RasqcResult:
         msg_dict = {
-            ras_model.prj_file.path.name: {
-                "title": ras_model.prj_file.title,
-                "plans": {},
-            }
+            "title": ras_model.prj_file.title,
+            "plans": {},
         }
         for plan in ras_model.plans:
-            msg_dict[ras_model.prj_file.path.name]["plans"][plan.path.name] = {
+            msg_dict["plans"][plan.path.name] = {
                 "title": plan.title,
                 "geometry": {
                     plan.associated_geometry.path.name: plan.associated_geometry.title
@@ -24,7 +24,7 @@ class FileStructure(RasqcChecker):
                 },
             }
         return RasqcResult(
-            name="File Structure",
+            name=self.name,
             filename=ras_model.prj_file.path.name,
             result=ResultStatus.NOTE,
             message=msg_dict,
