@@ -31,8 +31,12 @@ def test_EquationSet2DNote():
         "name": "2D Equation Set",
         "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"],
         "message": [
-            ["Diffusion Wave", "Diffusion Wave", "Diffusion Wave"],
-            ["Diffusion Wave", "Diffusion Wave"],
+            {
+                "193": "Diffusion Wave",
+                "194": "Diffusion Wave",
+                "LockHaven": "Diffusion Wave",
+            },
+            {"BaldEagleCr": "Diffusion Wave", "Upper 2D Area": "Diffusion Wave"},
         ],
         "gdf": None,
     }
@@ -41,19 +45,19 @@ def test_EquationSet2DNote():
 def test_CompSettings():
     assert asdict(CompSettings().run(RasModel(BALDEAGLE_PRJ))) == {
         "result": ResultStatus.NOTE,
-        "name": "Computational Timestep Settings",
+        "name": "Computation Settings",
         "filename": ["BaldEagleDamBrk.p13.hdf", "BaldEagleDamBrk.p18.hdf"],
         "message": [
             {
-                "Computation Time Step Base": "30SEC",
-                "Time Window": [
+                "Computation Time Step Base".lower(): "30SEC",
+                "Time Window".lower(): [
                     datetime(1999, 1, 1, 12, 0),
                     datetime(1999, 1, 2, 0, 0),
                 ],
             },
             {
-                "Computation Time Step Base": "20SEC",
-                "Time Window": [
+                "Computation Time Step Base".lower(): "20SEC",
+                "Time Window".lower(): [
                     datetime(1999, 1, 1, 12, 0),
                     datetime(1999, 1, 2, 0, 0),
                 ],
