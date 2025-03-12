@@ -54,17 +54,21 @@
         </table>
     </div>
 
-    <div><span style="font-weight:600; font-size:40px; color:{{heading1}};">checks</span></div>
+    {%for res_status in ["note", "error", "warning", "ok"]%}
+        {%if res_status in check_dict%}
+            <div><span style="font-weight:600; font-size:40px; color:{{heading1}};">{{res_status}}</span></div>
 
-    <table>
-        {%for check in checks%}
-            <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{check.name.lower()}}</span></div>
             <table>
-                {{dict_to_html_table(res_to_dict(check))}}
+                {%for check in check_dict[res_status]%}
+                    <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{check.name.lower()}}</span></div>
+                    <table>
+                        {{dict_to_html_table(res_to_dict(check))}}
+                    </table>
+                    <br>
+                {%endfor%}
             </table>
-            <br>
-        {%endfor%}
-    </table>
+        {%endif%}
+    {%endfor%}
 
     <div style="border-bottom:1px solid {{shadow}};margin:5px 0;"></div>
 

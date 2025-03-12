@@ -41,11 +41,14 @@ def to_file(
         .decode()
         .split()
     )
+    check_dict = {}
+    for check in checks:
+        check_dict.setdefault(check.result.value, []).append(check)
     subs = {
         "model_path": model_path,
         "model_title": RasModel(model_path).prj_file.title,
         "checksuite": checksuite,
-        "checks": checks,
+        "check_dict": check_dict,
         "tool_version": tool_version,
         "username": details[0],
         "day_name": details[1],
