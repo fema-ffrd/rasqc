@@ -35,7 +35,7 @@ class CheckSuite:
         for check in self.checks:
             result = check.run(RasModel(ras_model))
             if result.message and isinstance(result.message, str):
-                message = bold_single_quotes(result.message)
+                message = result.filename + ": " + bold_single_quotes(result.message)
             else:
                 message = dumps(res_to_dict(result), cls=RasqcResultEncoder, indent=4)
             console.print(f"- {check.name}: ", end="")

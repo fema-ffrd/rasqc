@@ -93,11 +93,16 @@ def run_files(
     for res in results:
         if res.gdf is not None:
             res.gdf_to_shp(ras_model=ras_model)
-            res.gdf["check"] = res.name 
+            res.gdf["check"] = res.name
             gdfs.append(res.gdf)
     out_dir = Path(ras_model).parent / "rasqc"
     out_dir.mkdir(parents=True, exist_ok=True)
-    gpd.GeoDataFrame(pd.concat(gdfs, axis=1)).to_file((out_dir / f"rasqc_{to_snake_case(RasModel(ras_model).prj_file.title)}").with_suffix(".shp")) if gdfs else None
+    out_shp = (
+        out_dir / f"rasqc_{to_snake_case(RasModel(ras_model).prj_file.title)}"
+    ).with_suffix(".shp")
+    gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True)).to_file(
+        out_shp
+    ) if gdfs else None
     log_file = to_file(
         model_path=ras_model,
         checksuite=checksuite,
