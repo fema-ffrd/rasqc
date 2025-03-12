@@ -6,6 +6,8 @@ from rasqc.result import RasqcResult, ResultStatus
 
 @register_check(["ble"])
 class FileStructure(RasqcChecker):
+    name = "File Structure"
+
     def run(self, ras_model: RasModel) -> RasqcResult:
         msg_dict = {
             "title": ras_model.prj_file.title,
@@ -22,7 +24,7 @@ class FileStructure(RasqcChecker):
                 },
             }
         return RasqcResult(
-            name="File Structure",
+            name=self.name,
             filename=ras_model.prj_file.path.name,
             result=ResultStatus.NOTE,
             message=msg_dict,

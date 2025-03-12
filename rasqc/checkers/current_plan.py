@@ -6,9 +6,11 @@ from rasqc.result import RasqcResult, ResultStatus
 
 @register_check(["ble"])
 class CurrentPlan(RasqcChecker):
+    name = "Current Saved Plan"
+
     def run(self, ras_model: RasModel) -> RasqcResult:
         return RasqcResult(
-            name="Current Saved Plan",
+            name=self.name,
             filename=ras_model.prj_file.path.name,
             result=ResultStatus.NOTE,
             message={

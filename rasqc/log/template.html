@@ -20,7 +20,7 @@
 
 <body style="font-family: -apple-system, 'Segoe UI', arial, Tahoma, Helvetica, sans-serif; background-color:{{background}}">
 
-    <div><span style="font-weight:600; font-size:75px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{{tool_version}}</span></div>
+    <div><span style="font-weight:600; font-size:75px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{%if tool_version and tool_version != ""%}version {{tool_version}}{%endif%}</span></div>
 
     <div style="margin:10px 0; display:inline-block; border-radius:7px; background:{{background}}; box-shadow:1px 1px 4px {{shadow}}; overflow:hidden;">
         <div style="background-color:{{background}}; border-bottom:1px solid {{shadow}}; font-size:larger; padding:10px;">
@@ -73,7 +73,7 @@
    __|   _` |   __|   _` |   __| 
   |     (   | \__ \  (   |  (    
  _|    \__._| ____/ \__. | \___| 
-                        _|       
+                        _|       {%if tool_version and tool_version != ""%}version {{tool_version}}{%endif%}
         </span>
     </pre>
 

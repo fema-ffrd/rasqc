@@ -22,7 +22,7 @@ def to_file(
     model_path: str,
     checksuite: str,
     checks: list[RasqcResult],
-    tool_version: str = "version 1.0",
+    tool_version: str = "",
     theme: ColorTheme = ColorTheme.NINETIES,
 ) -> Path:
     out_dir = Path(model_path).parent / "rasqc"
