@@ -13,6 +13,13 @@ class EquationSet2D(RasqcChecker):
     def run(self, ras_model: RasModel) -> RasqcResult:
         plan_hdf_path = ras_model.current_plan.hdf_path
         filename = plan_hdf_path.name
+        if not plan_hdf_path.exists():
+            return RasqcResult(
+                name=self.name,
+                filename=filename,
+                result=ResultStatus.WARNING,
+                message=f"{filename} does not exist within the specified directory",
+            )
         plan_hdf = RasPlanHdf(plan_hdf_path)
         plan_params = plan_hdf.get_plan_param_attrs()
         equation_sets = (
@@ -43,8 +50,10 @@ class EquationSet2DNote(RasqcChecker):
         filenames = []
         messages = []
         for plan_hdf_path in ras_model.plan_hdf_paths:
-            if plan_hdf_path.exists():
-                filenames.append(plan_hdf_path.name)
+            filenames.append(plan_hdf_path.name)
+            if not plan_hdf_path.exists():
+                messages.append(f"{plan_hdf_path.name} does not exist within the specified directory")
+            else:
                 plan_hdf = RasPlanHdf(plan_hdf_path)
                 plan_params = plan_hdf.get_plan_param_attrs()
                 messages.append(
@@ -83,8 +92,10 @@ class CompSettings(RasqcChecker):
         filenames = []
         messages = []
         for plan_hdf_path in ras_model.plan_hdf_paths:
-            if plan_hdf_path.exists():
-                filenames.append(plan_hdf_path.name)
+            filenames.append(plan_hdf_path.name)
+            if not plan_hdf_path.exists():
+                messages.append(f"{plan_hdf_path.name} does not exist within the specified directory")
+            else:
                 plan_hdf = RasPlanHdf(plan_hdf_path)
                 plan_info = plan_hdf.get_plan_info_attrs()
                 messages.append(

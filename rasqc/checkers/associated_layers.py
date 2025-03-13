@@ -15,21 +15,24 @@ class AssociatedLayers(RasqcChecker):
         messages = []
         for geom_hdf_path in ras_model.geometry_hdf_paths:
             filenames.append(geom_hdf_path.name)
-            geom_hdf = RasGeomHdf(geom_hdf_path)
-            geom_attrs = geom_hdf.get_geom_attrs()
-            messages.append(
-                {
-                    "terrain": geom_attrs["Terrain Filename"]
-                    if "Terrain Filename" in geom_attrs
-                    else None,
-                    "land cover": geom_attrs["Land Cover Filename"]
-                    if "Land Cover Filename" in geom_attrs
-                    else None,
-                    "infiltration": geom_attrs["Infiltration Filename"]
-                    if "Infiltration Filename" in geom_attrs
-                    else None,
-                }
-            )
+            if not geom_hdf_path.exists():
+                messages.append(f"{geom_hdf_path.name} does not exist within the specified directory")
+            else:
+                geom_hdf = RasGeomHdf(geom_hdf_path)
+                geom_attrs = geom_hdf.get_geom_attrs()
+                messages.append(
+                    {
+                        "terrain": geom_attrs["Terrain Filename"]
+                        if "Terrain Filename" in geom_attrs
+                        else None,
+                        "land cover": geom_attrs["Land Cover Filename"]
+                        if "Land Cover Filename" in geom_attrs
+                        else None,
+                        "infiltration": geom_attrs["Infiltration Filename"]
+                        if "Infiltration Filename" in geom_attrs
+                        else None,
+                    }
+                )
         return RasqcResult(
             name=self.name,
             filename=filenames,

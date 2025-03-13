@@ -14,9 +14,12 @@ class RasVersion(RasqcChecker):
         filenames = []
         messages = []
         for geom_hdf_path in ras_model.geometry_hdf_paths:
-            geom_hdf = RasGeomHdf(geom_hdf_path)
-            messages.append(geom_hdf.get_root_attrs()["File Version"])
             filenames.append(geom_hdf_path.name)
+            if not geom_hdf_path.exists():
+                messages.append(f"{geom_hdf_path.name} does not exist within the specified directory")
+            else:
+                geom_hdf = RasGeomHdf(geom_hdf_path)
+                messages.append(geom_hdf.get_root_attrs()["File Version"])
         return RasqcResult(
             name=self.name,
             filename=filenames,

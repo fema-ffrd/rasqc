@@ -13,6 +13,13 @@ class ErroneousCells(RasqcChecker):
     def run(self, ras_model: RasModel) -> RasqcResult:
         geom_hdf_path = ras_model.current_geometry.hdf_path
         filename = geom_hdf_path.name
+        if not geom_hdf_path.exists():
+            return RasqcResult(
+                name=self.name,
+                filename=filename,
+                result=ResultStatus.WARNING,
+                message=f"{filename} does not exist within the specified directory",
+            )
         with RasGeomHdf(geom_hdf_path) as geom_hdf:
             cells = geom_hdf.mesh_cell_polygons()
             pnts = geom_hdf.mesh_cell_points()
