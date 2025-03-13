@@ -16,7 +16,9 @@ class AssociatedLayers(RasqcChecker):
         for geom_hdf_path in ras_model.geometry_hdf_paths:
             filenames.append(geom_hdf_path.name)
             if not geom_hdf_path.exists():
-                messages.append(f"{geom_hdf_path.name} does not exist within the specified directory")
+                messages.append(
+                    f"{geom_hdf_path.name} does not exist within the specified directory"
+                )
             else:
                 geom_hdf = RasGeomHdf(geom_hdf_path)
                 geom_attrs = geom_hdf.get_geom_attrs()

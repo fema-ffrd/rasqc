@@ -52,7 +52,9 @@ class EquationSet2DNote(RasqcChecker):
         for plan_hdf_path in ras_model.plan_hdf_paths:
             filenames.append(plan_hdf_path.name)
             if not plan_hdf_path.exists():
-                messages.append(f"{plan_hdf_path.name} does not exist within the specified directory")
+                messages.append(
+                    f"{plan_hdf_path.name} does not exist within the specified directory"
+                )
             else:
                 plan_hdf = RasPlanHdf(plan_hdf_path)
                 plan_params = plan_hdf.get_plan_param_attrs()
@@ -94,7 +96,9 @@ class CompSettings(RasqcChecker):
         for plan_hdf_path in ras_model.plan_hdf_paths:
             filenames.append(plan_hdf_path.name)
             if not plan_hdf_path.exists():
-                messages.append(f"{plan_hdf_path.name} does not exist within the specified directory")
+                messages.append(
+                    f"{plan_hdf_path.name} does not exist within the specified directory"
+                )
             else:
                 plan_hdf = RasPlanHdf(plan_hdf_path)
                 plan_info = plan_hdf.get_plan_info_attrs()
