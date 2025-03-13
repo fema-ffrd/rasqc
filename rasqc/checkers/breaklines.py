@@ -16,6 +16,13 @@ class BreaklineEnforcement(RasqcChecker):
         with RasGeomHdf(geom_hdf_path) as geom_hdf:
             mesh_faces = geom_hdf.mesh_cell_faces()
             bls = geom_hdf.breaklines()
+            if bls.empty:
+                return RasqcResult(
+                    name=self.name,
+                    filename=filename,
+                    result=ResultStatus.WARNING,
+                    message="no breaklines found within the model geometry",
+                )
             flags_all = bls.overlay(
                 mesh_faces.buffer(5).to_frame(), how="difference", keep_geom_type=True
             ).explode()

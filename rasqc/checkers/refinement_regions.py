@@ -16,6 +16,13 @@ class RefRegionEnforcement(RasqcChecker):
         with RasGeomHdf(geom_hdf_path) as geom_hdf:
             mesh_faces = geom_hdf.mesh_cell_faces()
             rrs = geom_hdf.refinement_regions()
+            if rrs.empty:
+                return RasqcResult(
+                    name=self.name,
+                    filename=filename,
+                    result=ResultStatus.WARNING,
+                    message="no refinement regions found within the model geometry",
+                )
             rrs.geometry = rrs.geometry.apply(lambda g: g.exterior)
             flags_all = rrs.overlay(
                 mesh_faces.buffer(5).to_frame(), how="difference", keep_geom_type=True
