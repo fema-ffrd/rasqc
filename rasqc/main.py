@@ -101,7 +101,8 @@ def run_files(
         out_dir / f"rasqc_{to_snake_case(RasModel(ras_model).prj_file.title)}"
     ).with_suffix(".shp")
     gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True)).to_file(
-        out_shp
+        out_shp,
+        SHPT="ARC",
     ) if gdfs else None
     log_file = to_file(
         model_path=ras_model,
