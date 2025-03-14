@@ -2,7 +2,7 @@ from geopandas import GeoDataFrame
 
 from dataclasses import dataclass
 from enum import Enum
-from json import JSONEncoder
+from json import JSONEncoder, dumps
 from typing import Any, Optional, Union
 from datetime import datetime
 from pathlib import Path
@@ -42,6 +42,30 @@ class RasqcResult:
             self.gdf.to_file(
                 (out_dir / to_snake_case(self.name)).with_suffix(".shp"), SHPT="ARC"
             )
+
+    def to_msg_dict(self) -> dict:
+        if isinstance(self.filename, str):
+            return {self.filename: self.message}
+        elif isinstance(self.filename, list):
+            return {n: m for n, m in zip(self.filename, self.message)}
+
+    def to_msg_str(self) -> str:
+        if self.message and isinstance(self.message, str):
+            return self.filename + ": " + bold_single_quotes(self.message)
+        else:
+            return bold_single_quotes(
+                dumps(self.to_msg_dict(), cls=RasqcResultEncoder, indent=4)
+            )
+
+
+def bold_single_quotes(text: str) -> str:
+    # Regex to find text within single quotes
+    pattern = re.compile(r"'(.*?)'")
+
+    # Replace matches with bold tags
+    formatted_text = pattern.sub(r"[bold cyan]'\1'[/bold cyan]", text)
+
+    return formatted_text
 
 
 def to_snake_case(text: str) -> str:

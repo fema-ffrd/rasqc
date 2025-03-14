@@ -31,10 +31,7 @@ def to_file(
         out_dir / f"log_rasqc_{to_snake_case(RasModel(model_path).prj_file.title)}"
     ).with_suffix(".html")
     env = Environment(loader=FileSystemLoader(Path(__file__).parent.resolve()))
-    env.globals.update(
-        res_to_dict=res_to_dict,
-        dict_to_html_table=dict_to_html_table,
-    )
+    env.globals.update(res_dict_to_html_table=res_dict_to_html_table)
     template = env.get_template("template.html")
     details = (
         subprocess.check_output(["echo", "%USERNAME%", "%DATE%", "%TIME%"], shell=True)
@@ -61,28 +58,23 @@ def to_file(
     return log_path
 
 
-def res_to_dict(res: RasqcResult) -> dict:
-    if isinstance(res.filename, str):
-        return {res.filename: res.message}
-    elif isinstance(res.filename, list):
-        return {n: m for n, m in zip(res.filename, res.message)}
-
-
-def dict_to_html_table(data: dict, html_color_str: str = "rgb(170, 170, 170)") -> str:
+def res_dict_to_html_table(
+    res_msg_dict: dict, html_color_str: str = "rgb(170, 170, 170)"
+) -> str:
     html = f'<table border="0" style="line-height:1em; border-spacing:0; color:{html_color_str};">'
-    for key, value in data.items():
+    for key, value in res_msg_dict.items():
         html += "<tr>"
         html += f"<th valign='top' align='left'>{key} :</th>"
         if isinstance(value, dict):
-            html += f"<td valign='top' align='left'>{dict_to_html_table(value)}</td>"
+            html += (
+                f"<td valign='top' align='left'>{res_dict_to_html_table(value)}</td>"
+            )
         elif isinstance(value, list):
             html += f"<td valign='top' align='left'><table border='0'>"
             for item in value:
                 html += "<tr>"
                 if isinstance(item, dict):
-                    html += (
-                        f"<td valign='top' align='left'>{dict_to_html_table(item)}</td>"
-                    )
+                    html += f"<td valign='top' align='left'>{res_dict_to_html_table(item)}</td>"
                 else:
                     html += f"<td valign='top' align='left'>{item}</td>"
                 html += "</tr>"

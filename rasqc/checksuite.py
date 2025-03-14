@@ -1,23 +1,10 @@
 from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult, ResultStatus, RasqcResultEncoder
-from rasqc.log.writer import res_to_dict
+from rasqc.result import RasqcResult, ResultStatus
 
 from rich.console import Console
 
 import os
-import re
 from typing import List
-from json import dumps
-
-
-def bold_single_quotes(text: str) -> str:
-    # Regex to find text within single quotes
-    pattern = re.compile(r"'(.*?)'")
-
-    # Replace matches with bold tags
-    formatted_text = pattern.sub(r"[bold cyan]'\1'[/bold cyan]", text)
-
-    return formatted_text
 
 
 class CheckSuite:
@@ -34,22 +21,19 @@ class CheckSuite:
         console = Console()
         for check in self.checks:
             result = check.run(RasModel(ras_model))
-            if result.message and isinstance(result.message, str):
-                message = result.filename + ": " + bold_single_quotes(result.message)
-            else:
-                message = dumps(res_to_dict(result), cls=RasqcResultEncoder, indent=4)
             console.print(f"- {check.name}: ", end="")
             if result.result == ResultStatus.NOTE:
                 console.print("NOTE", style="bold purple")
-                console.print(f"    {message}", highlight=False, style="gray50")
+                console.print(f"    {result.to_msg_str()}", style="gray50")
             elif result.result == ResultStatus.ERROR:
                 console.print("ERROR", style="bold red")
-                console.print(f"    {message}", highlight=False, style="gray50")
+                console.print(f"    {result.to_msg_str()}", style="gray50")
             elif result.result == ResultStatus.WARNING:
                 console.print("WARNING", style="bold yellow")
-                console.print(f"    {message}", style="gray50")
+                console.print(f"    {result.to_msg_str()}", style="gray50")
             else:
                 console.print("OK", style="bold green")
+                console.print(f"    {result.to_msg_str()}", style="gray50")
             results.append(result)
         return results
 
