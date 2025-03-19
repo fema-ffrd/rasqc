@@ -1,7 +1,7 @@
 """Plan settings checkers for FFRD HEC-RAS models."""
 
 from rasqc.checkers.base_checker import RasqcChecker
-from rasqc.checksuite import register_check
+from rasqc.registry import register_check
 from rasqc.rasmodel import RasModel
 from rasqc.result import RasqcResult, ResultStatus
 

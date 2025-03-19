@@ -69,3 +69,36 @@ def check(
     if isinstance(check_suite, str):
         check_suite: CheckSuite = CHECKSUITES[check_suite]
     return check_suite.run_checks(ras_model)
+"""Main module for running quality control checks on HEC-RAS models."""
+
+from pathlib import Path
+from typing import List, Optional
+
+from rasqc.checksuite import CHECKSUITES
+from rasqc.result import RasqcResult
+
+
+def run_checks(prj_file: str | Path, suite_name: str = "ffrd", silent: bool = False) -> List[RasqcResult]:
+    """Run all checks in the specified suite on the HEC-RAS model.
+
+    Parameters
+    ----------
+        prj_file: Path to the HEC-RAS project file.
+        suite_name: Name of the check suite to run.
+        silent: If True, don't print results to console.
+
+    Returns
+    -------
+        List[RasqcResult]: The results of all checks.
+
+    Raises
+    ------
+        ValueError: If the suite name is not found.
+    """
+    if suite_name not in CHECKSUITES:
+        raise ValueError(f"Suite '{suite_name}' not found")
+    
+    if silent:
+        return CHECKSUITES[suite_name].run_checks(prj_file)
+    else:
+        return CHECKSUITES[suite_name].run_checks_console(prj_file)
