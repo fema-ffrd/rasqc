@@ -1,6 +1,9 @@
 """Module for registering and managing check suites."""
 
-from typing import Dict, List
+from typing import Dict, List, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from rasqc.checksuite import CheckSuite
 
 # Dictionary of available check suites
 CHECKSUITES: Dict[str, "CheckSuite"] = {}
