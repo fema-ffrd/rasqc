@@ -8,7 +8,7 @@ from rasqc.result import RasqcResult, ResultStatus
 import re
 
 
-@register_check(["ffrd", "asdf"])
+@register_check(["ffrd"])
 class PrjFileNaming(RasqcChecker):
     """Checker for project file naming conventions.
 

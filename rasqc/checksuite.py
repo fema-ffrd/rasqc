@@ -1,5 +1,6 @@
 """Module for defining and managing check suites for HEC-RAS model quality control."""
 
+from rasqc.checkers.base_checker import RasqcChecker
 from rasqc.rasmodel import RasModel
 from rasqc.result import RasqcResult, ResultStatus
 
@@ -7,7 +8,7 @@ from rich.console import Console
 
 import os
 import re
-from typing import List
+from typing import List, Dict
 
 
 def bold_single_quotes(text: str) -> str:
@@ -38,7 +39,7 @@ class CheckSuite:
         checks: List of RasqcChecker instances to run.
     """
 
-    checks: List
+    checks: List[RasqcChecker]
 
     def __init__(self):
         """Initialize an empty check suite."""
@@ -53,7 +54,9 @@ class CheckSuite:
         """
         self.checks.append(check)
 
-    def run_all(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+    def run_checks_console(
+        self, ras_model: str | os.PathLike | RasModel
+    ) -> List[RasqcResult]:
         """Run all checks in the suite and print results to the console.
 
         Parameters
@@ -82,10 +85,8 @@ class CheckSuite:
             results.append(result)
         return results
 
-    def run_all_silent(
-        self, ras_model: str | os.PathLike | RasModel
-    ) -> List[RasqcResult]:
-        """Run all checks in the suite without printing results.
+    def run_checks(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+        """Run all checks in the suite.
 
         Parameters
         ----------
@@ -102,7 +103,7 @@ class CheckSuite:
 
 
 # Dictionary of available check suites
-CHECKSUITES = {"ffrd": CheckSuite(), "asdf": CheckSuite()}
+CHECKSUITES: Dict[str, CheckSuite] = {"ffrd": CheckSuite(), "ble": CheckSuite()}
 
 
 def register_check(suite_names: List[str]):
