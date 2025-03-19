@@ -2,7 +2,7 @@ from pathlib import Path
 from rasqc.rasmodel import RasModel, RasModelFile
 
 TEST_DATA = Path("./tests/data")
-BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
+BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagle/BaldEagleDamBrk.prj"
 
 
 def test_RasModelFile():
@@ -50,3 +50,6 @@ def test_RasModel():
     assert rmf.current_plan.path.name == "BaldEagleDamBrk.p18"
     assert rmf.current_geometry.path.name == "BaldEagleDamBrk.g11"
     assert rmf.current_unsteady.path.name == "BaldEagleDamBrk.u10"
+    assert rmf.current_plan.associated_geometry.path.name == "BaldEagleDamBrk.g11"
+    assert rmf.current_plan.associated_unsteady.path.name == "BaldEagleDamBrk.u10"
+    assert rmf.prj_file.associated_geometry == None

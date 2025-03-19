@@ -8,7 +8,7 @@ from rasqc.checkers.naming import (
 )
 
 TEST_DATA = Path("./tests/data")
-BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
+BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagle/BaldEagleDamBrk.prj"
 
 
 def test_PrjFileNaming():

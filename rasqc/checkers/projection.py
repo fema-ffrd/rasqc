@@ -32,9 +32,16 @@ class GeomProjection(RasqcChecker):
 
     def run(self, ras_model: RasModel) -> RasqcResult:
         geom_hdf_path = ras_model.current_geometry.hdf_path
+        filename = geom_hdf_path.name
+        if not geom_hdf_path.exists():
+            return RasqcResult(
+                name=self.name,
+                filename=filename,
+                result=ResultStatus.WARNING,
+                message=f"{filename} does not exist within the specified directory",
+            )
         geom_hdf = RasGeomHdf(geom_hdf_path)
         projection = geom_hdf.projection()
-        filename = geom_hdf_path.name
         if not projection:
             return RasqcResult(
                 name=self.name,
@@ -54,3 +61,34 @@ class GeomProjection(RasqcChecker):
                 ),
             )
         return RasqcResult(name=self.name, result=ResultStatus.OK, filename=filename)
+
+
+@register_check(["ble"])
+class GeomProjectionNote(RasqcChecker):
+    name = "Geometry Projection"
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        geom_hdf_path = ras_model.current_geometry.hdf_path
+        filename = geom_hdf_path.name
+        if not geom_hdf_path.exists():
+            return RasqcResult(
+                name=self.name,
+                filename=filename,
+                result=ResultStatus.WARNING,
+                message=f"{filename} does not exist within the specified directory",
+            )
+        geom_hdf = RasGeomHdf(geom_hdf_path)
+        projection = geom_hdf.projection()
+        if not projection:
+            return RasqcResult(
+                name=self.name,
+                filename=filename,
+                result=ResultStatus.ERROR,
+                message="HEC-RAS geometry HDF file does not have a projection defined.",
+            )
+        return RasqcResult(
+            name=self.name,
+            filename=filename,
+            result=ResultStatus.NOTE,
+            message=projection.name,
+        )

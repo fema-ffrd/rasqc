@@ -29,6 +29,24 @@ class RasModelFile:
             title = match.group(2)
             return title
 
+    @property
+    def associated_geometry(self):
+        if not re.match(r"^\.p\d{2}$", self.path.suffix):
+            return None
+        with open(self.path, "r") as f:
+            match = re.search(r"(?m)Geom File\s*=\s*(.+)$", f.read())
+            current_geom_ext = match.group(1)
+            return RasModelFile(self.path.with_suffix(f".{current_geom_ext}"))
+
+    @property
+    def associated_unsteady(self):
+        if not re.match(r"^\.p\d{2}$", self.path.suffix):
+            return None
+        with open(self.path, "r") as f:
+            match = re.search(r"(?m)Flow File\s*=\s*(.+)$", f.read())
+            current_flow_ext = match.group(1)
+            return RasModelFile(self.path.with_suffix(f".{current_flow_ext}"))
+
 
 class RasModel:
     """HEC-RAS model class."""
