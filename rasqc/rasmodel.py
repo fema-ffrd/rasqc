@@ -73,7 +73,7 @@ class RasModel:
         """Get the current plan file referenced in the project file.
 
         Returns
-        -------  
+        -------
             RasModelFile: The current plan file.
         """
         with open(self.prj_file.path, "r") as f:

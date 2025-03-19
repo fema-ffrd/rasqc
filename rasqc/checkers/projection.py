@@ -1,9 +1,9 @@
 """Checker for FFRD geometry projection settings."""
 
-from rasqc.checkers.base_checker import RasqcChecker
-from rasqc.registry import register_check
-from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult, ResultStatus
+from ..base_checker import RasqcChecker
+from ..registry import register_check
+from ..rasmodel import RasModel
+from ..result import RasqcResult, ResultStatus
 
 from pyproj import CRS
 from rashdf import RasGeomHdf

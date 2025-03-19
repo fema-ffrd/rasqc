@@ -1,5 +1,5 @@
 import pytest
-from rasqc.checkers.base_checker import RasqcChecker
+from rasqc.base_checker import RasqcChecker
 from rasqc.rasmodel import RasModel
 from rasqc.result import RasqcResult
 

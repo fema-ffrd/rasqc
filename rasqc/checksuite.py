@@ -1,9 +1,8 @@
 """Module for defining and managing check suites for HEC-RAS model quality control."""
 
-from rasqc.checkers.base_checker import RasqcChecker
-from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult, ResultStatus
-from rasqc.registry import CHECKSUITES
+from .base_checker import RasqcChecker
+from .rasmodel import RasModel
+from .result import RasqcResult, ResultStatus
 
 from rich.console import Console
 
@@ -12,7 +11,7 @@ import re
 from typing import List
 
 
-def bold_single_quotes(text: str) -> str:
+def _bold_single_quotes(text: str) -> str:
     """Format text by making content within single quotes bold and cyan.
 
     Parameters
@@ -73,7 +72,7 @@ class CheckSuite:
         for check in self.checks:
             result = check.run(RasModel(ras_model))
             if result.message:
-                message = bold_single_quotes(result.message)
+                message = _bold_single_quotes(result.message)
             console.print(f"- {check.name}: ", end="")
             if result.result == ResultStatus.ERROR:
                 console.print("ERROR", style="bold red")
@@ -101,10 +100,3 @@ class CheckSuite:
         for check in self.checks:
             results.append(check.run(RasModel(ras_model)))
         return results
-
-
-# Initialize check suites
-if "ffrd" not in CHECKSUITES:
-    CHECKSUITES["ffrd"] = CheckSuite()
-if "ble" not in CHECKSUITES:
-    CHECKSUITES["ble"] = CheckSuite()

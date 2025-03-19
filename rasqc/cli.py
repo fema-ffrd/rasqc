@@ -1,24 +1,19 @@
 """Main entry point for the rasqc command-line tool."""
 
-import rasqc.checkers # noqa: F401
-from rasqc.checksuite import CHECKSUITES
-from rasqc.result import RasqcResultEncoder, ResultStatus
+from . import checkers  # noqa: F401
+from .registry import CHECKSUITES
+from .result import RasqcResultEncoder, ResultStatus
 
 from rich.console import Console
 
 import argparse
 from dataclasses import asdict
 from datetime import datetime, timezone
+from importlib.metadata import version
 import json
 import sys
 
-
-BANNER = r"""
-  __|   _` |   __|   _` |   __| 
- |     (   | \__ \  (   |  (    
-_|    \__._| ____/ \__. | \___| 
-                       _|       
-"""
+RASQC_VERSION = version("rasqc")
 
 
 def run_console(ras_model: str, checksuite: str) -> None:
@@ -39,7 +34,13 @@ def run_console(ras_model: str, checksuite: str) -> None:
         With code 1 if there are any errors.
     """
     console = Console()
-    console.print(BANNER.strip("\n"))
+    console.print(
+        f"[bold underline]rasqc: Automated HEC-RAS Model Quality Control Checks[/bold underline]"
+    )
+    console.print(
+        f"[bold]Version[/bold]: [bright_blue]{RASQC_VERSION}[/bright_blue]",
+        highlight=False,
+    )
     console.print(
         f"[bold]HEC-RAS Model[/bold]: [bright_blue]{ras_model}[/bright_blue]",
         highlight=False,
@@ -53,7 +54,7 @@ def run_console(ras_model: str, checksuite: str) -> None:
         highlight=False,
     )
     console.print(f"[bold]Checks[/bold]:")
-    results = CHECKSUITES[checksuite].run_all(ras_model)
+    results = CHECKSUITES[checksuite].run_checks_console(ras_model)
     error_count = len(
         [result for result in results if result.result == ResultStatus.ERROR]
     )
@@ -86,9 +87,10 @@ def run_json(ras_model: str, checksuite: str) -> dict:
     -------
         dict: Dictionary containing the check results.
     """
-    results = CHECKSUITES[checksuite].run_all_silent(ras_model)
+    results = CHECKSUITES[checksuite].run_checks(ras_model)
     results_dicts = [asdict(result) for result in results]
     output = {
+        "version": RASQC_VERSION,
         "model": ras_model,
         "checksuite": checksuite,
         "timestamp": datetime.now(timezone.utc).isoformat(),

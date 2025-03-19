@@ -1,5 +1,6 @@
-from rasqc.checksuite import CheckSuite, register_check, CHECKSUITES, bold_single_quotes
-from rasqc.checkers.base_checker import RasqcChecker
+from rasqc.registry import CHECKSUITES, register_check
+from rasqc.checksuite import CheckSuite, _bold_single_quotes
+from rasqc.base_checker import RasqcChecker
 from rasqc.rasmodel import RasModel
 from rasqc.result import RasqcResult, ResultStatus
 from pathlib import Path
@@ -58,7 +59,7 @@ def test_checksuite_run_all_silent():
     TEST_DATA = Path("./tests/data")
     BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 
-    results = suite.run_all_silent(BALDEAGLE_PRJ)
+    results = suite.run_checks(BALDEAGLE_PRJ)
 
     assert len(results) == 2
     assert results[0].result == ResultStatus.OK
@@ -112,7 +113,7 @@ def test_register_check_invalid_suite():
 def test_bold_single_quotes():
     """Test the bold_single_quotes function."""
     text = "This is a 'test' with 'multiple' quotes"
-    result = bold_single_quotes(text)
+    result = _bold_single_quotes(text)
     assert (
         result
         == "This is a [bold cyan]'test'[/bold cyan] with [bold cyan]'multiple'[/bold cyan] quotes"

@@ -1,12 +1,11 @@
 """Module for registering and managing check suites."""
 
-from typing import Dict, List, TYPE_CHECKING
+from typing import Dict, List
 
-if TYPE_CHECKING:
-    from rasqc.checksuite import CheckSuite
+from rasqc.checksuite import CheckSuite
 
 # Dictionary of available check suites
-CHECKSUITES: Dict[str, "CheckSuite"] = {}
+CHECKSUITES: Dict[str, "CheckSuite"] = {"ffrd": CheckSuite()}
 
 
 def register_check(suite_names: List[str]):
@@ -44,7 +43,7 @@ def register_check(suite_names: List[str]):
             if suite_name in CHECKSUITES:
                 CHECKSUITES[suite_name].add_check(check_class())
             else:
-                raise ValueError(f"Suite '{suite_name}' not found")
+                raise ValueError(f"Suite '{suite_name}' not found.")
         return check_class
 
     return decorator
