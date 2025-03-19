@@ -1,3 +1,5 @@
+"""Checker for FFRD geometry projection settings."""
+
 from rasqc.checkers.base_checker import RasqcChecker
 from rasqc.checksuite import register_check
 from rasqc.rasmodel import RasModel
@@ -7,6 +9,7 @@ from pyproj import CRS
 from rashdf import RasGeomHdf
 
 
+# Well-known text representation of the FFRD projection
 FFRD_PROJECTION_WKT = """
 PROJCS["USA_Contiguous_Albers_Equal_Area_Conic_USGS_version",
     GEOGCS["GCS_North_American_1983",
@@ -23,14 +26,31 @@ PROJCS["USA_Contiguous_Albers_Equal_Area_Conic_USGS_version",
     PARAMETER["Latitude_Of_Origin",23.0],
     UNIT["Foot_US",0.3048006096012192]]'
 """
+# Create a CRS object from the WKT
 FFRD_CRS = CRS.from_wkt(FFRD_PROJECTION_WKT)
 
 
 @register_check(["ffrd"])
 class GeomProjection(RasqcChecker):
+    """Checker for geometry projection settings.
+
+    Checks if the geometry projection matches the expected projection
+    for FFRD models (USA Contiguous Albers Equal Area Conic USGS version).
+    """
+
     name = "Geometry Projection"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
+        """Check if the geometry projection matches the expected projection.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
         geom_hdf_path = ras_model.current_geometry.hdf_path
         geom_hdf = RasGeomHdf(geom_hdf_path)
         projection = geom_hdf.projection()

@@ -1,3 +1,5 @@
+"""Module for defining and managing check suites for HEC-RAS model quality control."""
+
 from rasqc.rasmodel import RasModel
 from rasqc.result import RasqcResult, ResultStatus
 
@@ -9,6 +11,16 @@ from typing import List
 
 
 def bold_single_quotes(text: str) -> str:
+    """Format text by making content within single quotes bold and cyan.
+
+    Parameters
+    ----------
+        text: The text to format.
+
+    Returns
+    -------
+        str: The formatted text with rich markup for bold cyan text within single quotes.
+    """
     # Regex to find text within single quotes
     pattern = re.compile(r"'(.*?)'")
 
@@ -19,15 +31,39 @@ def bold_single_quotes(text: str) -> str:
 
 
 class CheckSuite:
+    """A suite of quality control checks to run on a HEC-RAS model.
+
+    Attributes
+    ----------
+        checks: List of RasqcChecker instances to run.
+    """
+
     checks: List
 
     def __init__(self):
+        """Initialize an empty check suite."""
         self.checks = []
 
     def add_check(self, check):
+        """Add a checker to the suite.
+
+        Parameters
+        ----------
+            check: The RasqcChecker instance to add.
+        """
         self.checks.append(check)
 
     def run_all(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+        """Run all checks in the suite and print results to the console.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check, either as a path or RasModel instance.
+
+        Returns
+        -------
+            List[RasqcResult]: The results of all checks.
+        """
         results = []
         console = Console()
         for check in self.checks:
@@ -49,17 +85,57 @@ class CheckSuite:
     def run_all_silent(
         self, ras_model: str | os.PathLike | RasModel
     ) -> List[RasqcResult]:
+        """Run all checks in the suite without printing results.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check, either as a path or RasModel instance.
+
+        Returns
+        -------
+            List[RasqcResult]: The results of all checks.
+        """
         results = []
         for check in self.checks:
             results.append(check.run(RasModel(ras_model)))
         return results
 
 
+# Dictionary of available check suites
 CHECKSUITES = {"ffrd": CheckSuite(), "asdf": CheckSuite()}
 
 
 def register_check(suite_names: List[str]):
+    """Register a checker with one or more check suites.
+
+    Parameters
+    ----------
+        suite_names: List of suite names to register the checker with.
+
+    Returns
+    -------
+        callable: Decorator function that registers the checker.
+
+    Raises
+    ------
+        ValueError: If a suite name is not found in CHECKSUITES.
+    """
+
     def decorator(check_class):
+        """Register the decorated checker class with the specified suites.
+
+        Parameters
+        ----------
+            check_class: The checker class to register.
+
+        Returns
+        -------
+            The original checker class.
+
+        Raises
+        ------
+            ValueError: If a suite name is not found in CHECKSUITES.
+        """
         for suite_name in suite_names:
             if suite_name in CHECKSUITES:
                 CHECKSUITES[suite_name].add_check(check_class())

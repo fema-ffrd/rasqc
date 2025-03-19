@@ -1,3 +1,5 @@
+"""Plan settings checkers for FFRD HEC-RAS models."""
+
 from rasqc.checkers.base_checker import RasqcChecker
 from rasqc.checksuite import register_check
 from rasqc.rasmodel import RasModel
@@ -8,9 +10,25 @@ from rashdf import RasPlanHdf
 
 @register_check(["ffrd"])
 class EquationSet2D(RasqcChecker):
+    """Checker for 2D equation set settings.
+
+    Checks if the 2D equation set is set to 'Diffusion Wave' as required
+    for FFRD models.
+    """
+
     name = "2D Equation Set"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
+        """Check if the 2D equation set is set to 'Diffusion Wave'.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
         plan_hdf_path = ras_model.current_plan.hdf_path
         filename = plan_hdf_path.name
         plan_hdf = RasPlanHdf(plan_hdf_path)
