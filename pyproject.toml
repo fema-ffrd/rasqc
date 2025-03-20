@@ -14,7 +14,7 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 version = "0.1.0rc1"
-dependencies = ["rashdf", "rich"]
+dependencies = ["rashdf", "fsspec", "rich"]
 
 [project.optional-dependencies]
 dev = ["pre-commit", "ruff", "pytest", "pytest-cov"]
@@ -39,3 +39,6 @@ convention = "numpy"
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["D"]
 "docs/**" = ["D"]
+
+[tool.setuptools.package-data]
+rasqc = ["data/*.json"]

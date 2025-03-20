@@ -57,6 +57,7 @@ class RasqcResult:
         name: The name of the check.
         filename: The filename of the checked file.
         message: Optional message providing details about the check result.
+        pattern: Optional regular expression related to the check.
         gdf: Optional GeoDataFrame containing spatial data related to the check.
     """
 
@@ -64,4 +65,5 @@ class RasqcResult:
     name: str
     filename: str
     message: Optional[str] = None
+    pattern: Optional[str] = None
     gdf: Optional[GeoDataFrame] = None

@@ -1,5 +1,6 @@
 """HEC-RAS model file and model classes."""
 
+from datetime import datetime
 import os
 from pathlib import Path
 import re
@@ -46,6 +47,87 @@ class RasModelFile:
             return title
 
 
+class GeomFile(RasModelFile):
+    """HEC-RAS geometry file class."""
+
+    def last_updated(self) -> datetime:
+        """Get the last updated date of the file.
+
+        Returns
+        -------
+            str: The last updated date of the file.
+        """
+        with open(self.path, "r") as f:
+            content = f.read()
+            matches = re.findall(r"(?m).*Time\s*=\s*(.+)$", content)
+            datetimes = []
+            for m in matches:
+                try:
+                    dt = datetime.strptime(m, "%b/%d/%Y %H:%M:%S")
+                    datetimes.append(dt)
+                    continue
+                except ValueError:
+                    pass
+                try:
+                    dt = datetime.strptime(m, "%d%b%Y %H:%M:%S")
+                    datetimes.append(dt)
+                    continue
+                except ValueError as e:
+                    raise ValueError(f"Invalid date format: {m}") from e
+            return max(datetimes)
+
+
+class UnsteadyFlowFile(RasModelFile):
+    """HEC-RAS unsteady flow file class."""
+
+    pass
+
+
+class PlanFile(RasModelFile):
+    """HEC-RAS plan file class."""
+
+    @property
+    def geom_file(self) -> GeomFile:
+        """Get the geometry file associated with the plan file.
+
+        Returns
+        -------
+            GeomFile: The geometry file associated with the plan file.
+        """
+        with open(self.path, "r") as f:
+            content = f.read()
+            match = re.search(r"(?m)Geom File\s*=\s*(.+)$", content)
+            geom_ext = match.group(1)
+            return GeomFile(self.path.with_suffix(f".{geom_ext}"))
+
+    @property
+    def unsteady_flow_file(self) -> UnsteadyFlowFile:
+        """Get the unsteady flow file associated with the plan file.
+
+        Returns
+        -------
+            UnsteadyFlowFile: The unsteady flow file associated with the plan file.
+        """
+        with open(self.path, "r") as f:
+            content = f.read()
+            match = re.search(r"(?m)Flow File\s*=\s*(.+)$", content)
+            flow_ext = match.group(1)
+            return UnsteadyFlowFile(self.path.with_suffix(f".{flow_ext}"))
+
+    @property
+    def short_id(self) -> str:
+        """Get the short ID of the plan file.
+
+        Returns
+        -------
+            str: The short ID of the plan file.
+        """
+        with open(self.path, "r") as f:
+            content = f.read()
+            match = re.search(r"(?m)Short Identifier\s*=\s*(.+)$", content)
+            return match.group(1).strip()
+
+
 class RasModel:
     """HEC-RAS model class.
 
@@ -69,55 +151,57 @@ class RasModel:
         self.title = self.prj_file.title
 
     @property
-    def current_plan(self) -> RasModelFile:
+    def current_plan(self) -> PlanFile:
         """Get the current plan file referenced in the project file.
 
         Returns
         -------
-            RasModelFile: The current plan file.
+            PlanFile: The current plan file.
         """
         with open(self.prj_file.path, "r") as f:
             match = re.search(r"(?m)Current Plan\s*=\s*(.+)$", f.read())
             current_plan_ext = match.group(1)
-            return RasModelFile(self.prj_file.path.with_suffix(f".{current_plan_ext}"))
+            return PlanFile(self.prj_file.path.with_suffix(f".{current_plan_ext}"))
 
     @property
-    def current_geometry(self) -> RasModelFile:
+    def current_geometry(self) -> GeomFile:
         """Get the current geometry file referenced in the current plan.
 
         Returns
         -------
-            RasModelFile: The current geometry file.
+            GeomFile: The current geometry file.
         """
         with open(self.current_plan.path, "r") as f:
             match = re.search(r"(?m)Geom File\s*=\s*(.+)$", f.read())
             current_geom_ext = match.group(1)
-            return RasModelFile(self.prj_file.path.with_suffix(f".{current_geom_ext}"))
+            return GeomFile(self.prj_file.path.with_suffix(f".{current_geom_ext}"))
 
     @property
-    def current_unsteady(self) -> RasModelFile:
+    def current_unsteady(self) -> UnsteadyFlowFile:
         """Get the current unsteady flow file referenced in the current plan.
 
         Returns
         -------
-            RasModelFile: The current unsteady flow file.
+            UnsteadyFlowFile: The current unsteady flow file.
         """
         with open(self.current_plan.path, "r") as f:
             match = re.search(r"(?m)Flow File\s*=\s*(.+)$", f.read())
             current_flow_ext = match.group(1)
-            return RasModelFile(self.prj_file.path.with_suffix(f".{current_flow_ext}"))
+            return UnsteadyFlowFile(
+                self.prj_file.path.with_suffix(f".{current_flow_ext}")
+            )
 
     @property
-    def geometries(self) -> list[RasModelFile]:
+    def geometries(self) -> list[GeomFile]:
         """Get all geometry files referenced in the project file.
 
         Returns
         -------
-            list[RasModelFile]: List of all geometry files.
+            list[GeomFile]: List of all geometry files.
         """
         with open(self.prj_file.path, "r") as f:
             return list(
-                RasModelFile(self.prj_file.path.with_suffix("." + suf))
+                GeomFile(self.prj_file.path.with_suffix("." + suf))
                 for suf in re.findall(r"(?m)Geom File\s*=\s*(.+)$", f.read())
             )
 
@@ -152,16 +236,16 @@ class RasModel:
         return list(x.title for x in self.geometries)
 
     @property
-    def plans(self) -> list[RasModelFile]:
+    def plans(self) -> list[PlanFile]:
         """Get all plan files referenced in the project file.
 
         Returns
         -------
-            list[RasModelFile]: List of all plan files.
+            list[PlanFile]: List of all plan files.
         """
         with open(self.prj_file.path, "r") as f:
             return list(
-                RasModelFile(self.prj_file.path.with_suffix("." + suf))
+                PlanFile(self.prj_file.path.with_suffix("." + suf))
                 for suf in re.findall(r"(?m)Plan File\s*=\s*(.+)$", f.read())
             )
 
@@ -205,7 +289,7 @@ class RasModel:
         """
         with open(self.prj_file.path, "r") as f:
             return list(
-                RasModelFile(self.prj_file.path.with_suffix("." + suf))
+                UnsteadyFlowFile(self.prj_file.path.with_suffix("." + suf))
                 for suf in re.findall(r"(?m)Unsteady File\s*=\s*(.+)$", f.read())
             )
 

@@ -5,6 +5,7 @@ from .rasmodel import RasModel
 from .result import RasqcResult, ResultStatus
 
 from rich.console import Console
+from rich.markup import escape
 
 import os
 import re
@@ -64,7 +65,7 @@ class CheckSuite:
         """
         if result.message:
             message = _bold_single_quotes(result.message)
-        console.print(f"- {check.name}: ", end="")
+        console.print(f"[{result.filename}] - {check.name}: ", end="")
         if result.result == ResultStatus.ERROR:
             console.print("ERROR", style="bold red")
             console.print(f"    {message}", highlight=False, style="gray50")
@@ -73,6 +74,12 @@ class CheckSuite:
             console.print(f"    {message}", style="gray50")
         else:
             console.print("OK", style="bold green")
+        if not result.result == ResultStatus.OK and result.pattern:
+            console.print(
+                f"    Required pattern: {escape(result.pattern)}",
+                highlight=False,
+                style="gray50",
+            )
 
     def run_checks_console(
         self, ras_model: str | os.PathLike | RasModel

@@ -18,6 +18,7 @@ class RasqcChecker:
     """
 
     name: str
+    criteria: str
 
     def run(self, ras_model: RasModel) -> RasqcResult | List[RasqcResult]:
         """Run the checker on the HEC-RAS model.
