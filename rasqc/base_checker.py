@@ -3,6 +3,8 @@
 from rasqc.rasmodel import RasModel
 from rasqc.result import RasqcResult
 
+from typing import List
+
 
 class RasqcChecker:
     """Base class for all quality control checkers.
@@ -17,7 +19,7 @@ class RasqcChecker:
 
     name: str
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
+    def run(self, ras_model: RasModel) -> RasqcResult | List[RasqcResult]:
         """Run the checker on the HEC-RAS model.
 
         Parameters

@@ -54,6 +54,26 @@ class CheckSuite:
         """
         self.checks.append(check)
 
+    @staticmethod
+    def _print_result(console: Console, check: RasqcChecker, result: RasqcResult):
+        """Print the result of a check to the console.
+
+        Parameters
+        ----------
+            result: The RasqcResult to print.
+        """
+        if result.message:
+            message = _bold_single_quotes(result.message)
+        console.print(f"- {check.name}: ", end="")
+        if result.result == ResultStatus.ERROR:
+            console.print("ERROR", style="bold red")
+            console.print(f"    {message}", highlight=False, style="gray50")
+        elif result.result == ResultStatus.WARNING:
+            console.print("WARNING", style="bold yellow")
+            console.print(f"    {message}", style="gray50")
+        else:
+            console.print("OK", style="bold green")
+
     def run_checks_console(
         self, ras_model: str | os.PathLike | RasModel
     ) -> List[RasqcResult]:
@@ -71,18 +91,22 @@ class CheckSuite:
         console = Console()
         for check in self.checks:
             result = check.run(RasModel(ras_model))
-            if result.message:
-                message = _bold_single_quotes(result.message)
-            console.print(f"- {check.name}: ", end="")
-            if result.result == ResultStatus.ERROR:
-                console.print("ERROR", style="bold red")
-                console.print(f"    {message}", highlight=False, style="gray50")
-            elif result.result == ResultStatus.WARNING:
-                console.print("WARNING", style="bold yellow")
-                console.print(f"    {message}", style="gray50")
-            else:
-                console.print("OK", style="bold green")
-            results.append(result)
+            if type(result) is RasqcResult:
+                result = [result]
+            for r in result:
+                self._print_result(console, check, r)
+                # if result.message:
+                #     message = _bold_single_quotes(result.message)
+                # console.print(f"- {check.name}: ", end="")
+                # if result.result == ResultStatus.ERROR:
+                #     console.print("ERROR", style="bold red")
+                #     console.print(f"    {message}", highlight=False, style="gray50")
+                # elif result.result == ResultStatus.WARNING:
+                #     console.print("WARNING", style="bold yellow")
+                #     console.print(f"    {message}", style="gray50")
+                # else:
+                #     console.print("OK", style="bold green")
+                # results.append(result)
         return results
 
     def run_checks(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
@@ -98,5 +122,9 @@ class CheckSuite:
         """
         results = []
         for check in self.checks:
-            results.append(check.run(RasModel(ras_model)))
+            result = check.run(RasModel(ras_model))
+            if type(result) is list:
+                results.extend(result)
+            else:
+                results.append(result)
         return results
