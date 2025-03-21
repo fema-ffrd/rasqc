@@ -110,9 +110,10 @@ class CheckSuite:
         results = []
         console = Console()
         ordered_checks = self.get_execution_order()
+        ras_model = RasModel(ras_model)
         for check_name in ordered_checks:
             check = self.checks[check_name]
-            result = check.run(RasModel(ras_model))
+            result = check.run(ras_model)
             if type(result) is RasqcResult:
                 result = [result]
             for r in result:
@@ -132,9 +133,10 @@ class CheckSuite:
         """
         results = []
         ordered_checks = self.get_execution_order()
+        ras_model = RasModel(ras_model)
         for check_name in ordered_checks:
             check = self.checks[check_name]
-            result = check.run(RasModel(ras_model))
+            result = check.run(ras_model)
             if type(result) is list:
                 results.extend(result)
             else:

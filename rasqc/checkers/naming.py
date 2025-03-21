@@ -208,11 +208,15 @@ class D2FlowArea(JsonSchemaChecker):
         """
         results = []
         for geom in ras_model.geometries:
-            ghdf_path = Path(f"{geom.path}.hdf")
-            ghdf = RasGeomHdf(ghdf_path)
-            results.extend(
-                [self._check(m, ghdf_path.name) for m in ghdf.mesh_area_names()]
-            )
+            if geom.hdf:
+                results.extend(
+                    [self._check(m, geom.hdf_path.name) for m in geom.hdf.mesh_area_names()]
+                )
+            # ghdf_path = Path(f"{geom.path}.hdf")
+            # ghdf = RasGeomHdf(ghdf_path)
+            # results.extend(
+            #     [self._check(m, ghdf_path.name) for m in ghdf.mesh_area_names()]
+            # )
         return results
 
 
