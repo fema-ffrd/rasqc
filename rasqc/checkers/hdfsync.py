@@ -131,7 +131,7 @@ class PlanHdfExists(RasqcChecker):
         return [self._check(plan_file) for plan_file in ras_model.plans]
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd"], dependencies=['PlanHdfExists'])
 class PlanHdfDatetime(RasqcChecker):
     """Check if the Plan HDF datetime aligns with the associated Geometry file datetime."""
 
