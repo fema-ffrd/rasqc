@@ -217,6 +217,81 @@ class D2FlowArea(JsonSchemaChecker):
 
 
 @register_check(["ffrd"])
+class TerrainNamePattern(JsonSchemaChecker):
+    """Checker for terrain file naming conventions."""
+
+    name = "Terrain name pattern"
+    criteria = (
+        "Terrain file name should follow the naming convention "
+        "'subbasin-name[_1]', where '[_1]' is an optional suffix "
+        " for multiple terrain files in the same geometry."
+    )
+    schema_property = "terrain_name"
+
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check if the terrain file title follows the naming convention.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        results = []
+        for geom in ras_model.geometries:
+            if geom.hdf:
+                geom_attrs = geom.hdf.get_geom_attrs()
+                terrain_name = geom_attrs.get("Terrain Layername")
+                if terrain_name:
+                    results.append(self._check(terrain_name, geom.hdf_path.name))
+                else:
+                    results.append(
+                        RasqcResult(
+                            name=self.name,
+                            filename=geom.hdf_path.name,
+                            result=ResultStatus.ERROR,
+                            message="Terrain Layerame not found in geometry HDF file.",
+                        )
+                    )
+        return results
+
+
+@register_check(["ffrd"])
+class ReferenceLinePattern(JsonSchemaChecker):
+    """Checker for reference line naming conventions."""
+
+    name = "Reference Line pattern"
+    criteria = (
+        "Reference Line names should follow the naming convention "
+        "'subbasin-name[_1]', where '[_1]' is an optional suffix "
+        " for multiple reference lines in the same geometry."
+    )
+    schema_property = "ref_line_gage"
+
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check if the reference line title follows the naming convention.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        results = []
+        for geom in ras_model.geometries:
+            if geom.hdf:
+                for mesh in geom.hdf.mesh_area_names():
+                    reflines = geom.hdf.reference_lines_names(mesh)
+                    for ref_line in reflines:
+                        results.append(self._check(ref_line, geom.hdf_path.name))
+        return results
+
+
+@register_check(["ffrd"])
 class SingleGeometryFile(RasqcChecker):
     """Checker for single geometry file in the project."""
 
