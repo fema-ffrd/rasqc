@@ -30,7 +30,9 @@ class RasModelFile:
 
     fs: fsspec.AbstractFileSystem
 
-    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
+    def __init__(
+        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
+    ):
         """Instantiate a RasModelFile object by the file path.
 
         Parameters
@@ -69,7 +71,9 @@ class RasModelFile:
         return title
 
 
-def _get_hdf(path: str | os.PathLike, fs: fsspec.AbstractFileSystem) -> Optional[RasHdf]:
+def _get_hdf(
+    path: str | os.PathLike, fs: fsspec.AbstractFileSystem
+) -> Optional[RasHdf]:
     """Given a Plan or Geometry path, return the corresponding HDF object."""
     hdf_path = f"{path}.hdf"
     if fs.exists(hdf_path):
@@ -82,7 +86,9 @@ class GeomFile(RasModelFile):
     _hdf_path: str
     hdf: Optional[RasGeomHdf] = None
 
-    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
+    def __init__(
+        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
+    ):
         """Instantiate a GeomFile object by the file path.
 
         Parameters
@@ -135,7 +141,9 @@ class PlanFile(RasModelFile):
     _hdf_path: str = None
     hdf: Optional[RasPlanHdf] = None
 
-    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
+    def __init__(
+        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
+    ):
         """Instantiate a PlanFile object by the file path.
 
         Parameters
@@ -220,17 +228,24 @@ class RasModel:
         fs = self.prj_file.fs
 
         for suf in re.findall(r"(?m)Geom File\s*=\s*(.+)$", self.prj_file.content):
-            self.geom_files[suf] = GeomFile(self.prj_file.path.with_suffix("." + suf), fs)
+            self.geom_files[suf] = GeomFile(
+                self.prj_file.path.with_suffix("." + suf), fs
+            )
 
         for suf in re.findall(r"(?m)Unsteady File\s*=\s*(.+)$", self.prj_file.content):
-            self.unsteady_flow_files[suf] = UnsteadyFlowFile(self.prj_file.path.with_suffix("." + suf), fs)
+            self.unsteady_flow_files[suf] = UnsteadyFlowFile(
+                self.prj_file.path.with_suffix("." + suf), fs
+            )
 
         for suf in re.findall(r"(?m)Plan File\s*=\s*(.+)$", self.prj_file.content):
-            self.plan_files[suf] = PlanFile(self.prj_file.path.with_suffix("." + suf), fs)
+            self.plan_files[suf] = PlanFile(
+                self.prj_file.path.with_suffix("." + suf), fs
+            )
 
-        current_plan_ext = re.search(r"(?m)Current Plan\s*=\s*(.+)$", self.prj_file.content)
+        current_plan_ext = re.search(
+            r"(?m)Current Plan\s*=\s*(.+)$", self.prj_file.content
+        )
         self.current_plan_ext = current_plan_ext.group(1) if current_plan_ext else None
-
 
     # @property
     # def current_plan(self) -> PlanFile:
