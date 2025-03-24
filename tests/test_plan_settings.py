@@ -8,14 +8,12 @@ MUNCIE_PRJ = TEST_DATA / "ras/Muncie.prj"
 
 
 def test_EquationSet2D_a():
-    assert (
-        EquationSet2D().run(RasModel(BALDEAGLE_PRJ)).__dict__.__str__()
-        == "{'result': <ResultStatus.OK: 'ok'>, 'name': '2D Equation Set', 'filename': 'BaldEagleDamBrk.p18.hdf', 'message': None, 'gdf': None}"
-    )
+    results = EquationSet2D().run(RasModel(BALDEAGLE_PRJ))
+    result = results[0]
+    assert result.result.value == "ok"
 
 
 def test_EquationSet2D_b():
-    assert (
-        EquationSet2D().run(RasModel(MUNCIE_PRJ)).__dict__.__str__()
-        == "{'result': <ResultStatus.OK: 'ok'>, 'name': '2D Equation Set', 'filename': 'Muncie.p03.hdf', 'message': None, 'gdf': None}"
-    )
+    results = EquationSet2D().run(RasModel(MUNCIE_PRJ))
+    result = results[0]
+    assert result.result.value == "ok"

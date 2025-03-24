@@ -30,9 +30,7 @@ class RasModelFile:
 
     fs: fsspec.AbstractFileSystem
 
-    def __init__(
-        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
-    ):
+    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
         """Instantiate a RasModelFile object by the file path.
 
         Parameters
@@ -71,9 +69,7 @@ class RasModelFile:
         return title
 
 
-def _get_hdf(
-    path: str | os.PathLike, fs: fsspec.AbstractFileSystem
-) -> Optional[RasHdf]:
+def _get_hdf(path: str | os.PathLike, fs: fsspec.AbstractFileSystem) -> Optional[RasHdf]:
     """Given a Plan or Geometry path, return the corresponding HDF object."""
     hdf_path = f"{path}.hdf"
     if fs.exists(hdf_path):
@@ -84,11 +80,9 @@ class GeomFile(RasModelFile):
     """HEC-RAS geometry file class."""
 
     _hdf_path: str
-    hdf: Optional[RasGeomHdf]
+    hdf: Optional[RasGeomHdf] = None
 
-    def __init__(
-        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
-    ):
+    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
         """Instantiate a GeomFile object by the file path.
 
         Parameters
@@ -138,12 +132,10 @@ class UnsteadyFlowFile(RasModelFile):
 class PlanFile(RasModelFile):
     """HEC-RAS plan file class."""
 
-    hdf: Optional[RasPlanHdf]
-    _hdf_path: str
+    _hdf_path: str = None
+    hdf: Optional[RasPlanHdf] = None
 
-    def __init__(
-        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
-    ):
+    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
         """Instantiate a PlanFile object by the file path.
 
         Parameters
@@ -209,7 +201,7 @@ class RasModel:
     geom_files: dict[str, GeomFile]
     unsteady_flow_files: dict[str, UnsteadyFlowFile]
     plan_files: dict[str, PlanFile]
-    current_plan: str
+    current_plan_ext: Optional[str]
 
     def __init__(self, prj_file: str | os.PathLike):
         """Instantiate a RasModel object by the '.prj' file path.
@@ -228,22 +220,17 @@ class RasModel:
         fs = self.prj_file.fs
 
         for suf in re.findall(r"(?m)Geom File\s*=\s*(.+)$", self.prj_file.content):
-            self.geom_files[suf] = GeomFile(
-                self.prj_file.path.with_suffix("." + suf), fs
-            )
+            self.geom_files[suf] = GeomFile(self.prj_file.path.with_suffix("." + suf), fs)
 
         for suf in re.findall(r"(?m)Unsteady File\s*=\s*(.+)$", self.prj_file.content):
-            self.unsteady_flow_files[suf] = UnsteadyFlowFile(
-                self.prj_file.path.with_suffix("." + suf), fs
-            )
+            self.unsteady_flow_files[suf] = UnsteadyFlowFile(self.prj_file.path.with_suffix("." + suf), fs)
 
         for suf in re.findall(r"(?m)Plan File\s*=\s*(.+)$", self.prj_file.content):
-            self.plan_files[suf] = PlanFile(
-                self.prj_file.path.with_suffix("." + suf), fs
-            )
+            self.plan_files[suf] = PlanFile(self.prj_file.path.with_suffix("." + suf), fs)
 
-        current_plan = re.search(r"(?m)Current Plan\s*=\s*(.+)$", self.prj_file.content)
-        self.current_plan = current_plan.group(1) if current_plan else None
+        current_plan_ext = re.search(r"(?m)Current Plan\s*=\s*(.+)$", self.prj_file.content)
+        self.current_plan_ext = current_plan_ext.group(1) if current_plan_ext else None
+
 
     # @property
     # def current_plan(self) -> PlanFile:
@@ -258,6 +245,16 @@ class RasModel:
     #     return PlanFile(self.prj_file.path.with_suffix(f".{current_plan_ext}"))
 
     @property
+    def current_plan(self) -> PlanFile:
+        """Get the current plan file referenced in the project file.
+
+        Returns
+        -------
+            PlanFile: The current plan file.
+        """
+        return self.plan_files[self.current_plan_ext]
+
+    @property
     def current_geometry(self) -> GeomFile:
         """Get the current geometry file referenced in the current plan.
 
@@ -269,7 +266,7 @@ class RasModel:
         #     match = re.search(r"(?m)Geom File\s*=\s*(.+)$", f.read())
         #     current_geom_ext = match.group(1)
         #     return GeomFile(self.prj_file.path.with_suffix(f".{current_geom_ext}"))
-        current_geom_ext = self.plan_files[self.current_plan].geom_file.path.suffix
+        current_geom_ext = self.current_plan.geom_file.path.suffix
         return self.geom_files[current_geom_ext[1:]]
 
     @property
@@ -286,9 +283,7 @@ class RasModel:
         #     return UnsteadyFlowFile(
         #         self.prj_file.path.with_suffix(f".{current_flow_ext}")
         #     )
-        current_unsteady_ext = self.plan_files[
-            self.current_plan
-        ].unsteady_flow_file.path.suffix
+        current_unsteady_ext = self.current_plan.unsteady_flow_file.path.suffix
         return self.unsteady_flow_files[current_unsteady_ext[1:]]
 
     @property
