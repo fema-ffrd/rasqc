@@ -79,6 +79,7 @@ def _get_hdf(path: str | os.PathLike, fs: fsspec.AbstractFileSystem) -> Optional
 class GeomFile(RasModelFile):
     """HEC-RAS geometry file class."""
 
+    _hdf_path: str
     hdf: Optional[RasGeomHdf]
 
     def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
@@ -93,9 +94,9 @@ class GeomFile(RasModelFile):
         """
         super().__init__(path, fs)
         protocol = _get_fsspec_protocol(self.fs)
-        hdf_path = f"{protocol}://{self.path}.hdf"
-        if self.fs.exists(hdf_path):
-            self.hdf = RasGeomHdf.open_uri(hdf_path)
+        self._hdf_path = f"{protocol}://{self.path}.hdf"
+        if self.fs.exists(self._hdf_path):
+            self.hdf = RasGeomHdf.open_uri(self._hdf_path)
 
     def last_updated(self) -> datetime:
         """Get the last updated date of the file.
@@ -104,24 +105,22 @@ class GeomFile(RasModelFile):
         -------
             str: The last updated date of the file.
         """
-        with open(self.path, "r") as f:
-            content = f.read()
-            matches = re.findall(r"(?m).*Time\s*=\s*(.+)$", content)
-            datetimes = []
-            for m in matches:
-                try:
-                    dt = datetime.strptime(m, "%b/%d/%Y %H:%M:%S")
-                    datetimes.append(dt)
-                    continue
-                except ValueError:
-                    pass
-                try:
-                    dt = datetime.strptime(m, "%d%b%Y %H:%M:%S")
-                    datetimes.append(dt)
-                    continue
-                except ValueError as e:
-                    raise ValueError(f"Invalid date format: {m}") from e
-            return max(datetimes)
+        matches = re.findall(r"(?m).*Time\s*=\s*(.+)$", self.content)
+        datetimes = []
+        for m in matches:
+            try:
+                dt = datetime.strptime(m, "%b/%d/%Y %H:%M:%S")
+                datetimes.append(dt)
+                continue
+            except ValueError:
+                pass
+            try:
+                dt = datetime.strptime(m, "%d%b%Y %H:%M:%S")
+                datetimes.append(dt)
+                continue
+            except ValueError as e:
+                raise ValueError(f"Invalid date format: {m}") from e
+        return max(datetimes)
 
 
 class UnsteadyFlowFile(RasModelFile):
@@ -134,6 +133,23 @@ class PlanFile(RasModelFile):
     """HEC-RAS plan file class."""
 
     hdf: Optional[RasPlanHdf]
+    _hdf_path: str
+
+    def __init__(self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None):
+        """Instantiate a PlanFile object by the file path.
+
+        Parameters
+        ----------
+        path : str | os.Pathlike
+            The absolute path to the RAS geometry file.
+        fs : fsspec.AbstractFileSystem, optional
+            The fsspec file system object. If not provided, it will be created based on the path.
+        """
+        super().__init__(path, fs)
+        protocol = _get_fsspec_protocol(self.fs)
+        self._hdf_path = f"{protocol}://{self.path}.hdf"
+        if self.fs.exists(self._hdf_path):
+            self.hdf = RasPlanHdf.open_uri(self._hdf_path)
 
     @property
     def geom_file(self) -> GeomFile:
@@ -145,7 +161,7 @@ class PlanFile(RasModelFile):
         """
         match = re.search(r"(?m)Geom File\s*=\s*(.+)$", self.content)
         geom_ext = match.group(1)
-        return GeomFile(self.path.with_suffix(f".{geom_ext}"))
+        return GeomFile(self.path.with_suffix(f".{geom_ext}"), self.fs)
 
     @property
     def unsteady_flow_file(self) -> UnsteadyFlowFile:
@@ -157,7 +173,7 @@ class PlanFile(RasModelFile):
         """
         match = re.search(r"(?m)Flow File\s*=\s*(.+)$", self.content)
         flow_ext = match.group(1)
-        return UnsteadyFlowFile(self.path.with_suffix(f".{flow_ext}"))
+        return UnsteadyFlowFile(self.path.with_suffix(f".{flow_ext}"), self.fs)
 
     @property
     def short_id(self) -> str:
@@ -241,7 +257,7 @@ class RasModel:
         #     current_geom_ext = match.group(1)
         #     return GeomFile(self.prj_file.path.with_suffix(f".{current_geom_ext}"))
         current_geom_ext = self.plan_files[self.current_plan].geom_file.path.suffix
-        return self.geom_files[current_geom_ext]
+        return self.geom_files[current_geom_ext[1:]]
 
     @property
     def current_unsteady(self) -> UnsteadyFlowFile:
@@ -258,7 +274,7 @@ class RasModel:
         #         self.prj_file.path.with_suffix(f".{current_flow_ext}")
         #     )
         current_unsteady_ext = self.plan_files[self.current_plan].unsteady_flow_file.path.suffix
-        return self.unsteady_flow_files[current_unsteady_ext]
+        return self.unsteady_flow_files[current_unsteady_ext[1:]]
 
     @property
     def geometries(self) -> list[GeomFile]:

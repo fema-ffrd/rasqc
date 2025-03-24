@@ -115,9 +115,12 @@ class CheckSuite:
             check = self.checks[check_name]
             result = check.run(ras_model)
             if type(result) is RasqcResult:
-                result = [result]
-            for r in result:
-                self._print_result(console, check, r)
+                self._print_result(console, check, result)
+                results.append(result)
+            elif type(result) is list:
+                for r in result:
+                    self._print_result(console, check, r)
+                    results.append(r)
         return results
 
     def run_checks(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:

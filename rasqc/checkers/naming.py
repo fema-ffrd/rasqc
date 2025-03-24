@@ -11,8 +11,6 @@ from rashdf import RasGeomHdf
 from datetime import date
 import importlib.resources
 import json
-from pathlib import Path
-import re
 from typing import Any, List
 
 
@@ -212,11 +210,6 @@ class D2FlowArea(JsonSchemaChecker):
                 results.extend(
                     [self._check(m, geom.hdf_path.name) for m in geom.hdf.mesh_area_names()]
                 )
-            # ghdf_path = Path(f"{geom.path}.hdf")
-            # ghdf = RasGeomHdf(ghdf_path)
-            # results.extend(
-            #     [self._check(m, ghdf_path.name) for m in ghdf.mesh_area_names()]
-            # )
         return results
 
 
@@ -261,19 +254,17 @@ class GeometryTitleMatchesProject(RasqcChecker):
     name = "Geometry title matches project"
     criteria = "Geometry file title should match the project filename."
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Check if the geometry file title follows the naming convention.
+    def _check(self, prj_filename: str, geom_file: RasModelFile) -> RasqcResult:
+        """Check if the geometry file title matches the project filename.
 
         Parameters
         ----------
-            ras_model: The HEC-RAS model to check.
+            geom_file: The geometry file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
-        prj_filename = ras_model.prj_file.path.name
-        geom_file = ras_model.current_geometry
         geom_title = geom_file.title
         if not geom_title == prj_filename[:-4]:
             err_msg = f"'{geom_title}': {self.criteria}"
@@ -286,6 +277,20 @@ class GeometryTitleMatchesProject(RasqcChecker):
         return RasqcResult(
             name=self.name, filename=geom_file.path.name, result=ResultStatus.OK
         )
+
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check if the geometry file title follows the naming convention.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        results = [self._check(ras_model.prj_file.path.name, g) for g in ras_model.geometries]
+        return results
 
 
 @register_check(["ffrd"])
