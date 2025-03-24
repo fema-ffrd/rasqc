@@ -92,7 +92,11 @@ class CheckSuite:
         else:
             console.print("OK", style="bold green")
         if not result.result == ResultStatus.OK and result.pattern:
-            console.print(f"    Required pattern: {escape(result.pattern)}", highlight=False, style="gray50")
+            console.print(
+                f"    Required pattern: {escape(result.pattern)}",
+                highlight=False,
+                style="gray50",
+            )
 
     def run_checks_console(
         self, ras_model: str | os.PathLike | RasModel

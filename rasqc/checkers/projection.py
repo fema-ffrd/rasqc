@@ -72,7 +72,9 @@ class GeomProjection(RasqcChecker):
                     " does not match the expected projection for FFRD models."
                 ),
             )
-        return RasqcResult(name=self.name, result=ResultStatus.OK, filename=ghdf_filename)
+        return RasqcResult(
+            name=self.name, result=ResultStatus.OK, filename=ghdf_filename
+        )
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
         """Check if the geometry projection matches the expected projection.

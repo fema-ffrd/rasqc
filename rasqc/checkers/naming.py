@@ -208,7 +208,10 @@ class D2FlowArea(JsonSchemaChecker):
         for geom in ras_model.geometries:
             if geom.hdf:
                 results.extend(
-                    [self._check(m, geom.hdf_path.name) for m in geom.hdf.mesh_area_names()]
+                    [
+                        self._check(m, geom.hdf_path.name)
+                        for m in geom.hdf.mesh_area_names()
+                    ]
                 )
         return results
 
@@ -289,7 +292,9 @@ class GeometryTitleMatchesProject(RasqcChecker):
         -------
             RasqcResult: The result of the check.
         """
-        results = [self._check(ras_model.prj_file.path.name, g) for g in ras_model.geometries]
+        results = [
+            self._check(ras_model.prj_file.path.name, g) for g in ras_model.geometries
+        ]
         return results
 
 

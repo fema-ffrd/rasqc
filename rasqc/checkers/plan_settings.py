@@ -10,6 +10,7 @@ from rashdf import RasPlanHdf
 from pathlib import Path
 from typing import List
 
+
 @register_check(["ffrd"])
 class EquationSet2D(RasqcChecker):
     """Checker for 2D equation set settings.
@@ -40,21 +41,25 @@ class EquationSet2D(RasqcChecker):
         results = []
         for equation_set in equation_sets:
             if equation_set != "Diffusion Wave":
-                results.append(RasqcResult(
-                    name=self.name,
-                    result=ResultStatus.WARNING,
-                    filename=phdf_filename,
-                    message=(
-                        f"2D Equation Set '{equation_set}'"
-                        " does not match expected setting: 'Diffusion Wave'."
-                    ),
-                ))
+                results.append(
+                    RasqcResult(
+                        name=self.name,
+                        result=ResultStatus.WARNING,
+                        filename=phdf_filename,
+                        message=(
+                            f"2D Equation Set '{equation_set}'"
+                            " does not match expected setting: 'Diffusion Wave'."
+                        ),
+                    )
+                )
             else:
-                results.append(RasqcResult(
-                    name=self.name,
-                    result=ResultStatus.OK,
-                    filename=phdf_filename,
-                ))
+                results.append(
+                    RasqcResult(
+                        name=self.name,
+                        result=ResultStatus.OK,
+                        filename=phdf_filename,
+                    )
+                )
         return results
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:

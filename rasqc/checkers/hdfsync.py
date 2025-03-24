@@ -33,18 +33,22 @@ class GeomHdfExists(RasqcChecker):
         for geom_file in ras_model.geometries:
             if not geom_file.hdf:
                 err_msg = f"'{geom_file.path.name}': {self.criteria}"
-                results.append(RasqcResult(
-                    name=self.name,
-                    filename=geom_file.path.name,
-                    result=ResultStatus.ERROR,
-                    message=err_msg,
-                ))
+                results.append(
+                    RasqcResult(
+                        name=self.name,
+                        filename=geom_file.path.name,
+                        result=ResultStatus.ERROR,
+                        message=err_msg,
+                    )
+                )
             else:
-                results.append(RasqcResult(
-                    name=self.name,
-                    filename=geom_file.path.name,
-                    result=ResultStatus.OK,
-                ))
+                results.append(
+                    RasqcResult(
+                        name=self.name,
+                        filename=geom_file.path.name,
+                        result=ResultStatus.OK,
+                    )
+                )
         return results
 
 
@@ -113,22 +117,26 @@ class PlanHdfExists(RasqcChecker):
         for plan_file in ras_model.plans:
             if not plan_file.hdf:
                 err_msg = f"'{plan_file.path.name}': {self.criteria}"
-                results.append(RasqcResult(
-                    name=self.name,
-                    filename=plan_file.path.name,
-                    result=ResultStatus.ERROR,
-                    message=err_msg,
-                ))
+                results.append(
+                    RasqcResult(
+                        name=self.name,
+                        filename=plan_file.path.name,
+                        result=ResultStatus.ERROR,
+                        message=err_msg,
+                    )
+                )
             else:
-                results.append(RasqcResult(
-                    name=self.name,
-                    filename=plan_file.path.name,
-                    result=ResultStatus.OK,
-                ))
+                results.append(
+                    RasqcResult(
+                        name=self.name,
+                        filename=plan_file.path.name,
+                        result=ResultStatus.OK,
+                    )
+                )
         return results
 
 
-@register_check(["ffrd"], dependencies=['PlanHdfExists'])
+@register_check(["ffrd"], dependencies=["PlanHdfExists"])
 class PlanHdfDatetime(RasqcChecker):
     """Check if the Plan HDF datetime aligns with the associated Geometry file datetime."""
 
