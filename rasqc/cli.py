@@ -1,27 +1,46 @@
-import rasqc.checkers
-from rasqc.checksuite import CHECKSUITES
-from rasqc.result import RasqcResultEncoder, ResultStatus
+"""Main entry point for the rasqc command-line tool."""
+
+from . import checkers  # noqa: F401
+from .registry import CHECKSUITES
+from .result import RasqcResultEncoder, ResultStatus
 
 from rich.console import Console
 
 import argparse
 from dataclasses import asdict
 from datetime import datetime, timezone
+from importlib.metadata import version
 import json
 import sys
 
-
-BANNER = """
-  __|   _` |   __|   _` |   __| 
- |     (   | \__ \  (   |  (    
-_|    \__._| ____/ \__. | \___| 
-                       _|       
-"""
+RASQC_VERSION = version("rasqc")
 
 
 def run_console(ras_model: str, checksuite: str) -> None:
+    """Run checks in console mode with rich formatting.
+
+    Parameters
+    ----------
+        ras_model: Path to the HEC-RAS model .prj file.
+        checksuite: Name of the checksuite to run.
+
+    Returns
+    -------
+        None
+
+    Exits
+    -----
+        With code 0 if all checks pass or there are only warnings.
+        With code 1 if there are any errors.
+    """
     console = Console()
-    console.print(BANNER.strip("\n"))
+    console.print(
+        f"[bold underline]rasqc: Automated HEC-RAS Model Quality Control Checks[/bold underline]"
+    )
+    console.print(
+        f"[bold]Version[/bold]: [bright_blue]{RASQC_VERSION}[/bright_blue]",
+        highlight=False,
+    )
     console.print(
         f"[bold]HEC-RAS Model[/bold]: [bright_blue]{ras_model}[/bright_blue]",
         highlight=False,
@@ -35,7 +54,7 @@ def run_console(ras_model: str, checksuite: str) -> None:
         highlight=False,
     )
     console.print(f"[bold]Checks[/bold]:")
-    results = CHECKSUITES[checksuite].run_all(ras_model)
+    results = CHECKSUITES[checksuite].run_checks_console(ras_model)
     error_count = len(
         [result for result in results if result.result == ResultStatus.ERROR]
     )
@@ -57,11 +76,23 @@ def run_console(ras_model: str, checksuite: str) -> None:
 
 
 def run_json(ras_model: str, checksuite: str) -> dict:
-    results = CHECKSUITES[checksuite].run_all_silent(ras_model)
+    """Run checks and output results as JSON.
+
+    Parameters
+    ----------
+        ras_model: Path to the HEC-RAS model .prj file.
+        checksuite: Name of the checksuite to run.
+
+    Returns
+    -------
+        dict: Dictionary containing the check results.
+    """
+    results = CHECKSUITES[checksuite].run_checks(ras_model)
     results_dicts = [asdict(result) for result in results]
     output = {
+        "version": RASQC_VERSION,
         "model": ras_model,
-        "checksuite": "ffrd",
+        "checksuite": checksuite,
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "checks": results_dicts,
     }
@@ -70,6 +101,10 @@ def run_json(ras_model: str, checksuite: str) -> dict:
 
 
 def main():
+    """Launch the rasqc command-line tool.
+
+    Parses command-line arguments and runs the appropriate checks.
+    """
     parser = argparse.ArgumentParser(
         description="rasqc: Automated HEC-RAS Model Quality Control Checks"
     )
