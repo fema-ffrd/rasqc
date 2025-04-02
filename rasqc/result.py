@@ -5,7 +5,7 @@ from geopandas import GeoDataFrame
 from dataclasses import dataclass
 from enum import Enum
 from json import JSONEncoder
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 
 class ResultStatus(Enum):
@@ -65,5 +65,6 @@ class RasqcResult:
     name: str
     filename: str
     message: Optional[str] = None
-    pattern: Optional[str] = None
+    pattern: Optional[str] | Optional[List[str]] = None
+    examples: Optional[str] = None
     gdf: Optional[GeoDataFrame] = None
