@@ -451,8 +451,7 @@ class SA2DConnectionPattern(MultiJsonSchemaChecker):
 
     name = "SA/2D Connection name pattern"
     criteria = (
-        "SA/2D Connection names should follow naming conventions"
-        " for SA/2D Connections."
+        "SA/2D Connection names should follow naming conventions for SA/2D Connections."
     )
     schema_properties = [
         "dam_connection",
@@ -478,9 +477,7 @@ class SA2DConnectionPattern(MultiJsonSchemaChecker):
                 connections = structures[structures["Type"] == "Connection"]
                 conn_names = connections["Connection"]
                 for name in conn_names:
-                    results.append(
-                        self._check(name, geom.hdf_path.name)
-                    )
+                    results.append(self._check(name, geom.hdf_path.name))
         return results
 
 
