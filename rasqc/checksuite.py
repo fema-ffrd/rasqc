@@ -11,7 +11,7 @@ from rich.markup import escape
 from collections import defaultdict
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Any
 
 
 def _bold_single_quotes(text: str) -> str:
@@ -130,9 +130,7 @@ class CheckSuite:
                     style="gray50",
                 )
 
-    def run_checks_console(
-        self, ras_model: str | os.PathLike | RasModel
-    ) -> List[RasqcResult]:
+    def run_checks_console(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
         """Run all checks in the suite and print results to the console.
 
         Parameters
@@ -177,6 +175,23 @@ class CheckSuite:
             check = self.checks[check_name]
             result = check.run(ras_model)
             if type(result) is list:
+                results.extend(result)
+            else:
+                results.append(result)
+        return results
+
+
+class StacCheckSuite(CheckSuite):
+    """CheckSuite for running checks against STAC item asset properties."""
+
+    def run_checks(self, stac_assets: Dict[str, Dict[str, Any]]) -> List[RasqcResult]:
+        """Run all checks directly on STAC assets."""
+        results = []
+        ordered_checks = self.get_execution_order()
+        for check_name in ordered_checks:
+            check = self.checks[check_name]
+            result = check.run(stac_assets)
+            if isinstance(result, list):
                 results.extend(result)
             else:
                 results.append(result)

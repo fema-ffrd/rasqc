@@ -1,11 +1,11 @@
 """Module for registering and managing check suites."""
 
-from rasqc.checksuite import CheckSuite
+from rasqc.checksuite import CheckSuite, StacCheckSuite
 
 from typing import Dict, List
 
 # Dictionary of available check suites
-CHECKSUITES: Dict[str, "CheckSuite"] = {"ffrd": CheckSuite()}
+CHECKSUITES: Dict[str, "CheckSuite"] = {"ffrd": CheckSuite(), "stac_ffrd": StacCheckSuite()}
 
 
 def register_check(suite_names: List[str], dependencies: List[str] = []):
