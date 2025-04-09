@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd"], dependencies=["PlanHdfExists"])
 class EquationSet2D(RasqcChecker):
     """Checker for 2D equation set settings.
 

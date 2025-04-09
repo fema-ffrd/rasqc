@@ -93,10 +93,42 @@ class CheckSuite:
             console.print("OK", style="bold green")
         if not result.result == ResultStatus.OK and result.pattern:
             console.print(
-                f"    Required pattern: {escape(result.pattern)}",
+                f"    Required pattern:",
                 highlight=False,
                 style="gray50",
             )
+            if type(result.pattern) is list:
+                for pattern in result.pattern:
+                    console.print(
+                        f"        {escape(pattern)}",
+                        highlight=False,
+                        style="gray50",
+                    )
+            else:
+                console.print(
+                    f"        {escape(result.pattern)}",
+                    highlight=False,
+                    style="gray50",
+                )
+        if not result.result == ResultStatus.OK and result.examples:
+            console.print(
+                f"    Example:",
+                highlight=False,
+                style="gray50",
+            )
+            if type(result.examples) is list:
+                for example in result.examples:
+                    console.print(
+                        f"        {escape(example)}",
+                        highlight=False,
+                        style="gray50",
+                    )
+            else:
+                console.print(
+                    f"        {escape(result.examples)}",
+                    highlight=False,
+                    style="gray50",
+                )
 
     def run_checks_console(
         self, ras_model: str | os.PathLike | RasModel

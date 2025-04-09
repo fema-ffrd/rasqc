@@ -153,6 +153,13 @@ class PlanHdfDatetime(RasqcChecker):
         ghdf_datetime = ghdf_attrs.get("Geometry Time")
 
         phdf = plan_file.hdf
+        if not phdf:
+            return RasqcResult(
+                name=self.name,
+                filename=Path(plan_file._hdf_path).name,
+                result=ResultStatus.ERROR,
+                message="Plan HDF file not found.",
+            )
 
         phdf_attrs = phdf.get_results_unsteady_summary_attrs()
         run_time_window = phdf_attrs.get("Run Time Window")

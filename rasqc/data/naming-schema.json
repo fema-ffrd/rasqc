@@ -9,34 +9,38 @@
             "type": "string",
             "description": "Project File Name",
             "pattern": "^[a-z0-9-]+$",
-            "underscore_count": 0,
+            "max_underscore_count": 0,
+            "min_underscore_count": 0,
             "examples": [
                 "lower-new"
             ]
         },
-        "geometry_name": {
+        "geometry_title": {
             "type": "string",
             "description": "Geometry Name",
             "pattern": "^[a-z0-9-]+$",
-            "underscore_count": 0,
+            "max_underscore_count": 0,
+            "min_underscore_count": 0,
             "examples": [
                 "lower-new"
             ]
         },
-        "unsteady_flow_name": {
+        "unsteady_flow_title": {
             "type": "string",
             "description": "Unsteady Flow Name",
             "pattern": "^(\\d+x-)?[a-z]{3}\\d{4}$",
-            "underscore_count": 0,
+            "max_underscore_count": 0,
+            "min_underscore_count": 0,
             "examples": [
                 "apr1997",
                 "2x-apr1997"
             ]
         },
-        "plan_name": {
+        "plan_title": {
             "description": "Plan Name",
             "pattern": "^(calibration|validation|breach|stress-test)_[a-z]{3}\\d{4}$|^(stress-test_\\d+x-[a-z]{3}\\d{4})$",
-            "underscore_count": 1,
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
             "examples": [
                 "calibration_apr1997",
                 "validation_jun1988",
@@ -48,7 +52,8 @@
             "type": "string",
             "description": "The short plan name must be identical to the Plan name.",
             "pattern": "^(calibration|validation|breach|stress-test)_[a-z]{3}\\d{4}$|^(stress-test_\\d+x-[a-z]{3}\\d{4})$",
-            "underscore_count": 1,
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
             "examples": [
                 "calibration_apr1997",
                 "validation_jun1988",
@@ -60,7 +65,8 @@
             "type": "string",
             "description": "Terrain Names",
             "pattern": "^[a-z0-9-]+_terrain_\\d+m(_merged)?$",
-            "underscore_count": 2,
+            "max_underscore_count": 3,
+            "min_underscore_count": 2,
             "examples": [
                 "little-fork-creek_terrain_1m",
                 "little-fork-creek_terrain_5m_merged"
@@ -70,7 +76,8 @@
             "type": "string",
             "description": "2D Flow Area Element Names",
             "pattern": "^[a-z0-9-]+(_\\d+)?$",
-            "underscore_count": 1,
+            "max_underscore_count": 1,
+            "min_underscore_count": 0,
             "examples": [
                 "lower-new",
                 "lower-new_1"
@@ -80,7 +87,8 @@
             "type": "string",
             "description": "Inflow Boundary Condition from Upstream Basins",
             "pattern": "^[a-z0-9-]+_to_[a-z0-9-]+$",
-            "underscore_count": 2,
+            "max_underscore_count": 2,
+            "min_underscore_count": 2,
             "examples": [
                 "mount-creek_to_lower-new"
             ]
@@ -89,16 +97,18 @@
             "type": "string",
             "description": "Internal Boundary Condition from Subbassin Baseflows",
             "pattern": "^bc_[a-z0-9-]+_s\\d+_base$",
-            "underscore_count": 3,
+            "max_underscore_count": 3,
+            "min_underscore_count": 3,
             "examples": [
                 "bc_clear-crk_s230_base"
             ]
         },
-        "outlflow_bc": {
+        "outflow_bc": {
             "type": "string",
             "description": "Downstream Outflow Boundary Condition",
             "pattern": "^bc_[a-z0-9-]+_out(_\\d+)?$",
-            "underscore_count": 2,
+            "max_underscore_count": 3,
+            "min_underscore_count": 2,
             "examples": [
                 "bc_lower-new_out",
                 "bc_lower-new_out_1"
@@ -108,7 +118,8 @@
             "type": "string",
             "description": "Excess Precipitation (Meteorological) Boundary Condition",
             "pattern": "^/[A-Z0-9_-]+/[A-Z0-9_-]+/[A-Z0-9_-]+/[0-3]?[0-9][A-Z]{3}[0-9]{4}/[A-Z0-9_-]+/[A-Z0-9_-]+/$",
-            "underscore_count": null,
+            "max_underscore_count": null,
+            "min_underscore_count": null,
             "examples": [
                 "/MYRIVER/DAVIS/FLOW/18NOV2001/IR-DAY/CDEC_INCOMING/"
             ]
@@ -117,7 +128,8 @@
             "type": "string",
             "description": "Initial Condition Point Name",
             "pattern": "^IC_[a-z0-9-]+(_\\d+)?$",
-            "underscore_count": 1,
+            "max_underscore_count": 3,
+            "min_underscore_count": 2,
             "examples": [
                 "IC_homme-dam",
                 "IC_homme-dam_1"
@@ -127,7 +139,8 @@
             "type": "string",
             "description": "Dam: Storage Area/Two-Dimensional (SA/2D) Connection Names",
             "pattern": "^nid_[a-z]{2}\\d{5}(_s\\d{3})?$",
-            "underscore_count": 1,
+            "max_underscore_count": 2,
+            "min_underscore_count": 1,
             "examples": [
                 "nid_tx05966",
                 "nid_mn00584_s002"
@@ -137,7 +150,8 @@
             "type": "string",
             "description": "Levee: Storage Area/Two-Dimensional (SA/2D) Connection Names",
             "pattern": "^nld_\\d{10}(_\\d+)?$",
-            "underscore_count": 1,
+            "max_underscore_count": 2,
+            "min_underscore_count": 1,
             "examples": [
                 "nld_3005000153",
                 "nld_505000356_2"
@@ -147,7 +161,8 @@
             "type": "string",
             "description": "Other Connection: Storage Area/Two-Dimensional (SA/2D) Connection Names",
             "pattern": "^conn_\\d+_[a-z0-9-]+$",
-            "underscore_count": 2,
+            "max_underscore_count": 2,
+            "min_underscore_count": 2,
             "examples": [
                 "conn_1_bridge",
                 "conn_4_rr-embank",
@@ -159,7 +174,8 @@
             "type": "string",
             "description": "Observed Data Gage",
             "pattern": "^gage_[a-z]+_\\d{7,10}(_[a-z0-9-]+)?$",
-            "underscore_count": 2,
+            "max_underscore_count": 3,
+            "min_underscore_count": 2,
             "examples": [
                 "gage_usgs_12105900_gr-at-auburn",
                 "gage_usgs_12105900",
@@ -170,7 +186,8 @@
             "type": "string",
             "description": "Hydrologic Model Elements",
             "pattern": "^[a-z0-9-+]+(_[a-z0-9]+)?(_s\\d{3}|_r\\d{3}|_j\\d{3})?$",
-            "underscore_count": 1,
+            "max_underscore_count": 2,
+            "min_underscore_count": 0,
             "examples": [
                 "s-grn-50",
                 "white-rock-ck_s040",
@@ -189,7 +206,8 @@
             "type": "string",
             "description": "Levee Reference Points",
             "pattern": "^nld_(us|ms|ds|br-hw|br-tw)_\\d{10}(_\\d+)?$",
-            "underscore_count": 2,
+            "max_underscore_count": 3,
+            "min_underscore_count": 2,
             "examples": [
                 "nld_us_3005000153",
                 "nld_ms_3005000153",
@@ -203,7 +221,8 @@
             "type": "string",
             "description": "Other Reference Points",
             "pattern": "^ref-pt_[a-z0-9-]+$",
-            "underscore_count": 1,
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
             "examples": [
                 "ref-pt_sunrise-bridge"
             ]
@@ -212,7 +231,8 @@
             "type": "string",
             "description": "Outflow Linking Locations",
             "pattern": "^[a-z0-9-]+_to_[a-z0-9-]+$",
-            "underscore_count": 2,
+            "max_underscore_count": 2,
+            "min_underscore_count": 2,
             "examples": [
                 "mount-creek_to_lower-new"
             ]
