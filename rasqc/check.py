@@ -27,6 +27,6 @@ def check(ras_model: str | PathLike | RasModel, check_suite: str | CheckSuite) -
     if ras_model.endswith(".json"):
         with open(ras_model) as f:
             stac_item = json.load(f)
-        return check_suite.run_checks(stac_item["assets"])
+        return check_suite.run_checks(stac_item)
 
     return check_suite.run_checks(ras_model)
