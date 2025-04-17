@@ -82,7 +82,12 @@ class CheckSuite:
         """
         if result.message:
             message = _bold_single_quotes(result.message)
-        console.print(f"[{result.filename}] - {check.name}: ", end="")
+        if result.element:
+            console.print(
+                f"[{result.filename}] ({result.element}) - {result.name}: ", end=""
+            )
+        else:
+            console.print(f"[{result.filename}] - {result.name}: ", end="")
         if result.result == ResultStatus.ERROR:
             console.print("ERROR", style="bold red")
             console.print(f"    {message}", highlight=False, style="gray50")

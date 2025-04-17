@@ -65,6 +65,13 @@ class GeomHdfDatetime(RasqcChecker):
         """Check if the HDF file datetime aligns with the Geometry file datetime."""
         geom_file_last_updated = geom_file.last_updated()
         ghdf = geom_file.hdf
+        if not ghdf:
+            return RasqcResult(
+                name=self.name,
+                filename=Path(geom_file.path).name,
+                result=ResultStatus.ERROR,
+                message="Geometry HDF file not found.",
+            )
         ghdf_attrs = ghdf.get_geom_attrs()
         ghdf_datetime = ghdf_attrs.get("Geometry Time")
         if geom_file_last_updated > ghdf_datetime:
@@ -149,6 +156,13 @@ class PlanHdfDatetime(RasqcChecker):
         """Check if the Plan HDF datetime aligns with the Geometry file datetime."""
         geom_file = plan_file.geom_file
         ghdf = geom_file.hdf
+        if not ghdf:
+            return RasqcResult(
+                name=self.name,
+                filename=Path(plan_file._hdf_path).name,
+                result=ResultStatus.ERROR,
+                message="Geometry HDF file not found.",
+            )
         ghdf_attrs = ghdf.get_geom_attrs()
         ghdf_datetime = ghdf_attrs.get("Geometry Time")
 
