@@ -5,7 +5,11 @@ from rasqc.checksuite import CheckSuite, StacCheckSuite
 from typing import Dict, List
 
 # Dictionary of available check suites
-CHECKSUITES: Dict[str, "CheckSuite"] = {"ffrd": CheckSuite(), "stac_ffrd": StacCheckSuite()}
+CHECKSUITES: Dict[str, "CheckSuite"] = {
+    "ffrd": CheckSuite(),
+    "ras_stac_ffrd": StacCheckSuite(),
+    "hms_stac_ffrd": StacCheckSuite(),
+}
 
 
 def register_check(suite_names: List[str], dependencies: List[str] = []):

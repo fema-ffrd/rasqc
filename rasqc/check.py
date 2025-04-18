@@ -1,6 +1,6 @@
 """Module for primary check function."""
 
-from typing import List
+from typing import List, Dict
 from os import PathLike
 import json
 
@@ -8,6 +8,13 @@ from .checksuite import CheckSuite
 from .rasmodel import RasModel
 from .result import RasqcResult
 from .registry import CHECKSUITES
+from .checkers.stac_naming import (
+    SinkElementPattern,
+    JunctionElementPattern,
+    SubbasinElementPattern,
+    ReservoirElementPattern,
+    ReachElementPattern,
+)
 
 
 def check(ras_model: str | PathLike | RasModel, check_suite: str | CheckSuite) -> List[RasqcResult]:
@@ -30,3 +37,26 @@ def check(ras_model: str | PathLike | RasModel, check_suite: str | CheckSuite) -
         return check_suite.run_checks(stac_item)
 
     return check_suite.run_checks(ras_model)
+
+
+def asset_check(asset_map: Dict[str, str]) -> List[RasqcResult]:
+    """Loop through the asset map and check each GeoJSON asset."""
+    asset_results = []
+
+    for property_name, geojson_file in asset_map.items():
+        if property_name == "sink_element":
+            asset_checker = SinkElementPattern(geojson_file, property_name)
+        elif property_name == "junction_element":
+            asset_checker = JunctionElementPattern(geojson_file, property_name)
+        if property_name == "subbasin_element":
+            asset_checker = SubbasinElementPattern(geojson_file, property_name)
+        elif property_name == "reservoir_element":
+            asset_checker = ReservoirElementPattern(geojson_file, property_name)
+        elif property_name == "reach_element":
+            asset_checker = ReachElementPattern(geojson_file, property_name)
+        else:
+            continue
+
+        asset_results.extend(asset_checker.run())
+
+    return asset_results
