@@ -16,6 +16,9 @@ STABILITY_VARS = [
     "Water Surface",
     "Flow",
 ]
+STABILITY_VARS_POINT = [
+    "Water Surface",
+]
 UNSTABLE_THRESHOLD = 0.002  # 0.002 is the default for hydrostab
 
 
@@ -128,7 +131,7 @@ class RefpointStability(RasqcChecker):
         filename = os.path.basename(phdf._loc)
         results = []
         for id, name in zip(refpoint_ids, refpoint_names):
-            for var in STABILITY_VARS:
+            for var in STABILITY_VARS_POINT:
                 da_is_stable = ds_refpoint_stability[f"{var} is Stable"]
                 da_score = ds_refpoint_stability[f"{var} Stability Score"]
                 is_stable = da_is_stable.sel(refpt_id=id).all()
