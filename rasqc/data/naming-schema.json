@@ -127,9 +127,9 @@
         "initial_condition_point_name": {
             "type": "string",
             "description": "Initial Condition Point Name",
-            "pattern": "^IC_[a-z0-9-]+(_\\d+)?$",
-            "max_underscore_count": 3,
-            "min_underscore_count": 2,
+            "pattern": "^IC_[a-z-]+(_\\d+)?$",
+            "max_underscore_count": 2,
+            "min_underscore_count": 1,
             "examples": [
                 "IC_homme-dam",
                 "IC_homme-dam_1"

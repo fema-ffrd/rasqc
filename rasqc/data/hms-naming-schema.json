@@ -1,0 +1,138 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Naming Convention Schema for HEC-HMS model files, names, elements",
+    "version": "0.1.0",
+    "description": "This schema defines the naming conventions for various elements in the flood risk model.",
+    "type": "object",
+    "properties": {
+        "project_title": {
+            "type": "string",
+            "description": "Project name",
+            "pattern": "^[a-z0-9-]+(_\\d+)?$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 0,
+            "examples": [
+                "trinity",
+                "rock-river_1",
+                "rock-river_2"
+            ]
+        },
+        "basin_title": {
+            "type": "string",
+            "description": "Basin file name",
+            "pattern": "^[a-z0-9-]+_[a-z0-9-]+$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 0,
+            "examples": [
+                "big-horn_feb1997",
+                "trinity_por"
+            ]
+        },
+        "met_title": {
+            "type": "string",
+            "description": "Met file name",
+            "pattern": "^[a-z0-9-]+$",
+            "max_underscore_count": 0,
+            "min_underscore_count": 0,
+            "examples": [
+                "apr1997",
+                "por",
+                "sst"
+            ]
+        },
+        "control_title": {
+            "type": "string",
+            "description": "Control file name",
+            "pattern": "^[a-z0-9-]+$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 0,
+            "examples": [
+                "apr1997",
+                "por",
+                "sst"
+            ]
+        },
+        "run_title": {
+            "type": "string",
+            "description": "Run file name",
+            "pattern": "^[a-z0-9-]+$",
+            "max_underscore_count": 0,
+            "min_underscore_count": 0,
+            "examples": [
+                "trinity"
+            ]
+        },
+        "subbasin_element": {
+            "type": "string",
+            "description": "Subbassin element name",
+            "pattern": "^[a-z0-9-]+_s\\d{3}$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
+            "examples": [
+                "white-rock-ck_s040"
+            ]
+        },
+        "reach_element": {
+            "type": "string",
+            "description": "Reach element name",
+            "pattern": "^[a-z0-9-]+_r\\d{3}$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
+            "examples": [
+                "trinity-river_r070"
+            ]
+        },
+        "junction_element": {
+            "type": "string",
+            "description": "Junction element name",
+            "pattern": "^[a-z0-9+-]+_j\\d{3}$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 2,
+            "examples": [
+                "west-fork_j090",
+                "nid_tx05966+out_j010"
+            ]
+        },
+        "reservoir_element": {
+            "type": "string",
+            "description": "Reservoir element name",
+            "pattern": "^nid_[a-z]{2}\\d{5}(_s\\d{3})?$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 2,
+            "examples": [
+                "nid_tx05966",
+                "nid_mn00584_s002"
+            ]
+        },
+        "diversion_element": {
+            "type": "string",
+            "description": "Diversion element name",
+            "pattern": "^[a-z0-9-]+_d\\d{3}$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
+            "examples": [
+                "lost-creek-diversion_d001"
+            ]
+        },
+        "sink_element": {
+            "type": "string",
+            "description": "Sink element name",
+            "pattern": "^[a-z0-9-]+$",
+            "max_underscore_count": 0,
+            "min_underscore_count": 0,
+            "examples": [
+                "trinity-bay"
+            ]
+        },
+        "source_element": {
+            "type": "string",
+            "description": "Source element name",
+            "pattern": "^source_[a-z0-9-]+$",
+            "max_underscore_count": 1,
+            "min_underscore_count": 1,
+            "examples": [
+                "source_trinity-bay"
+            ]
+        }
+    }
+}
