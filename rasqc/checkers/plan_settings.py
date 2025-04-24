@@ -76,6 +76,6 @@ class EquationSet2D(RasqcChecker):
         results = []
         for plan in ras_model.plans:
             if plan.hdf:
-                phdf_filename = Path(plan._hdf_path).name
+                phdf_filename = Path(plan.hdf_path).name
                 results.extend(self._check(plan.hdf, phdf_filename))
         return results

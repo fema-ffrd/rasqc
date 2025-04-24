@@ -91,5 +91,5 @@ class GeomProjection(RasqcChecker):
         for geom_file in ras_model.geometries:
             ghdf = geom_file.hdf
             if ghdf:
-                results.append(self._check(ghdf, Path(geom_file._hdf_path).name))
+                results.append(self._check(ghdf, Path(geom_file.hdf_path).name))
         return results
