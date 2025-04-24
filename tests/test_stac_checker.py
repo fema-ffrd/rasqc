@@ -27,4 +27,4 @@ def test_initial_condition_point_check():
     result = InitialConditionPointPattern().run(stac_item)
     assert isinstance(result, list)
     assert len(result) == 17
-    assert all(r.name == "Initial Condition Point name pattern" for r in result)
+    assert all(r.name == "Initial Condition Point name" for r in result)
