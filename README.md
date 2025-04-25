@@ -9,7 +9,7 @@ $ python -m venv venv-rasqc
 $ source ./venv-rasqc/bin/activate
 ```
 ```
-(venv-rasqc) $ pip install -r requirements.txt
+(venv-rasqc) $ pip install ".[dev]"
 ```
 To run:
 ```

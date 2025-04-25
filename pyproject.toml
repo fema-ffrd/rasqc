@@ -12,8 +12,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-version = "0.0.1"
-dependencies = ["rashdf", "hydrostab", "fsspec", "rich", "networkx", "jsonschema"]
+version = "0.0.2"
+dependencies = ["rashdf", "hydrostab", "fsspec", "rich", "networkx", "jsonschema", "obstore==0.6.0"]
 
 [project.optional-dependencies]
 dev = ["pre-commit", "ruff", "pytest", "pytest-cov"]

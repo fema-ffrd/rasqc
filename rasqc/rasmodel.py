@@ -1,20 +1,32 @@
 """HEC-RAS model file and model classes."""
 
-import fsspec
-from rashdf import RasHdf, RasGeomHdf, RasPlanHdf
+import obstore
+from rashdf import RasGeomHdf, RasPlanHdf
 
 from datetime import datetime
 import os
 from pathlib import Path
 import re
-from typing import Optional
+from typing import List, Optional
 
 
-def _get_fsspec_protocol(fs: fsspec.AbstractFileSystem) -> str:
-    """Get the protocol of the fsspec file system."""
-    if isinstance(fs.protocol, (list, tuple)):
-        return fs.protocol[0]
-    return fs.protocol
+def _obstore_file_exists(
+    store: obstore.store.ObjectStore, path: str | os.PathLike
+) -> bool:
+    if path is None:
+        return False
+    try:
+        store.head(str(path))
+        return True
+    except FileNotFoundError:
+        return False
+
+
+def _get_hdf_path(path: Path) -> Optional[Path]:
+    """Get the HDF path for a given file path."""
+    if path.suffix == ".prj":
+        return None
+    return Path(f"{path}.hdf")
 
 
 class RasModelFile:
@@ -28,10 +40,12 @@ class RasModelFile:
     hdf_path: Path to the associated HDF file, if applicable.
     """
 
-    fs: fsspec.AbstractFileSystem
+    local: bool
+    store: Optional[obstore.store.ObjectStore] = None
+    hdf_path: Optional[Path] = None
 
     def __init__(
-        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
+        self, path: str | os.PathLike, store: Optional[obstore.store.ObjectStore] = None
     ):
         """Instantiate a RasModelFile object by the file path.
 
@@ -39,24 +53,36 @@ class RasModelFile:
         ----------
         path : str | os.Pathlike
             The absolute path to the RAS file.
-        fs : fsspec.AbstractFileSystem, optional
-            The fsspec file system object. If not provided, it will be created based on the path.
+        store : obstore.store.ObjectStore, optional
+            The obstore file system object. If not provided, it will be created based on the path.
         """
-        if fs:
-            self.fs = fs
+        # local file
+        if not store and os.path.exists(path):
+            self.local = True
+            self.store = None
+            self.filename = os.path.basename(path)
             self.path = Path(path)
+            self.hdf_path = _get_hdf_path(self.path)
+            self.content = open(path, "r").read()
+
+        # remote file
         else:
-            self.fs, _, fs_paths = fsspec.get_fs_token_paths(str(path))
-            self.path = Path(fs_paths[0])
-        protocol = _get_fsspec_protocol(self.fs)
-        fsspec_path = f"{protocol}://{self.path}"
-        with self.fs.open(fsspec_path, "r") as f:
-            self.content = f.read()
-        self.hdf_path = (
-            None
-            if self.path.suffix == ".prj"
-            else self.path.with_suffix(self.path.suffix + ".hdf")
-        )
+            self.local = False
+            if store:
+                self.store = store
+            else:
+                prefix = os.path.dirname(path)
+                self.store = obstore.store.from_url(prefix)
+            self.filename = os.path.basename(path)
+            self.path = Path(self.filename)
+            self.hdf_path = _get_hdf_path(self.path)
+            self.content = (
+                obstore.open_reader(self.store, self.filename)
+                .readall()
+                .to_bytes()
+                .decode("utf-8")
+                .replace("\r\n", "\n")  # normalize line endings
+            )
 
     @property
     def title(self):
@@ -71,13 +97,27 @@ class RasModelFile:
         return title
 
 
-def _get_hdf(
-    path: str | os.PathLike, fs: fsspec.AbstractFileSystem
-) -> Optional[RasHdf]:
-    """Given a Plan or Geometry path, return the corresponding HDF object."""
-    hdf_path = f"{path}.hdf"
-    if fs.exists(hdf_path):
-        return RasHdf.open_uri(hdf_path)
+def _obstore_protocol_url(
+    store: obstore.store.ObjectStore, path: str | os.PathLike
+) -> str:
+    match store:
+        case obstore.store.S3Store():
+            bucket = store.config["bucket"]
+            return "s3", f"s3://{bucket}/{store.prefix}/{path}"
+        case obstore.store.GCSStore():
+            bucket = store.config["bucket"]
+            return "gs", f"gs://{bucket}/{store.prefix}/{path}"
+        case obstore.store.AzureStore():
+            container_name = store.config["container_name"]
+            return "az", f"az://{container_name}/{store.prefix}/{path}"
+        case obstore.store.HTTPStore():
+            return "https", f"{store.url}/{path}"
+        case obstore.store.LocalStore():
+            return "file", f"file://{store.prefix}/{path}"
+        case _:
+            raise ValueError(
+                f"Unsupported ObjectStore type: {type(store)}. Supported types are S3, GCS, Azure, HTTP, and Local."
+            )
 
 
 class GeomFile(RasModelFile):
@@ -87,7 +127,7 @@ class GeomFile(RasModelFile):
     hdf: Optional[RasGeomHdf] = None
 
     def __init__(
-        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
+        self, path: str | os.PathLike, store: Optional[obstore.store.ObjectStore] = None
     ):
         """Instantiate a GeomFile object by the file path.
 
@@ -95,14 +135,21 @@ class GeomFile(RasModelFile):
         ----------
         path : str | os.Pathlike
             The absolute path to the RAS geometry file.
-        fs : fsspec.AbstractFileSystem, optional
-            The fsspec file system object. If not provided, it will be created based on the path.
+        store : obstore.store.ObjectStore, optional
+            The obstore file system object. If not provided, it will be created based on the path.
         """
-        super().__init__(path, fs)
-        protocol = _get_fsspec_protocol(self.fs)
-        self._hdf_path = f"{protocol}://{self.path}.hdf"
-        if self.fs.exists(self._hdf_path):
-            self.hdf = RasGeomHdf.open_uri(self._hdf_path)
+        super().__init__(path, store)
+        if store and _obstore_file_exists(self.store, self.hdf_path):
+            _, url = _obstore_protocol_url(self.store, self.hdf_path)
+            self.hdf = RasGeomHdf.open_uri(
+                url,
+                fsspec_kwargs={
+                    "default_cache_type": "blockcache",
+                    "default_block_size": 10**5,
+                },
+            )
+        elif os.path.exists(self.hdf_path):
+            self.hdf = RasGeomHdf(self.hdf_path)
 
     def last_updated(self) -> datetime:
         """Get the last updated date of the file.
@@ -111,9 +158,10 @@ class GeomFile(RasModelFile):
         -------
             str: The last updated date of the file.
         """
-        matches = re.findall(r"(?m).*Time\s*=\s*(.+)$", self.content)
+        matches: List[str] = re.findall(r"(?m).*Time\s*=\s*(.+)$", self.content)
         datetimes = []
         for m in matches:
+            m = m.strip()
             try:
                 dt = datetime.strptime(m, "%b/%d/%Y %H:%M:%S")
                 datetimes.append(dt)
@@ -142,7 +190,7 @@ class PlanFile(RasModelFile):
     hdf: Optional[RasPlanHdf] = None
 
     def __init__(
-        self, path: str | os.PathLike, fs: Optional[fsspec.AbstractFileSystem] = None
+        self, path: str | os.PathLike, store: Optional[obstore.store.ObjectStore] = None
     ):
         """Instantiate a PlanFile object by the file path.
 
@@ -150,18 +198,25 @@ class PlanFile(RasModelFile):
         ----------
         path : str | os.Pathlike
             The absolute path to the RAS geometry file.
-        fs : fsspec.AbstractFileSystem, optional
-            The fsspec file system object. If not provided, it will be created based on the path.
+        store : obstore.store.ObjectStore, optional
+            The obstore file system object. If not provided, it will be created based on the path.
         """
-        super().__init__(path, fs)
-        protocol = _get_fsspec_protocol(self.fs)
-        self._hdf_path = f"{protocol}://{self.path}.hdf"
-        if self.fs.exists(self._hdf_path):
-            self.hdf = RasPlanHdf.open_uri(self._hdf_path)
+        super().__init__(path, store)
+        if store and _obstore_file_exists(self.store, self.hdf_path):
+            _, url = _obstore_protocol_url(self.store, self.hdf_path)
+            self.hdf = RasPlanHdf.open_uri(
+                url,
+                fsspec_kwargs={
+                    "default_cache_type": "blockcache",
+                    "default_block_size": 10**5,
+                },
+            )
+        elif os.path.exists(self.hdf_path):
+            self.hdf = RasPlanHdf(self.hdf_path)
 
     @property
-    def geom_file(self) -> GeomFile:
-        """Get the geometry file associated with the plan file.
+    def geom_file_ext(self) -> str:
+        """Get the geometry file extension associated with the plan file.
 
         Returns
         -------
@@ -169,10 +224,10 @@ class PlanFile(RasModelFile):
         """
         match = re.search(r"(?m)Geom File\s*=\s*(.+)$", self.content)
         geom_ext = match.group(1)
-        return GeomFile(self.path.with_suffix(f".{geom_ext}"), self.fs)
+        return geom_ext
 
     @property
-    def unsteady_flow_file(self) -> UnsteadyFlowFile:
+    def flow_file_ext(self) -> str:
         """Get the unsteady flow file associated with the plan file.
 
         Returns
@@ -181,7 +236,7 @@ class PlanFile(RasModelFile):
         """
         match = re.search(r"(?m)Flow File\s*=\s*(.+)$", self.content)
         flow_ext = match.group(1)
-        return UnsteadyFlowFile(self.path.with_suffix(f".{flow_ext}"), self.fs)
+        return flow_ext
 
     @property
     def short_id(self) -> str:
@@ -225,21 +280,19 @@ class RasModel:
         self.unsteady_flow_files = {}
         self.plan_files = {}
 
-        fs = self.prj_file.fs
-
         for suf in re.findall(r"(?m)Geom File\s*=\s*(.+)$", self.prj_file.content):
             self.geom_files[suf] = GeomFile(
-                self.prj_file.path.with_suffix("." + suf), fs
+                self.prj_file.path.with_suffix("." + suf), self.prj_file.store
             )
 
         for suf in re.findall(r"(?m)Unsteady File\s*=\s*(.+)$", self.prj_file.content):
             self.unsteady_flow_files[suf] = UnsteadyFlowFile(
-                self.prj_file.path.with_suffix("." + suf), fs
+                self.prj_file.path.with_suffix("." + suf), self.prj_file.store
             )
 
         for suf in re.findall(r"(?m)Plan File\s*=\s*(.+)$", self.prj_file.content):
             self.plan_files[suf] = PlanFile(
-                self.prj_file.path.with_suffix("." + suf), fs
+                self.prj_file.path.with_suffix("." + suf), self.prj_file.store
             )
 
         current_plan_ext = re.search(
@@ -265,8 +318,8 @@ class RasModel:
         -------
             GeomFile: The current geometry file.
         """
-        current_geom_ext = self.current_plan.geom_file.path.suffix
-        return self.geom_files[current_geom_ext[1:]]
+        current_geom_ext = self.current_plan.geom_file_ext
+        return self.geom_files[current_geom_ext]
 
     @property
     def current_unsteady(self) -> UnsteadyFlowFile:
@@ -276,8 +329,8 @@ class RasModel:
         -------
             UnsteadyFlowFile: The current unsteady flow file.
         """
-        current_unsteady_ext = self.current_plan.unsteady_flow_file.path.suffix
-        return self.unsteady_flow_files[current_unsteady_ext[1:]]
+        current_unsteady_ext = self.current_plan.flow_file_ext
+        return self.unsteady_flow_files[current_unsteady_ext]
 
     @property
     def geometries(self) -> list[GeomFile]:
