@@ -155,7 +155,7 @@ class GeomFile(RasModelFile):
         if store and _obstore_file_exists(self.store, self.hdf_path):
             _, url = _obstore_protocol_url(self.store, self.hdf_path)
             self.hdf = RasGeomHdf.open_uri(
-                url, fsspec_kwargs={"default_cache_type": "blockcache"}
+                url, fsspec_kwargs={"default_cache_type": "first"}
             )
         elif os.path.exists(self.hdf_path):
             self.hdf = RasGeomHdf(self.hdf_path)
@@ -214,7 +214,7 @@ class PlanFile(RasModelFile):
         if store and _obstore_file_exists(self.store, self.hdf_path):
             _, url = _obstore_protocol_url(self.store, self.hdf_path)
             self.hdf = RasPlanHdf.open_uri(
-                url, fsspec_kwargs={"default_cache_type": "blockcache"}
+                url, fsspec_kwargs={"default_cache_type": "first"}
             )
         elif os.path.exists(self.hdf_path):
             self.hdf = RasPlanHdf(self.hdf_path)
