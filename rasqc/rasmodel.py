@@ -156,7 +156,11 @@ class GeomFile(RasModelFile):
             _, url = _obstore_protocol_url(self.store, self.hdf_path)
             print(f"Opening HDF file: {url}")
             self.hdf = RasGeomHdf.open_uri(
-                url, fsspec_kwargs={"default_cache_type": "blockcache", "default_block_size": 10**5}
+                url,
+                fsspec_kwargs={
+                    "default_cache_type": "blockcache",
+                    "default_block_size": 10**5,
+                },
             )
         elif os.path.exists(self.hdf_path):
             self.hdf = RasGeomHdf(self.hdf_path)
@@ -216,7 +220,11 @@ class PlanFile(RasModelFile):
             _, url = _obstore_protocol_url(self.store, self.hdf_path)
             print(f"Opening HDF file: {url}")
             self.hdf = RasPlanHdf.open_uri(
-                url, fsspec_kwargs={"default_cache_type": "blockcache", "default_block_size": 10**5}
+                url,
+                fsspec_kwargs={
+                    "default_cache_type": "blockcache",
+                    "default_block_size": 10**5,
+                },
             )
         elif os.path.exists(self.hdf_path):
             self.hdf = RasPlanHdf(self.hdf_path)
