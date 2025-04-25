@@ -142,7 +142,6 @@ class GeomFile(RasModelFile):
         super().__init__(path, store)
         if store and _obstore_file_exists(self.store, self.hdf_path):
             _, url = _obstore_protocol_url(self.store, self.hdf_path)
-            print(f"Opening HDF file: {url}")
             self.hdf = RasGeomHdf.open_uri(
                 url,
                 fsspec_kwargs={
@@ -206,7 +205,6 @@ class PlanFile(RasModelFile):
         super().__init__(path, store)
         if store and _obstore_file_exists(self.store, self.hdf_path):
             _, url = _obstore_protocol_url(self.store, self.hdf_path)
-            print(f"Opening HDF file: {url}")
             self.hdf = RasPlanHdf.open_uri(
                 url,
                 fsspec_kwargs={
