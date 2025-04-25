@@ -100,16 +100,15 @@ class RasModelFile:
 def _obstore_protocol_url(
     store: obstore.store.ObjectStore, path: str | os.PathLike
 ) -> str:
-    config: dict = store.config
     match store:
         case obstore.store.S3Store():
-            bucket = config["bucket"]
+            bucket = store.config["bucket"]
             return "s3", f"s3://{bucket}/{store.prefix}/{path}"
         case obstore.store.GCSStore():
-            bucket = config["bucket"]
+            bucket = store.config["bucket"]
             return "gs", f"gs://{bucket}/{store.prefix}/{path}"
         case obstore.store.AzureStore():
-            container_name = config["container_name"]
+            container_name = store.config["container_name"]
             return "az", f"az://{container_name}/{store.prefix}/{path}"
         case obstore.store.HTTPStore():
             return "https", f"{store.url}/{path}"
