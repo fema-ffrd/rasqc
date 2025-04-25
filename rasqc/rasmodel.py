@@ -65,26 +65,14 @@ class RasModelFile:
             self.hdf_path = _get_hdf_path(self.path)
             self.content = open(path, "r").read()
 
-        # remote file, with store provided
-        elif store:
-            self.local = False
-            self.store = store
-            self.filename = os.path.basename(path)
-            self.path = Path(self.filename)
-            self.hdf_path = _get_hdf_path(self.path)
-            self.content = (
-                obstore.open_reader(self.store, self.filename)
-                .readall()
-                .to_bytes()
-                .decode("utf-8")
-                .replace("\r\n", "\n")
-            )
-
         # remote file
         else:
             self.local = False
-            prefix = os.path.dirname(path)
-            self.store = obstore.store.from_url(prefix)
+            if store:
+                self.store = store
+            else:
+                prefix = os.path.dirname(path)
+                self.store = obstore.store.from_url(prefix)
             self.filename = os.path.basename(path)
             self.path = Path(self.filename)
             self.hdf_path = _get_hdf_path(self.path)
@@ -93,7 +81,7 @@ class RasModelFile:
                 .readall()
                 .to_bytes()
                 .decode("utf-8")
-                .replace("\r\n", "\n")
+                .replace("\r\n", "\n") # normalize line endings
             )
 
     @property
