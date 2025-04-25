@@ -333,8 +333,8 @@ class RasModel:
         -------
             GeomFile: The current geometry file.
         """
-        current_geom_ext = self.current_plan.geom_file.path.suffix
-        return self.geom_files[current_geom_ext[1:]]
+        current_geom_ext = self.current_plan.geom_file_ext
+        return self.geom_files[current_geom_ext]
 
     @property
     def current_unsteady(self) -> UnsteadyFlowFile:
@@ -344,8 +344,8 @@ class RasModel:
         -------
             UnsteadyFlowFile: The current unsteady flow file.
         """
-        current_unsteady_ext = self.current_plan.unsteady_flow_file.path.suffix
-        return self.unsteady_flow_files[current_unsteady_ext[1:]]
+        current_unsteady_ext = self.current_plan.flow_file_ext
+        return self.unsteady_flow_files[current_unsteady_ext]
 
     @property
     def geometries(self) -> list[GeomFile]:
