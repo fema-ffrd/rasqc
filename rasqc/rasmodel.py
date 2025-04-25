@@ -81,7 +81,7 @@ class RasModelFile:
                 .readall()
                 .to_bytes()
                 .decode("utf-8")
-                .replace("\r\n", "\n") # normalize line endings
+                .replace("\r\n", "\n")  # normalize line endings
             )
 
     @property
