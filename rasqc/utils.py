@@ -1,12 +1,14 @@
 """Utility functions."""
 
-from rasqc.result import RasqcResult, ResultStatus
-from collections import defaultdict
-import pandas as pd
 import json
+from collections import defaultdict
+
+import pandas as pd
+
+from rasqc.result import RasqcResult, ResultStatus
 
 
-def results_to_json(results: list[RasqcResult], json_fn: str) -> dict:
+def summarize_results(results: list[RasqcResult]) -> dict:
     """Create a json from a list of RasqcResults."""
 
     summary = {"passed": defaultdict(lambda: defaultdict(list)), "failed": defaultdict(lambda: defaultdict(list))}
@@ -30,21 +32,24 @@ def results_to_json(results: list[RasqcResult], json_fn: str) -> dict:
 
         summary[group][check_name][filename].append(value)
 
-    total_results = {
+    return {
         "passed": {k: dict(v) for k, v in summary["passed"].items()},
         "failed": {k: dict(v) for k, v in summary["failed"].items()},
     }
 
-    with open(json_fn, "w") as f:
-        json.dump(total_results, f, indent=2)
+
+def results_to_json(results: dict, output_path: str) -> None:
+    """Create a json from a list of RasqcResults."""
+    with open(output_path, "w") as f:
+        json.dump(results, f, indent=2)
 
 
-def write_json_results_to_excel(json_results: dict, output_path: str):
+def results_to_excel(results: dict, output_path: str) -> None:
     """Creates an excel from a json of RasqcResults. Creates 2 excel sheets for passed and failed."""
 
     def flatten(group_name):
         rows = []
-        for pattern, files in json_results.get(group_name, {}).items():
+        for pattern, files in results.get(group_name, {}).items():
             for file, props in files.items():
                 for prop in props:
                     rows.append({"Pattern Name": pattern, "File Name": file, "RAS Property Name": prop})
