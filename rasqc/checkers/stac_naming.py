@@ -73,7 +73,9 @@ class StacChecker(RasqcChecker):
         schema = get_schema(self.schema_property, self.check_type)
         try:
             validate(value, schema)
-            return RasqcResult(name=self.name, filename=filename, result=ResultStatus.OK, message=value)
+            return RasqcResult(
+                name=self.name, filename=filename, result=ResultStatus.OK, message=value
+            )
         except ValidationError:
             return RasqcResult(
                 name=self.name,
@@ -89,7 +91,9 @@ class StacChecker(RasqcChecker):
         results = []
         assets = stac_item.get("assets", {})
         for asset_name, asset_props in assets.items():
-            normalized_props = {key.split(":", 1)[-1]: val for key, val in asset_props.items()}
+            normalized_props = {
+                key.split(":", 1)[-1]: val for key, val in asset_props.items()
+            }
             if self.schema_property in normalized_props:
                 values = normalized_props[self.schema_property]
                 if not isinstance(values, list):
@@ -111,10 +115,14 @@ class MultiSchemaChecker(StacChecker):
         assets = stac_item.get("assets", {})
 
         # Load schemas to try for each value
-        candidate_schemas = [get_schema(key, self.check_type) for key in self.valid_schema_keys]
+        candidate_schemas = [
+            get_schema(key, self.check_type) for key in self.valid_schema_keys
+        ]
 
         for asset_name, asset_props in assets.items():
-            normalized_props = {key.split(":", 1)[-1]: val for key, val in asset_props.items()}
+            normalized_props = {
+                key.split(":", 1)[-1]: val for key, val in asset_props.items()
+            }
             if self.schema_property not in normalized_props:
                 continue
 
@@ -137,7 +145,12 @@ class MultiSchemaChecker(StacChecker):
 
                 if matched:
                     results.append(
-                        RasqcResult(name=self.name, filename=asset_name, result=ResultStatus.OK, message=val)
+                        RasqcResult(
+                            name=self.name,
+                            filename=asset_name,
+                            result=ResultStatus.OK,
+                            message=val,
+                        )
                     )
                 else:
                     results.append(
@@ -146,7 +159,9 @@ class MultiSchemaChecker(StacChecker):
                             filename=asset_name,
                             result=ResultStatus.ERROR,
                             message=f"'{val}' does not match any of the expected patterns.",
-                            pattern=" | ".join(s.get("pattern", "") for s in candidate_schemas),
+                            pattern=" | ".join(
+                                s.get("pattern", "") for s in candidate_schemas
+                            ),
                             examples=[s.get("examples") for s in candidate_schemas],
                         )
                     )
@@ -175,7 +190,9 @@ class AssetChecker(StacChecker):
                 feature_name = feature.get("properties", {}).get("name", "")
                 if feature_name:
                     feature_name = feature_name.strip()
-                    results.append(self._check_property(feature_name, Path(self.geojson_file).name))
+                    results.append(
+                        self._check_property(feature_name, Path(self.geojson_file).name)
+                    )
         return results
 
 
@@ -331,15 +348,21 @@ class BoundaryConditionPattern(MultiSchemaChecker):
     """Checker for boundary_locations — must match one of the allowed BC schemas."""
 
     name = "Boundary Condition"
-    criteria = "Each boundary condition must match at least one valid naming convention."
+    criteria = (
+        "Each boundary condition must match at least one valid naming convention."
+    )
     schema_property = "boundary_locations"
-    valid_schema_keys = ["inflow_bc_from_ras", "outflow_bc_to_ras", "internal_bc_from_hms", "outflow_bc"]
+    valid_schema_keys = [
+        "inflow_bc_from_ras",
+        "outflow_bc_to_ras",
+        "internal_bc_from_hms",
+        "outflow_bc",
+    ]
     check_type = "ras"
 
 
 @register_check(["hms_stac_ffrd"])
 class ProjectTitlePattern(StacChecker):
-
     name = "Project Title."
     criteria = ""
     schema_property = "project_title"
@@ -348,7 +371,6 @@ class ProjectTitlePattern(StacChecker):
 
 @register_check(["hms_stac_ffrd"])
 class BasinTitlePattern(StacChecker):
-
     name = "Basin Title."
     criteria = ""
     schema_property = "basin_title"
@@ -357,7 +379,6 @@ class BasinTitlePattern(StacChecker):
 
 @register_check(["hms_stac_ffrd"])
 class MetTitlePattern(StacChecker):
-
     name = "Met Title."
     criteria = ""
     schema_property = "met_title"
@@ -366,7 +387,6 @@ class MetTitlePattern(StacChecker):
 
 @register_check(["hms_stac_ffrd"])
 class ControlTitlePattern(StacChecker):
-
     name = "Control Title."
     criteria = ""
     schema_property = "control_title"
@@ -375,7 +395,6 @@ class ControlTitlePattern(StacChecker):
 
 @register_check(["hms_stac_ffrd"])
 class RunTitlePattern(StacChecker):
-
     name = "Run Title."
     criteria = ""
     schema_property = "run_title"

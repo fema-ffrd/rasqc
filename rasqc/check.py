@@ -17,7 +17,9 @@ from .checkers.stac_naming import (
 )
 
 
-def check(ras_model: str | PathLike | RasModel, check_suite: str | CheckSuite) -> List[RasqcResult]:
+def check(
+    ras_model: str | PathLike | RasModel, check_suite: str | CheckSuite
+) -> List[RasqcResult]:
     """Run all checks on the provided HEC-RAS model.
 
     Parameters
@@ -28,7 +30,6 @@ def check(ras_model: str | PathLike | RasModel, check_suite: str | CheckSuite) -
     -------
         List[RasqcResult]: List of results from all checks.
     """
-
     if isinstance(check_suite, str):
         check_suite: CheckSuite = CHECKSUITES[check_suite]
     if ras_model.endswith(".json"):

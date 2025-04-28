@@ -8,8 +8,10 @@ import json
 
 def results_to_json(results: list[RasqcResult], json_fn: str) -> dict:
     """Create a json from a list of RasqcResults."""
-
-    summary = {"passed": defaultdict(lambda: defaultdict(list)), "failed": defaultdict(lambda: defaultdict(list))}
+    summary = {
+        "passed": defaultdict(lambda: defaultdict(list)),
+        "failed": defaultdict(lambda: defaultdict(list)),
+    }
 
     for result in results:
         group = "passed" if result.result == ResultStatus.OK else "failed"
@@ -47,7 +49,13 @@ def write_json_results_to_excel(json_results: dict, output_path: str):
         for pattern, files in json_results.get(group_name, {}).items():
             for file, props in files.items():
                 for prop in props:
-                    rows.append({"Pattern Name": pattern, "File Name": file, "RAS Property Name": prop})
+                    rows.append(
+                        {
+                            "Pattern Name": pattern,
+                            "File Name": file,
+                            "RAS Property Name": prop,
+                        }
+                    )
         return pd.DataFrame(rows)
 
     passed_df = flatten("passed")

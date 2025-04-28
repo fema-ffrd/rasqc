@@ -130,7 +130,9 @@ class CheckSuite:
                     style="gray50",
                 )
 
-    def run_checks_console(self, ras_model: str | os.PathLike | RasModel) -> List[RasqcResult]:
+    def run_checks_console(
+        self, ras_model: str | os.PathLike | RasModel
+    ) -> List[RasqcResult]:
         """Run all checks in the suite and print results to the console.
 
         Parameters
