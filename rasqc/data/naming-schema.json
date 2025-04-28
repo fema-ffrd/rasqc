@@ -117,7 +117,7 @@
         "precip_bc": {
             "type": "string",
             "description": "Excess Precipitation (Meteorological) Boundary Condition",
-            "pattern": "^/[A-Z0-9_-]+/[A-Z0-9_-]+/[A-Z0-9_-]+/[0-3]?[0-9][A-Z]{3}[0-9]{4}/[A-Z0-9_-]+/[A-Z0-9_-]+/$",
+            "pattern": "^/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/[0-3]?[0-9][a-zA-Z]{3}[0-9]{4}/[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+/$",
             "max_underscore_count": null,
             "min_underscore_count": null,
             "examples": [
@@ -127,7 +127,7 @@
         "initial_condition_point_name": {
             "type": "string",
             "description": "Initial Condition Point Name",
-            "pattern": "^IC_[a-z-]+(_\\d+)?$",
+            "pattern": "^IC_[a-z0-9-]+(_\\d+)?$",
             "max_underscore_count": 2,
             "min_underscore_count": 1,
             "examples": [
