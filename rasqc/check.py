@@ -21,9 +21,7 @@ from .registry import CHECKSUITES
 from .result import RasqcResult
 
 
-def check(
-    ras_model: str | PathLike | Item, check_suite: str | CheckSuite
-) -> List[RasqcResult]:
+def check(ras_model: str | PathLike | Item, check_suite: str | CheckSuite) -> List[RasqcResult]:
     """Run all checks on the provided HEC-RAS model.
 
     Parameters
@@ -49,7 +47,14 @@ def check(
 
 
 def asset_check(asset_map: Dict[str, str]) -> List[RasqcResult]:
-    """Loop through the asset map and check each GeoJSON asset."""
+    """Loop through the asset map and check each GeoJSON asset.
+
+    Example asset map:
+
+    ASSET_MAP = {"junction_element": "path/to/junction.geojson",
+                 "subbasin_element": "path/to/subbasin.geojson"}
+
+    """
     asset_results = []
 
     for property_name, geojson_file in asset_map.items():
