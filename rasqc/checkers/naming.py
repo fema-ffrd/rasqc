@@ -26,7 +26,6 @@ from typing import List
 
 def read_schema(schema_url: str) -> dict:
     """Load external schema from given url."""
-    print("loading")
     with urllib.request.urlopen(schema_url) as response:
         return json.load(response)
 
