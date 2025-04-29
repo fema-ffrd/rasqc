@@ -1,10 +1,13 @@
 """Naming convention checkers for FFRD HEC-RAS STAC Items."""
 
 import urllib.request
+
 from ..base_checker import RasqcChecker
 from ..registry import register_check
 from ..rasmodel import RasModel, RasModelFile
 from ..result import RasqcResult, ResultStatus
+from .naming import load_schema
+from ..constants import RAS_SCHEMA_URL, HMS_SCHEMA_URL
 
 from jsonschema import validate, ValidationError
 from geopandas import GeoDataFrame
@@ -13,7 +16,6 @@ from rashdf.utils import convert_ras_hdf_string
 from datetime import date
 import importlib.resources
 import json
-import urllib
 from typing import List
 from pathlib import Path
 
@@ -21,40 +23,21 @@ from typing import Dict, List, Any
 
 
 #### LOAD SCHEMA LOCALLY #####
-# def _load_schema() -> dict:
+# def load_schema() -> dict:
 #     """Load the JSON schema for naming conventions."""
 #     with importlib.resources.path("rasqc.data", "naming-schema.json") as path:
 #         with open(path) as f:
 #             return json.load(f)
 
 
-# SCHEMA_URL = "https://raw.githubusercontent.com/fema-ffrd/ffrd-conventions/main/hec-ras/json-schema/schema.json"
-
-
-# def _load_schema() -> dict:
-#     with urllib.request.urlopen(SCHEMA_URL) as response:
-#         return json.load(response)
-
-
-# NAMING_SCHEMA = _load_schema()
-
-
-# def _get_schema(property_name: str) -> dict:
-#     """Get a property from the naming schema."""
-#     return NAMING_SCHEMA["properties"][property_name]
-
-
 def load_schema_for_check(check_type: str) -> dict:
     """Load the schema based on the check type."""
     if check_type == "hms":
         # Load the HMS-specific schema
-        with importlib.resources.path("rasqc.data", "hms-naming-schema.json") as path:
-            with open(path) as f:
-                return json.load(f)
-    # Default schema loading logic
-    with importlib.resources.path("rasqc.data", "naming-schema.json") as path:
-        with open(path) as f:
-            return json.load(f)
+        return load_schema(HMS_SCHEMA_URL)
+    else:
+        # Default to RAS schema loading logic
+        return load_schema(RAS_SCHEMA_URL)
 
 
 def get_schema(property_name: str, check_type: str) -> dict:
@@ -73,9 +56,7 @@ class StacChecker(RasqcChecker):
         schema = get_schema(self.schema_property, self.check_type)
         try:
             validate(value, schema)
-            return RasqcResult(
-                name=self.name, filename=filename, result=ResultStatus.OK, message=value
-            )
+            return RasqcResult(name=self.name, filename=filename, result=ResultStatus.OK, message=value)
         except ValidationError:
             return RasqcResult(
                 name=self.name,
@@ -91,9 +72,7 @@ class StacChecker(RasqcChecker):
         results = []
         assets = stac_item.get("assets", {})
         for asset_name, asset_props in assets.items():
-            normalized_props = {
-                key.split(":", 1)[-1]: val for key, val in asset_props.items()
-            }
+            normalized_props = {key.split(":", 1)[-1]: val for key, val in asset_props.items()}
             if self.schema_property in normalized_props:
                 values = normalized_props[self.schema_property]
                 if not isinstance(values, list):
@@ -115,14 +94,10 @@ class MultiSchemaChecker(StacChecker):
         assets = stac_item.get("assets", {})
 
         # Load schemas to try for each value
-        candidate_schemas = [
-            get_schema(key, self.check_type) for key in self.valid_schema_keys
-        ]
+        candidate_schemas = [get_schema(key, self.check_type) for key in self.valid_schema_keys]
 
         for asset_name, asset_props in assets.items():
-            normalized_props = {
-                key.split(":", 1)[-1]: val for key, val in asset_props.items()
-            }
+            normalized_props = {key.split(":", 1)[-1]: val for key, val in asset_props.items()}
             if self.schema_property not in normalized_props:
                 continue
 
@@ -159,9 +134,7 @@ class MultiSchemaChecker(StacChecker):
                             filename=asset_name,
                             result=ResultStatus.ERROR,
                             message=f"'{val}' does not match any of the expected patterns.",
-                            pattern=" | ".join(
-                                s.get("pattern", "") for s in candidate_schemas
-                            ),
+                            pattern=" | ".join(s.get("pattern", "") for s in candidate_schemas),
                             examples=[s.get("examples") for s in candidate_schemas],
                         )
                     )
@@ -190,9 +163,7 @@ class AssetChecker(StacChecker):
                 feature_name = feature.get("properties", {}).get("name", "")
                 if feature_name:
                     feature_name = feature_name.strip()
-                    results.append(
-                        self._check_property(feature_name, Path(self.geojson_file).name)
-                    )
+                    results.append(self._check_property(feature_name, Path(self.geojson_file).name))
         return results
 
 
@@ -210,7 +181,7 @@ class PrjFilenamePattern(StacChecker):
 
     def run(self, stac_item: Dict[str, Any]) -> List[RasqcResult]:
         results = []
-
+        print(stac_item)
         props = stac_item.get("properties", {})  # check item level properties
 
         if self.schema_property in props:
@@ -348,9 +319,7 @@ class BoundaryConditionPattern(MultiSchemaChecker):
     """Checker for boundary_locations — must match one of the allowed BC schemas."""
 
     name = "Boundary Condition"
-    criteria = (
-        "Each boundary condition must match at least one valid naming convention."
-    )
+    criteria = "Each boundary condition must match at least one valid naming convention."
     schema_property = "boundary_locations"
     valid_schema_keys = [
         "inflow_bc_from_ras",
