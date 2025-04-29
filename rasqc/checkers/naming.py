@@ -4,6 +4,7 @@ from ..base_checker import RasqcChecker
 from ..registry import register_check
 from ..rasmodel import RasModel, RasModelFile
 from ..result import RasqcResult, ResultStatus
+from ..constants import RAS_SCHEMA_URL
 
 from jsonschema import validate, ValidationError
 from geopandas import GeoDataFrame
@@ -11,18 +12,17 @@ from rashdf.utils import convert_ras_hdf_string
 
 from datetime import date
 import importlib.resources
+import urllib
 import json
 from typing import List
 
 
-def _load_schema() -> dict:
-    """Load the JSON schema for naming conventions."""
-    with importlib.resources.path("rasqc.data", "naming-schema.json") as path:
-        with open(path) as f:
-            return json.load(f)
+def load_schema(schema_url: str) -> dict:
+    with urllib.request.urlopen(schema_url) as response:
+        return json.load(response)
 
 
-NAMING_SCHEMA = _load_schema()
+NAMING_SCHEMA = load_schema(RAS_SCHEMA_URL)
 
 
 def _get_schema(property_name: str) -> dict:
@@ -41,9 +41,7 @@ class JsonSchemaChecker(RasqcChecker):
         schema = _get_schema(self.schema_property)
         try:
             validate(s, schema)
-            return RasqcResult(
-                name=self.name, filename=filename, result=ResultStatus.OK
-            )
+            return RasqcResult(name=self.name, filename=filename, result=ResultStatus.OK)
         except ValidationError:
             if "description" in schema:
                 err_msg = f"'{s}': {schema['description']}"
@@ -287,12 +285,7 @@ class D2FlowArea(JsonSchemaChecker):
         results = []
         for geom in ras_model.geometries:
             if geom.hdf:
-                results.extend(
-                    [
-                        self._check(m, geom.hdf_path.name)
-                        for m in geom.hdf.mesh_area_names()
-                    ]
-                )
+                results.extend([self._check(m, geom.hdf_path.name) for m in geom.hdf.mesh_area_names()])
         return results
 
 
@@ -372,8 +365,7 @@ class PrecipBoundaryConditionPattern(JsonSchemaChecker):
 
     name = "Precip Boundary Condition name pattern"
     criteria = (
-        "Precip Boundary Condition names should follow naming conventions"
-        " for precipitation boundary conditions."
+        "Precip Boundary Condition names should follow naming conventions" " for precipitation boundary conditions."
     )
     schema_property = "precip_bc"
 
@@ -412,10 +404,7 @@ class InitialConditionPointPattern(JsonSchemaChecker):
     """Checker for initial condition point naming conventions."""
 
     name = "Initial Condition Point name pattern"
-    criteria = (
-        "Initial Condition Point names should follow naming conventions"
-        " for initial condition points."
-    )
+    criteria = "Initial Condition Point names should follow naming conventions" " for initial condition points."
     schema_property = "initial_condition_point_name"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -450,9 +439,7 @@ class SA2DConnectionPattern(MultiJsonSchemaChecker):
     """Checker for SA/2D Connection naming conventions."""
 
     name = "SA/2D Connection name pattern"
-    criteria = (
-        "SA/2D Connection names should follow naming conventions for SA/2D Connections."
-    )
+    criteria = "SA/2D Connection names should follow naming conventions for SA/2D Connections."
     schema_properties = [
         "dam_connection",
         "levee_connection",
@@ -486,10 +473,7 @@ class ReferenceLinePattern(MultiJsonSchemaChecker):
     """Checker for reference line naming conventions."""
 
     name = "Reference line name pattern"
-    criteria = (
-        "Reference Line names should follow gage or hydro model"
-        " reference line naming conventions."
-    )
+    criteria = "Reference Line names should follow gage or hydro model" " reference line naming conventions."
     schema_properties = [
         "ref_line_gage",
         "ref_line_hydro_model",
@@ -521,10 +505,7 @@ class ReferencePointPattern(MultiJsonSchemaChecker):
     """Checker for reference point naming conventions."""
 
     name = "Reference point name pattern"
-    criteria = (
-        "Reference Point names should follow levee or 'other'"
-        " reference point naming conventions."
-    )
+    criteria = "Reference Point names should follow levee or 'other'" " reference point naming conventions."
     schema_properties = [
         "ref_point_levee",
         "ref_point_other",
@@ -612,9 +593,7 @@ class GeometryTitleMatchesProject(RasqcChecker):
                 result=ResultStatus.ERROR,
                 message=err_msg,
             )
-        return RasqcResult(
-            name=self.name, filename=geom_file.path.name, result=ResultStatus.OK
-        )
+        return RasqcResult(name=self.name, filename=geom_file.path.name, result=ResultStatus.OK)
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
         """Check if the geometry file title follows the naming convention.
@@ -627,9 +606,7 @@ class GeometryTitleMatchesProject(RasqcChecker):
         -------
             RasqcResult: The result of the check.
         """
-        results = [
-            self._check(ras_model.prj_file.path.name, g) for g in ras_model.geometries
-        ]
+        results = [self._check(ras_model.prj_file.path.name, g) for g in ras_model.geometries]
         return results
 
 
