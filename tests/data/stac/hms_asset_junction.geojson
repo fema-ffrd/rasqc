@@ -1,0 +1,102 @@
+{
+    "type": "FeatureCollection",
+    "name": "Junction",
+    "crs": {
+        "type": "name",
+        "properties": {
+            "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+        }
+    },
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "HUC_012_J_0",
+                "Last Modified Date": "16 July 2021",
+                "Last Modified Time": "17:15:12"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -109.817538092096328,
+                    44.613872776673247
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "HUC_012_J_1",
+                "Last Modified Date": "16 July 2021",
+                "Last Modified Time": "17:15:12"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -109.874553554045974,
+                    44.618711434830971
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "HUC_012_J_2",
+                "Last Modified Date": "16 July 2021",
+                "Last Modified Time": "17:15:12"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -109.873691419717346,
+                    44.610779814543811
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "HUC_012_J_137",
+                "Last Modified Date": "16 July 2021",
+                "Last Modified Time": "17:15:12"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -109.282696091108463,
+                    44.530272348255991
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "HUC_012_J_138",
+                "Last Modified Date": "16 July 2021",
+                "Last Modified Time": "17:15:12"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -109.260746092683448,
+                    44.493787310521739
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "HUC_012_J_139",
+                "Last Modified Date": "16 July 2021",
+                "Last Modified Time": "17:15:12"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -109.205775320508096,
+                    44.490433455944078
+                ]
+            }
+        }
+    ]
+}
