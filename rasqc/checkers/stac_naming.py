@@ -56,7 +56,9 @@ class StacChecker(RasqcChecker):
         schema = get_schema(self.schema_property, self.check_type)
         try:
             validate(value, schema)
-            return RasqcResult(name=self.name, filename=filename, result=ResultStatus.OK, message=value)
+            return RasqcResult(
+                name=self.name, filename=filename, result=ResultStatus.OK, message=value
+            )
         except ValidationError:
             return RasqcResult(
                 name=self.name,
@@ -72,7 +74,9 @@ class StacChecker(RasqcChecker):
         results = []
         assets = stac_item.get("assets", {})
         for asset_name, asset_props in assets.items():
-            normalized_props = {key.split(":", 1)[-1]: val for key, val in asset_props.items()}
+            normalized_props = {
+                key.split(":", 1)[-1]: val for key, val in asset_props.items()
+            }
             if self.schema_property in normalized_props:
                 values = normalized_props[self.schema_property]
                 if not isinstance(values, list):
@@ -94,10 +98,14 @@ class MultiSchemaChecker(StacChecker):
         assets = stac_item.get("assets", {})
 
         # Load schemas to try for each value
-        candidate_schemas = [get_schema(key, self.check_type) for key in self.valid_schema_keys]
+        candidate_schemas = [
+            get_schema(key, self.check_type) for key in self.valid_schema_keys
+        ]
 
         for asset_name, asset_props in assets.items():
-            normalized_props = {key.split(":", 1)[-1]: val for key, val in asset_props.items()}
+            normalized_props = {
+                key.split(":", 1)[-1]: val for key, val in asset_props.items()
+            }
             if self.schema_property not in normalized_props:
                 continue
 
@@ -134,7 +142,9 @@ class MultiSchemaChecker(StacChecker):
                             filename=asset_name,
                             result=ResultStatus.ERROR,
                             message=f"'{val}' does not match any of the expected patterns.",
-                            pattern=" | ".join(s.get("pattern", "") for s in candidate_schemas),
+                            pattern=" | ".join(
+                                s.get("pattern", "") for s in candidate_schemas
+                            ),
                             examples=[s.get("examples") for s in candidate_schemas],
                         )
                     )
@@ -163,7 +173,9 @@ class AssetChecker(StacChecker):
                 feature_name = feature.get("properties", {}).get("name", "")
                 if feature_name:
                     feature_name = feature_name.strip()
-                    results.append(self._check_property(feature_name, Path(self.geojson_file).name))
+                    results.append(
+                        self._check_property(feature_name, Path(self.geojson_file).name)
+                    )
         return results
 
 
@@ -220,9 +232,7 @@ class UnsteadyFlowTitlePattern(StacChecker):
     """Checker for unsteady flow file title naming conventions."""
 
     name = "Unsteady Flow title"
-    criteria = (
-        "Unsteady Flow file title should follow the pattern 'event-name' where the event name is lowercase and hyphens."
-    )
+    criteria = "Unsteady Flow file title should follow the pattern 'event-name' where the event name is lowercase and hyphens."
     schema_property = "unsteady_flow_title"
     check_type = "ras"
 
@@ -344,9 +354,7 @@ class BasinTitlePattern(StacChecker):
 @register_check(["hms_stac_ffrd"])
 class MetTitlePattern(StacChecker):
     name = "Met Title."
-    criteria = (
-        "Met title should follow the pattern 'event-name' where the event name is all lowercase letters and hyphens."
-    )
+    criteria = "Met title should follow the pattern 'event-name' where the event name is all lowercase letters and hyphens."
     schema_property = "met_title"
     check_type = "hms"
 
@@ -362,9 +370,7 @@ class ControlTitlePattern(StacChecker):
 @register_check(["hms_stac_ffrd"])
 class RunTitlePattern(StacChecker):
     name = "Run Title."
-    criteria = (
-        "Run title should follow the pattern 'basin-name' where the basin name is all lowercase letters and hyphens."
-    )
+    criteria = "Run title should follow the pattern 'basin-name' where the basin name is all lowercase letters and hyphens."
     schema_property = "run_title"
     check_type = "hms"
 

@@ -1,5 +1,9 @@
 import pytest
-from rasqc.checkers.stac_naming import InitialConditionPointPattern, PrjFilenamePattern, BasinTitlePattern
+from rasqc.checkers.stac_naming import (
+    InitialConditionPointPattern,
+    PrjFilenamePattern,
+    BasinTitlePattern,
+)
 from rasqc.result import ResultStatus
 import json
 from pathlib import Path
