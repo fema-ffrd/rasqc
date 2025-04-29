@@ -47,7 +47,7 @@ def results_to_json(results: dict, output_path: str) -> None:
 
 
 def results_to_excel(results: dict, output_path: str) -> None:
-    """Creates an excel from a json of RasqcResults. Creates 2 excel sheets for passed and failed."""
+    """Create an excel from a json of RasqcResults. Creates 2 excel sheets for passed and failed."""
 
     def flatten(group_name):
         rows = []
