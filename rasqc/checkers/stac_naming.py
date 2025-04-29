@@ -1,20 +1,12 @@
 """Naming convention checkers for FFRD HEC-RAS STAC Items."""
 
-import urllib.request
-
 from ..base_checker import RasqcChecker
 from ..registry import register_check
-from ..rasmodel import RasModel, RasModelFile
 from ..result import RasqcResult, ResultStatus
-from .naming import load_schema
-from ..constants import RAS_SCHEMA_URL, HMS_SCHEMA_URL
+from .naming import load_hms_schema, load_ras_schema, get_schema_property
 
 from jsonschema import validate, ValidationError
-from geopandas import GeoDataFrame
-from rashdf.utils import convert_ras_hdf_string
 
-from datetime import date
-import importlib.resources
 import json
 from typing import List
 from pathlib import Path
@@ -22,40 +14,22 @@ from pathlib import Path
 from typing import Dict, List, Any
 
 
-#### LOAD SCHEMA LOCALLY #####
-# def load_schema() -> dict:
-#     """Load the JSON schema for naming conventions."""
-#     with importlib.resources.path("rasqc.data", "naming-schema.json") as path:
-#         with open(path) as f:
-#             return json.load(f)
-
-
-def load_schema_for_check(check_type: str) -> dict:
-    """Load the schema based on the check type."""
-    if check_type == "hms":
-        # Load the HMS-specific schema
-        return load_schema(HMS_SCHEMA_URL)
-    else:
-        # Default to RAS schema loading logic
-        return load_schema(RAS_SCHEMA_URL)
-
-
-def get_schema(property_name: str, check_type: str) -> dict:
-    """Get a property from the loaded naming schema."""
-    schema = load_schema_for_check(check_type)
-    return schema["properties"][property_name]
-
-
 class StacChecker(RasqcChecker):
     """Base class for checking STAC asset fields against JSON schema."""
 
     schema_property: str
-    check_type: str = "ras"  # Default schema type
+    check_type: str
+
+    def __init__(self):
+        if self.check_type == "hms":
+            self.schema = load_hms_schema()
+        else:
+            self.schema = load_ras_schema()
 
     def _check_property(self, value: Any, filename: str) -> RasqcResult:
-        schema = get_schema(self.schema_property, self.check_type)
+        property_schema = get_schema_property(self.schema, self.schema_property)
         try:
-            validate(value, schema)
+            validate(value, property_schema)
             return RasqcResult(
                 name=self.name, filename=filename, result=ResultStatus.OK, message=value
             )
@@ -64,9 +38,9 @@ class StacChecker(RasqcChecker):
                 name=self.name,
                 filename=filename,
                 result=ResultStatus.ERROR,
-                message=f"'{value}': {schema.get('description', self.criteria)}",
-                pattern=schema.get("pattern"),
-                examples=schema.get("examples"),
+                message=f"'{value}': {property_schema.get('description', self.criteria)}",
+                pattern=property_schema.get("pattern"),
+                examples=property_schema.get("examples"),
             )
 
     def run(self, stac_item: Dict[str, Any]) -> List[RasqcResult]:
@@ -92,6 +66,13 @@ class MultiSchemaChecker(StacChecker):
     """Checker for properties where each value must match one of multiple schema keys."""
 
     valid_schema_keys: List[str] = []
+    check_type: str
+
+    def __init__(self):
+        if self.check_type == "hms":
+            self.schema = load_hms_schema()
+        else:
+            self.schema = load_ras_schema()
 
     def run(self, stac_item: Dict[str, Any]) -> List[RasqcResult]:
         """Run the check on one stac property against multiple possible schemas."""
@@ -100,7 +81,7 @@ class MultiSchemaChecker(StacChecker):
 
         # Load schemas to try for each value
         candidate_schemas = [
-            get_schema(key, self.check_type) for key in self.valid_schema_keys
+            get_schema_property(self.schema, key) for key in self.valid_schema_keys
         ]
 
         for asset_name, asset_props in assets.items():
@@ -157,13 +138,16 @@ class AssetChecker(StacChecker):
 
     def __init__(self, geojson_file: str, property_name: str, check_type: str = "hms"):
         self.geojson_file = geojson_file
-        self.schema_property = property_name
+        self.property = property_name
         self.check_type = check_type
 
         self.name = self.__class__.name
         self.criteria = self.__class__.criteria
-
-        self.schema = get_schema(property_name, check_type)
+        if self.check_type == "hms":
+            self.schema = load_hms_schema()
+        else:
+            self.schema = load_ras_schema()
+        self.property_schema = get_schema_property(self.schema, self.property)
 
     def run(self) -> List[RasqcResult]:
         """Run the check on each feature in the GeoJSON file."""
