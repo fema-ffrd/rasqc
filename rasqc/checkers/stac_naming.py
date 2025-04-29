@@ -173,7 +173,7 @@ class PrjFilenamePattern(StacChecker):
 
     name = "Project filename pattern"
     criteria = (
-        "Project filename should follow the pattern 'subbasin-name.prj',"
+        "Project filename should follow the pattern 'subbasin-name',"
         " where the subbasin name is all lowercase letters and hyphens."
     )
     schema_property = "project_file_name"
@@ -181,7 +181,6 @@ class PrjFilenamePattern(StacChecker):
 
     def run(self, stac_item: Dict[str, Any]) -> List[RasqcResult]:
         results = []
-        print(stac_item)
         props = stac_item.get("properties", {})  # check item level properties
 
         if self.schema_property in props:
@@ -198,11 +197,7 @@ class PlanTitleChecker(StacChecker):
     """Checker for plan name pattern."""
 
     name = "Plan title"
-    criteria = (
-        "Plan file title should follow the naming convention "
-        "'hydra-event-type:YYYY-MM-DD', where 'hydra-event-type'"  # double check
-        " is a lowercase description "
-    )
+    criteria = "Plan file title should follow the naming convention 'event-type_event-name' where event type and event name are lowercase and hyphens."
     schema_property = "plan_title"
     check_type = "ras"
 
@@ -213,8 +208,8 @@ class GeometryTitlePattern(StacChecker):
 
     name = "Geometry title"
     criteria = (
-        "Geometry file title should follow the pattern 'subbasin-name',"
-        "where the subbasin name is all lowercase letters and hyphens."
+        "Geometry file title should follow the pattern 'model-unit',"
+        "where the model unit is all lowercase letters and hyphens."
     )
     schema_property = "geometry_title"
     check_type = "ras"
@@ -225,7 +220,9 @@ class UnsteadyFlowTitlePattern(StacChecker):
     """Checker for unsteady flow file title naming conventions."""
 
     name = "Unsteady Flow title"
-    criteria = "Unsteady Flow file title should follow the pattern 'YYYY-MM-DD'."  # double check
+    criteria = (
+        "Unsteady Flow file title should follow the pattern 'event-name' where the event name is lowercase and hyphens."
+    )
     schema_property = "unsteady_flow_title"
     check_type = "ras"
 
@@ -235,11 +232,7 @@ class PlanShortIdPattern(StacChecker):
     """Checker for plan file short ID naming conventions."""
 
     name = "Plan short ID"
-    criteria = (
-        "Plan file short ID should follow the naming convention "
-        "'hydra-event-type:YYYY-MM-DD', where 'hydra-event-type'"  # double check
-        " is a lowercase description "
-    )
+    criteria = "Plan file short ID should be identical to the Plan name. "
     schema_property = "plan_short_id"
     check_type = "ras"
 
@@ -249,11 +242,7 @@ class TerrainNamePattern(StacChecker):
     """Checker for terrain file naming conventions."""
 
     name = "Terrain name"
-    criteria = (
-        "Terrain file name should follow the naming convention "
-        "'subbasin-name[_1]', where '[_1]' is an optional suffix "
-        " for multiple terrain files in the same geometry."
-    )
+    criteria = "Terrain file name should follow the naming convention 'model-unit_'terrain'_resolution[_'merged']' where the model unit is lowercase and hyphens."
     schema_property = "terrain_name"
     check_type = "ras"
 
@@ -265,7 +254,7 @@ class D2FlowArea(StacChecker):
     name = "2D Flow Area"
     criteria = (
         "2D Flow Area names should follow the naming convention "
-        "'subbasin-name[_1]', where '[_1]' is an optional suffix "
+        "'model-unit[_integer]', where '[_integer]' is an optional suffix "
         " for multiple 2D Flow Areas in the same geometry."
     )
     schema_property = "2d_flow_element"
@@ -287,7 +276,7 @@ class InitialConditionPointPattern(StacChecker):
     """Checker for initial condition point naming conventions."""
 
     name = "Initial Condition Point name"
-    criteria = "Initial Condition Point names should follow naming conventions for initial condition points."
+    criteria = "Initial Condition Point names should follow naming convention ''ic'_reservoir-name[_integer]' where the reservoir name is lowercase and hyphens."
     schema_property = "initial_condition_point_name"
     check_type = "ras"
 
@@ -297,7 +286,7 @@ class RefLinePattern(MultiSchemaChecker):
     """Checker for ref_lines values."""
 
     name = "Reference Line"
-    criteria = "Each reference line must match a known ref_line pattern."
+    criteria = "Each reference line must match either the ref_line_gage or ref_line_hydro_model naming convention."
     schema_property = "ref_lines"
     valid_schema_keys = ["ref_line_gage", "ref_line_hydro_model"]
     check_type = "ras"
@@ -308,7 +297,7 @@ class RefPointPattern(MultiSchemaChecker):
     """Checker for ref_points values."""
 
     name = "Reference Point"
-    criteria = "Each reference point must match a known ref_point pattern."
+    criteria = "Each reference point must match either the ref_point_levee or ref_point_other naming convention."
     schema_property = "ref_points"
     valid_schema_keys = ["ref_point_levee", "ref_point_other"]
     check_type = "ras"
@@ -319,7 +308,7 @@ class BoundaryConditionPattern(MultiSchemaChecker):
     """Checker for boundary_locations — must match one of the allowed BC schemas."""
 
     name = "Boundary Condition"
-    criteria = "Each boundary condition must match at least one valid naming convention."
+    criteria = "Each boundary condition must match either the inflow_bc_from_ras, outflow_bc_to_ras, internal_bc_from_hms, or outflow_bc naming convention."
     schema_property = "boundary_locations"
     valid_schema_keys = [
         "inflow_bc_from_ras",
@@ -333,7 +322,10 @@ class BoundaryConditionPattern(MultiSchemaChecker):
 @register_check(["hms_stac_ffrd"])
 class ProjectTitlePattern(StacChecker):
     name = "Project Title."
-    criteria = ""
+    criteria = (
+        "Project title should follow the pattern 'basin-name [_integer]'"
+        "where the subbasin name is all lowercase letters and hyphens."
+    )
     schema_property = "project_title"
     check_type = "hms"
 
@@ -341,7 +333,10 @@ class ProjectTitlePattern(StacChecker):
 @register_check(["hms_stac_ffrd"])
 class BasinTitlePattern(StacChecker):
     name = "Basin Title."
-    criteria = ""
+    criteria = (
+        "Basin title should follow the pattern 'basin-name_event-name'"
+        "where the basin and event names are all lowercase letters and hyphens."
+    )
     schema_property = "basin_title"
     check_type = "hms"
 
@@ -349,7 +344,9 @@ class BasinTitlePattern(StacChecker):
 @register_check(["hms_stac_ffrd"])
 class MetTitlePattern(StacChecker):
     name = "Met Title."
-    criteria = ""
+    criteria = (
+        "Met title should follow the pattern 'event-name' where the event name is all lowercase letters and hyphens."
+    )
     schema_property = "met_title"
     check_type = "hms"
 
@@ -357,7 +354,7 @@ class MetTitlePattern(StacChecker):
 @register_check(["hms_stac_ffrd"])
 class ControlTitlePattern(StacChecker):
     name = "Control Title."
-    criteria = ""
+    criteria = "Control title should follow the pattern 'event-name' where the event name is all lowercase letters and hyphens."
     schema_property = "control_title"
     check_type = "hms"
 
@@ -365,7 +362,9 @@ class ControlTitlePattern(StacChecker):
 @register_check(["hms_stac_ffrd"])
 class RunTitlePattern(StacChecker):
     name = "Run Title."
-    criteria = ""
+    criteria = (
+        "Run title should follow the pattern 'basin-name' where the basin name is all lowercase letters and hyphens."
+    )
     schema_property = "run_title"
     check_type = "hms"
 
@@ -374,7 +373,7 @@ class SinkElementPattern(AssetChecker):
     """Checker for validating sink element names in GeoJSON files."""
 
     name = "Sink Element"
-    criteria = "Sink element names should follow the defined pattern."
+    criteria = "Sink elements should follow the pattern 'reference-name' where the reference name is all lowercase letters and hyphens."
     schema_property = "sink_element"
     check_type = "hms"
 
@@ -383,7 +382,7 @@ class JunctionElementPattern(AssetChecker):
     """Checker for validating junction element names in GeoJSON files."""
 
     name = "Junction Element"
-    criteria = "Junction element names should follow the defined pattern."
+    criteria = "Junction elements should follow the pattern 'reference-name[+ reference-name]_'j'unique-id' where the reference name is all lowercase letters and hyphens."
     schema_property = "junction_element"
     check_type = "hms"
 
@@ -392,7 +391,7 @@ class ReservoirElementPattern(AssetChecker):
     """Checker for validating reservoir element names in GeoJSON files."""
 
     name = "Reservoir Element"
-    criteria = "Reservoir element names should follow the defined pattern."
+    criteria = "Reservoir elements should follow the pattern ''nid'_nid-id[_other-structure-id]'."
     schema_property = "reservoir_element"
     check_type = "hms"
 
@@ -401,7 +400,7 @@ class ReachElementPattern(AssetChecker):
     """Checker for validating reach element names in GeoJSON files."""
 
     name = "Reach Element"
-    criteria = "Reach element names should follow the defined pattern."
+    criteria = "Reach elements should follow the pattern 'reference-name_'r'unique-id' where the reference name is all lowercase letters and hyphens."
     schema_property = "reach_element"
     check_type = "hms"
 
@@ -410,6 +409,6 @@ class SubbasinElementPattern(AssetChecker):
     """Checker for validating subbasin element names in GeoJSON files."""
 
     name = "Subbasin Element"
-    criteria = "Subbasin element names should follow the defined pattern."
+    criteria = "Subbasin elements should follow the pattern 'reference-name_'s'unique-id' where the reference name is all lowercase letters and hyphens."
     schema_property = "subbasin_element"
     check_type = "hms"
