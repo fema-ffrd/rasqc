@@ -64,6 +64,7 @@ class RasqcResult:
     result: ResultStatus
     name: str
     filename: str
+    element: Optional[str] | Optional[List[str]] = None
     message: Optional[str] = None
     pattern: Optional[str] | Optional[List[str]] = None
     examples: Optional[str] = None

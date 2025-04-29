@@ -65,6 +65,13 @@ class GeomHdfDatetime(RasqcChecker):
         """Check if the HDF file datetime aligns with the Geometry file datetime."""
         geom_file_last_updated = geom_file.last_updated()
         ghdf = geom_file.hdf
+        if not ghdf:
+            return RasqcResult(
+                name=self.name,
+                filename=Path(geom_file.path).name,
+                result=ResultStatus.ERROR,
+                message="Geometry HDF file not found.",
+            )
         ghdf_attrs = ghdf.get_geom_attrs()
         ghdf_datetime = ghdf_attrs.get("Geometry Time")
         if geom_file_last_updated > ghdf_datetime:
@@ -145,10 +152,25 @@ class PlanHdfDatetime(RasqcChecker):
         "Plan HDF file datetime should be newer than the Geometry HDF file datetime."
     )
 
-    def _check(self, plan_file: PlanFile) -> RasqcResult:
+    def _check(self, ras_model: RasModel, plan_file: PlanFile) -> RasqcResult:
         """Check if the Plan HDF datetime aligns with the Geometry file datetime."""
-        geom_file = plan_file.geom_file
+        geom_file_ext = plan_file.geom_file_ext
+        geom_file = ras_model.geom_files.get(geom_file_ext)
+        if not geom_file:
+            return RasqcResult(
+                name=self.name,
+                filename=Path(plan_file.hdf_path).name,
+                result=ResultStatus.ERROR,
+                message=f"Geometry file '{geom_file_ext}' not found.",
+            )
         ghdf = geom_file.hdf
+        if not ghdf:
+            return RasqcResult(
+                name=self.name,
+                filename=Path(plan_file.hdf_path).name,
+                result=ResultStatus.ERROR,
+                message="Geometry HDF file not found.",
+            )
         ghdf_attrs = ghdf.get_geom_attrs()
         ghdf_datetime = ghdf_attrs.get("Geometry Time")
 
@@ -156,7 +178,7 @@ class PlanHdfDatetime(RasqcChecker):
         if not phdf:
             return RasqcResult(
                 name=self.name,
-                filename=Path(plan_file._hdf_path).name,
+                filename=Path(plan_file.hdf_path).name,
                 result=ResultStatus.ERROR,
                 message="Plan HDF file not found.",
             )
@@ -169,18 +191,18 @@ class PlanHdfDatetime(RasqcChecker):
                 err_msg = f"'{plan_file.path.name}': {self.criteria} ({run_time_start} > {ghdf_datetime})"
                 return RasqcResult(
                     name=self.name,
-                    filename=Path(plan_file._hdf_path).name,
+                    filename=Path(plan_file.hdf_path).name,
                     result=ResultStatus.ERROR,
                     message=err_msg,
                 )
             return RasqcResult(
                 name=self.name,
-                filename=Path(plan_file._hdf_path).name,
+                filename=Path(plan_file.hdf_path).name,
                 result=ResultStatus.OK,
             )
         return RasqcResult(
             name=self.name,
-            filename=Path(plan_file._hdf_path).name,
+            filename=Path(plan_file.hdf_path).name,
             result=ResultStatus.ERROR,
             message="Run Time Window not found in HDF file.",
         )
@@ -196,4 +218,4 @@ class PlanHdfDatetime(RasqcChecker):
         -------
             RasqcResult: The result of the check.
         """
-        return [self._check(plan_file) for plan_file in ras_model.plans]
+        return [self._check(ras_model, plan_file) for plan_file in ras_model.plans]
