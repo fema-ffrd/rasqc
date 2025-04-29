@@ -21,7 +21,9 @@ from .registry import CHECKSUITES
 from .result import RasqcResult
 
 
-def check(ras_model: str | PathLike | Item, check_suite: str | CheckSuite) -> List[RasqcResult]:
+def check(
+    ras_model: str | PathLike | Item, check_suite: str | CheckSuite
+) -> List[RasqcResult]:
     """Run all checks on the provided HEC-RAS model.
 
     Parameters
