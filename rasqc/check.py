@@ -55,13 +55,14 @@ def asset_check(asset_map: Dict[str, str]) -> List[RasqcResult]:
             asset_checker = SinkElementPattern(geojson_file, property_name)
         elif property_name == "junction_element":
             asset_checker = JunctionElementPattern(geojson_file, property_name)
-        if property_name == "subbasin_element":
+        elif property_name == "subbasin_element":
             asset_checker = SubbasinElementPattern(geojson_file, property_name)
         elif property_name == "reservoir_element":
             asset_checker = ReservoirElementPattern(geojson_file, property_name)
         elif property_name == "reach_element":
             asset_checker = ReachElementPattern(geojson_file, property_name)
         else:
+            print(f"Property name: {property_name} not a valid property.")
             continue
 
         asset_results.extend(asset_checker.run())
