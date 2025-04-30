@@ -129,7 +129,11 @@ class MultiSchemaChecker(StacChecker):
                             pattern=" | ".join(
                                 s.get("pattern", "") for s in candidate_schemas
                             ),
-                            examples=[s.get("examples") for s in candidate_schemas],
+                            examples=[
+                                ex
+                                for s in candidate_schemas
+                                for ex in s.get("examples", [])
+                            ],
                         )
                     )
         return results
