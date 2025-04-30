@@ -20,15 +20,8 @@ def summarize_results(results: list[RasqcResult]) -> dict:
         check_name = result.name
         filename = result.filename
 
-        if result.message and isinstance(result.message, str):
-            if result.message.startswith("'") and "':" in result.message:
-                value = result.message.split("':")[0].strip("'")
-            elif result.message.startswith("'") and result.message.endswith(
-                "does not match any of the expected patterns."
-            ):
-                value = result.message.strip("'").rsplit("'", 1)[0]
-            else:
-                value = result.message.strip()
+        if result.element and isinstance(result.element, str):
+            value = result.element
         else:
             value = "N/A"
 
