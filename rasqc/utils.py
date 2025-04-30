@@ -16,7 +16,10 @@ def summarize_results(results: list[RasqcResult]) -> dict:
     }
 
     for result in results:
-        group = "passed" if result.result == ResultStatus.OK else "failed"
+        if result.result == ResultStatus.OK or result.result == ResultStatus.WARNING:
+            group = "passed"
+        else:
+            group = "failed"
         check_name = result.name
         filename = result.filename
 
