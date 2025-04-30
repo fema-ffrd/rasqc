@@ -15,14 +15,15 @@ from .checkers.stac_naming import (
 )
 from .checksuite import CheckSuite
 
-# from .rasmodel import RasModel
+from .rasmodel import RasModel
+
 # TODO: Lets discuss RasModel in this lib
 from .registry import CHECKSUITES
 from .result import RasqcResult
 
 
 def check(
-    ras_model: str | PathLike | Item, check_suite: str | CheckSuite
+    ras_model: str | PathLike | RasModel | Item, check_suite: str | CheckSuite
 ) -> List[RasqcResult]:
     """Run all checks on the provided HEC-RAS model.
 
