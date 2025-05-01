@@ -8,10 +8,10 @@ import networkx as nx
 from rich.console import Console
 from rich.markup import escape
 
-from collections import defaultdict
+import json
 import os
 import re
-from typing import Dict, List
+from typing import Dict, List, Any
 
 
 def _bold_single_quotes(text: str) -> str:
@@ -184,5 +184,52 @@ class CheckSuite:
             if type(result) is list:
                 results.extend(result)
             else:
+                results.append(result)
+        return results
+
+
+class StacCheckSuite(CheckSuite):
+    """CheckSuite for running checks against STAC item asset properties."""
+
+    def run_checks(self, stac_item: Dict[str, Dict[str, Any]]) -> List[RasqcResult]:
+        """Run all checks directly on STAC assets."""
+        results = []
+        ordered_checks = self.get_execution_order()
+        for check_name in ordered_checks:
+            check = self.checks[check_name]
+            result = check.run(stac_item)
+            if isinstance(result, list):
+                results.extend(result)
+            else:
+                results.append(result)
+        return results
+
+    def run_checks_console(self, item_path: str | os.PathLike) -> List[RasqcResult]:
+        """Run all checks in the suite and print results to the console.
+
+        Parameters
+        ----------
+            item_path: Path to the HEC stac item to check.
+
+        Returns
+        -------
+            List[RasqcResult]: The results of all checks.
+        """
+        if item_path.endswith(".json"):
+            with open(item_path) as f:
+                stac_item = json.load(f)
+
+        results = []
+        console = Console()
+        ordered_checks = self.get_execution_order()
+        for check_name in ordered_checks:
+            check = self.checks[check_name]
+            result = check.run(stac_item)
+            if isinstance(result, list):
+                for r in result:
+                    self._print_result(console, check, r)
+                    results.append(r)
+            else:
+                self._print_result(console, check, result)
                 results.append(result)
         return results

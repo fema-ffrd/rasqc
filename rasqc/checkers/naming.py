@@ -4,41 +4,52 @@ from ..base_checker import RasqcChecker
 from ..registry import register_check
 from ..rasmodel import RasModel, RasModelFile
 from ..result import RasqcResult, ResultStatus
+from ..constants import RAS_SCHEMA_URL, HMS_SCHEMA_URL
 
 from jsonschema import validate, ValidationError
 from geopandas import GeoDataFrame
 from rashdf.utils import convert_ras_hdf_string
+from functools import lru_cache
 
 from datetime import date
-import importlib.resources
+import urllib
 import json
 from typing import List
 
 
-def _load_schema() -> dict:
-    """Load the JSON schema for naming conventions."""
-    with importlib.resources.path("rasqc.data", "naming-schema.json") as path:
-        with open(path) as f:
-            return json.load(f)
+def read_schema(schema_url: str) -> dict:
+    """Load external schema from given url."""
+    with urllib.request.urlopen(schema_url) as response:
+        return json.load(response)
 
 
-NAMING_SCHEMA = _load_schema()
+@lru_cache
+def load_ras_schema():
+    """Load schema for HEC-RAS."""
+    return read_schema(RAS_SCHEMA_URL)
 
 
-def _get_schema(property_name: str) -> dict:
+@lru_cache
+def load_hms_schema():
+    """Load schema for HEC-HMS."""
+    return read_schema(HMS_SCHEMA_URL)
+
+
+def get_schema_property(naming_schema: dict, property_name: str) -> dict:
     """Get a property from the naming schema."""
-    return NAMING_SCHEMA["properties"][property_name]
+    return naming_schema["properties"][property_name]
 
 
 class JsonSchemaChecker(RasqcChecker):
     """Base class for JSON schema checks."""
 
+    naming_schema = load_ras_schema()
     schema_property: str
     criteria: str
 
     def _check(self, s: str, filename: str) -> RasqcResult:
         """Run the check."""
-        schema = _get_schema(self.schema_property)
+        schema = get_schema_property(self.naming_schema, self.schema_property)
         try:
             validate(s, schema)
             return RasqcResult(
@@ -62,6 +73,7 @@ class JsonSchemaChecker(RasqcChecker):
 class MultiJsonSchemaChecker(JsonSchemaChecker):
     """Base class for multiple JSON schema checks."""
 
+    naming_schema = load_ras_schema()
     schema_properties: List[str]
     criteria: str
 
@@ -70,7 +82,7 @@ class MultiJsonSchemaChecker(JsonSchemaChecker):
         patterns = []
         examples = []
         for prop in self.schema_properties:
-            schema = _get_schema(prop)
+            schema = get_schema_property(self.naming_schema, prop)
             pattern = schema.get("pattern")
             patterns.append(pattern)
             examples.extend(schema.get("examples", []))
