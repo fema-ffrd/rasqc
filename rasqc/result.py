@@ -56,8 +56,11 @@ class RasqcResult:
         result: The status of the check (OK, WARNING, ERROR).
         name: The name of the check.
         filename: The filename of the checked file.
+        element: Optional identifier for the specific element checked.
         message: Optional message providing details about the check result.
         pattern: Optional regular expression related to the check.
+        pattern_description: Optional human-readable description of the pattern.
+        examples: Optional string or list of strings containing valid examples related to the check.
         gdf: Optional GeoDataFrame containing spatial data related to the check.
     """
 
@@ -67,5 +70,6 @@ class RasqcResult:
     element: Optional[str] | Optional[List[str]] = None
     message: Optional[str] = None
     pattern: Optional[str] | Optional[List[str]] = None
-    examples: Optional[str] = None
+    pattern_description: Optional[str] | Optional[List[str]] = None
+    examples: Optional[str] | Optional[List[str]] = None
     gdf: Optional[GeoDataFrame] = None
