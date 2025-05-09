@@ -50,23 +50,26 @@ class JsonSchemaChecker(RasqcChecker):
     def _check(self, s: str, filename: str) -> RasqcResult:
         """Run the check."""
         schema = get_schema_property(self.naming_schema, self.schema_property)
+        name = schema["name"]
         try:
             validate(s, schema)
-            return RasqcResult(
-                name=self.name, filename=filename, result=ResultStatus.OK
-            )
+            return RasqcResult(name=name, filename=filename, result=ResultStatus.OK)
         except ValidationError:
-            if "description" in schema:
-                err_msg = f"'{s}': {schema['description']}"
-            else:
-                err_msg = f"'{s}': {self.criteria}"
+            description = schema.get("description")
+            if not description:
+                description = self.criteria
+            message = f"'{s}': {description}"
+            pattern = schema.get("pattern")
+            pattern_description = schema.get("pattern_description")
+            examples = schema.get("examples")
             return RasqcResult(
-                name=self.name,
+                name=name,
                 filename=filename,
                 result=ResultStatus.ERROR,
-                message=err_msg,
-                pattern=schema.get("pattern"),
-                examples=schema.get("examples"),
+                message=message,
+                pattern=pattern,
+                pattern_description=pattern_description,
+                examples=examples,
             )
 
 
@@ -83,13 +86,14 @@ class MultiJsonSchemaChecker(JsonSchemaChecker):
         examples = []
         for prop in self.schema_properties:
             schema = get_schema_property(self.naming_schema, prop)
+            name = schema["name"]
             pattern = schema.get("pattern")
             patterns.append(pattern)
             examples.extend(schema.get("examples", []))
             try:
                 validate(s, schema)
                 return RasqcResult(
-                    name=self.name,
+                    name=name,
                     filename=filename,
                     result=ResultStatus.OK,
                     pattern=pattern,
@@ -97,7 +101,7 @@ class MultiJsonSchemaChecker(JsonSchemaChecker):
             except ValidationError:
                 pass
         return RasqcResult(
-            name=self.name,
+            name=self.name,  # name from the class rather than the schema
             filename=filename,
             result=ResultStatus.ERROR,
             message=f"'{s}': {self.criteria}",
@@ -110,11 +114,6 @@ class MultiJsonSchemaChecker(JsonSchemaChecker):
 class PrjFilenamePattern(JsonSchemaChecker):
     """Checker for project filename pattern."""
 
-    name = "Project filename pattern"
-    criteria = (
-        "Project filename should follow the pattern 'subbasin-name.prj',"
-        " where the subbasin name is all lowercase letters and hyphens."
-    )
     schema_property = "project_file_name"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
@@ -136,11 +135,6 @@ class PrjFilenamePattern(JsonSchemaChecker):
 class GeometryTitlePattern(JsonSchemaChecker):
     """Checker for geometry file title naming conventions."""
 
-    name = "Geometry title pattern"
-    criteria = (
-        "Geometry file title should follow the pattern 'subbasin-name',"
-        " where the subbasin name is all lowercase letters and hyphens."
-    )
     schema_property = "geometry_title"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
@@ -161,8 +155,6 @@ class GeometryTitlePattern(JsonSchemaChecker):
 class UnsteadyFlowTitlePattern(JsonSchemaChecker):
     """Checker for unsteady flow file title naming conventions."""
 
-    name = "Unsteady Flow title pattern"
-    criteria = "Unsteady Flow file title should follow the pattern 'YYYY-MM-DD'."
     schema_property = "unsteady_flow_title"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -183,12 +175,6 @@ class UnsteadyFlowTitlePattern(JsonSchemaChecker):
 class PlanTitlePattern(JsonSchemaChecker):
     """Checker for plan file title naming conventions."""
 
-    name = "Plan title pattern"
-    criteria = (
-        "Plan file title should follow the naming convention "
-        "'hydra-event-type:YYYY-MM-DD', where 'hydra-event-type'"
-        " is a lowercase description "
-    )
     schema_property = "plan_title"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -209,12 +195,6 @@ class PlanTitlePattern(JsonSchemaChecker):
 class PlanShortIdPattern(JsonSchemaChecker):
     """Checker for plan file short ID naming conventions."""
 
-    name = "Plan short ID pattern"
-    criteria = (
-        "Plan file short ID should follow the naming convention "
-        "'hydra-event-type:YYYY-MM-DD', where 'hydra-event-type'"
-        " is a lowercase description "
-    )
     schema_property = "plan_short_id"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -235,12 +215,6 @@ class PlanShortIdPattern(JsonSchemaChecker):
 class TerrainNamePattern(JsonSchemaChecker):
     """Checker for terrain file naming conventions."""
 
-    name = "Terrain name pattern"
-    criteria = (
-        "Terrain file name should follow the naming convention "
-        "'subbasin-name[_1]', where '[_1]' is an optional suffix "
-        " for multiple terrain files in the same geometry."
-    )
     schema_property = "terrain_name"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -277,12 +251,6 @@ class TerrainNamePattern(JsonSchemaChecker):
 class D2FlowArea(JsonSchemaChecker):
     """Checker for 2D Flow Area naming conventions."""
 
-    name = "2D Flow Area pattern"
-    criteria = (
-        "2D Flow Area names should follow the naming convention "
-        "'subbasin-name[_1]', where '[_1]' is an optional suffix "
-        " for multiple 2D Flow Areas in the same geometry."
-    )
     schema_property = "2d_flow_element"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -349,11 +317,6 @@ class ExternalBoundaryConditionLinePattern(MultiJsonSchemaChecker):
 class InternalBoundaryConditionLinePattern(JsonSchemaChecker):
     """Checker for internal boundary condition line naming conventions."""
 
-    name = "Internal Boundary Condition line name pattern"
-    criteria = (
-        "Internal Boundary Condition Lines should follow naming conventions"
-        " for an internal boundary condition from HMS."
-    )
     schema_property = "internal_bc_from_hms"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -382,11 +345,6 @@ class InternalBoundaryConditionLinePattern(JsonSchemaChecker):
 class PrecipBoundaryConditionPattern(JsonSchemaChecker):
     """Checker for precipitation boundary condition DSS path conventions."""
 
-    name = "Precip Boundary Condition name pattern"
-    criteria = (
-        "Precip Boundary Condition names should follow naming conventions"
-        " for precipitation boundary conditions."
-    )
     schema_property = "precip_bc"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
@@ -423,11 +381,6 @@ class PrecipBoundaryConditionPattern(JsonSchemaChecker):
 class InitialConditionPointPattern(JsonSchemaChecker):
     """Checker for initial condition point naming conventions."""
 
-    name = "Initial Condition Point name pattern"
-    criteria = (
-        "Initial Condition Point names should follow naming conventions"
-        " for initial condition points."
-    )
     schema_property = "initial_condition_point_name"
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:

@@ -28,20 +28,26 @@ class StacChecker(RasqcChecker):
 
     def _check_property(self, value: Any, filename: str) -> RasqcResult:
         property_schema = get_schema_property(self.schema, self.schema_property)
+        name = property_schema.get("name")
         try:
             validate(value, property_schema)
             return RasqcResult(
-                name=self.name, filename=filename, element=value, result=ResultStatus.OK
+                name=name, filename=filename, element=value, result=ResultStatus.OK
             )
         except ValidationError:
+            description = property_schema.get("description")
+            pattern = property_schema.get("pattern")
+            pattern_description = property_schema.get("pattern_description")
+            examples = property_schema.get("examples")
             return RasqcResult(
-                name=self.name,
+                name=name,
                 filename=filename,
                 element=value,
                 result=ResultStatus.ERROR,
-                message=f"{self.criteria}",
-                pattern=property_schema.get("pattern"),
-                examples=property_schema.get("examples"),
+                message=description,
+                pattern=pattern,
+                pattern_description=pattern_description,
+                examples=examples,
             )
 
     def run(self, stac_item: Dict[str, Any]) -> List[RasqcResult]:
@@ -147,8 +153,6 @@ class AssetChecker(StacChecker):
         self.property = property_name
         self.check_type = check_type
 
-        self.name = self.__class__.name
-        self.criteria = self.__class__.criteria
         if self.check_type == "hms":
             self.schema = load_hms_schema()
         else:
@@ -174,11 +178,6 @@ class AssetChecker(StacChecker):
 class PrjFilenamePattern(StacChecker):
     """Checker for project filename pattern."""
 
-    name = "Project filename pattern"
-    criteria = (
-        "Project filename should follow the pattern 'subbasin-name',"
-        " where the subbasin name is all lowercase letters and hyphens."
-    )
     schema_property = "project_file_name"
     check_type = "ras"
 
@@ -200,8 +199,6 @@ class PrjFilenamePattern(StacChecker):
 class PlanTitleChecker(StacChecker):
     """Checker for plan name pattern."""
 
-    name = "Plan title"
-    criteria = "Plan file title should follow the naming convention 'event-type_event-name' where event type and event name are lowercase and hyphens."
     schema_property = "plan_title"
     check_type = "ras"
 
@@ -210,11 +207,6 @@ class PlanTitleChecker(StacChecker):
 class GeometryTitlePattern(StacChecker):
     """Checker for geometry file title naming conventions."""
 
-    name = "Geometry title"
-    criteria = (
-        "Geometry file title should follow the pattern 'model-unit',"
-        "where the model unit is all lowercase letters and hyphens."
-    )
     schema_property = "geometry_title"
     check_type = "ras"
 
@@ -223,8 +215,6 @@ class GeometryTitlePattern(StacChecker):
 class UnsteadyFlowTitlePattern(StacChecker):
     """Checker for unsteady flow file title naming conventions."""
 
-    name = "Unsteady Flow title"
-    criteria = "Unsteady Flow file title should follow the pattern 'event-name' where the event name is lowercase and hyphens."
     schema_property = "unsteady_flow_title"
     check_type = "ras"
 
@@ -233,8 +223,6 @@ class UnsteadyFlowTitlePattern(StacChecker):
 class PlanShortIdPattern(StacChecker):
     """Checker for plan file short ID naming conventions."""
 
-    name = "Plan short ID"
-    criteria = "Plan file short ID should be identical to the Plan name. "
     schema_property = "plan_short_id"
     check_type = "ras"
 
@@ -243,8 +231,6 @@ class PlanShortIdPattern(StacChecker):
 class TerrainNamePattern(StacChecker):
     """Checker for terrain file naming conventions."""
 
-    name = "Terrain name"
-    criteria = "Terrain file name should follow the naming convention 'model-unit_'terrain'_resolution[_'merged']' where the model unit is lowercase and hyphens."
     schema_property = "terrain_name"
     check_type = "ras"
 
@@ -253,12 +239,6 @@ class TerrainNamePattern(StacChecker):
 class D2FlowArea(StacChecker):
     """Checker for 2D Flow Area naming conventions."""
 
-    name = "2D Flow Area"
-    criteria = (
-        "2D Flow Area names should follow the naming convention "
-        "'model-unit[_integer]', where '[_integer]' is an optional suffix "
-        " for multiple 2D Flow Areas in the same geometry."
-    )
     schema_property = "2d_flow_element"
     check_type = "ras"
 
@@ -268,7 +248,6 @@ class PrecipBoundaryConditionPattern(StacChecker):
     """Checker for precipitation boundary condition DSS path conventions."""
 
     name = "Precip Boundary Condition name"
-    criteria = "Precip Boundary Condition names should follow naming conventions for precipitation boundary conditions."
     schema_property = "precip_bc"
     check_type = "ras"
 
@@ -277,8 +256,6 @@ class PrecipBoundaryConditionPattern(StacChecker):
 class InitialConditionPointPattern(StacChecker):
     """Checker for initial condition point naming conventions."""
 
-    name = "Initial Condition Point name"
-    criteria = "Initial Condition Point names should follow naming convention ''ic'_reservoir-name[_integer]' where the reservoir name is lowercase and hyphens."
     schema_property = "initial_condition_point_name"
     check_type = "ras"
 
@@ -299,7 +276,6 @@ class RefPointPattern(MultiSchemaChecker):
     """Checker for ref_points values."""
 
     name = "Reference Point"
-    criteria = "Each reference point must match either the ref_point_levee or ref_point_other naming convention."
     schema_property = "ref_points"
     valid_schema_keys = ["ref_point_levee", "ref_point_other"]
     check_type = "ras"
@@ -310,7 +286,6 @@ class BoundaryConditionPattern(MultiSchemaChecker):
     """Checker for boundary_locations — must match one of the allowed BC schemas."""
 
     name = "Boundary Condition"
-    criteria = "Each boundary condition must match either the inflow_bc_from_ras, outflow_bc_to_ras, internal_bc_from_hms, or outflow_bc naming convention."
     schema_property = "boundary_locations"
     valid_schema_keys = [
         "inflow_bc_from_ras",
@@ -325,11 +300,6 @@ class BoundaryConditionPattern(MultiSchemaChecker):
 class ProjectTitlePattern(StacChecker):
     """Checker for project title naming conventions."""
 
-    name = "Project Title."
-    criteria = (
-        "Project title should follow the pattern 'basin-name [_integer]'"
-        "where the subbasin name is all lowercase letters and hyphens."
-    )
     schema_property = "project_title"
     check_type = "hms"
 
@@ -338,11 +308,6 @@ class ProjectTitlePattern(StacChecker):
 class BasinTitlePattern(StacChecker):
     """Checker for basin title naming conventions."""
 
-    name = "Basin Title."
-    criteria = (
-        "Basin title should follow the pattern 'basin-name_event-name'"
-        "where the basin and event names are all lowercase letters and hyphens."
-    )
     schema_property = "basin_title"
     check_type = "hms"
 
@@ -351,8 +316,6 @@ class BasinTitlePattern(StacChecker):
 class MetTitlePattern(StacChecker):
     """Checker for met title naming conventions."""
 
-    name = "Met Title."
-    criteria = "Met title should follow the pattern 'event-name' where the event name is all lowercase letters and hyphens."
     schema_property = "met_title"
     check_type = "hms"
 
@@ -361,8 +324,6 @@ class MetTitlePattern(StacChecker):
 class ControlTitlePattern(StacChecker):
     """Checker for control title naming conventions."""
 
-    name = "Control Title."
-    criteria = "Control title should follow the pattern 'event-name' where the event name is all lowercase letters and hyphens."
     schema_property = "control_title"
     check_type = "hms"
 
@@ -371,8 +332,6 @@ class ControlTitlePattern(StacChecker):
 class RunTitlePattern(StacChecker):
     """Checker for run title naming conventions."""
 
-    name = "Run Title."
-    criteria = "Run title should follow the pattern 'basin-name' where the basin name is all lowercase letters and hyphens."
     schema_property = "run_title"
     check_type = "hms"
 
@@ -380,8 +339,6 @@ class RunTitlePattern(StacChecker):
 class SinkElementPattern(AssetChecker):
     """Checker for validating sink element names in GeoJSON files."""
 
-    name = "Sink Element"
-    criteria = "Sink elements should follow the pattern 'reference-name' where the reference name is all lowercase letters and hyphens."
     schema_property = "sink_element"
     check_type = "hms"
 
@@ -389,8 +346,6 @@ class SinkElementPattern(AssetChecker):
 class JunctionElementPattern(AssetChecker):
     """Checker for validating junction element names in GeoJSON files."""
 
-    name = "Junction Element"
-    criteria = "Junction elements should follow the pattern 'reference-name[+ reference-name]_'j'unique-id' where the reference name is all lowercase letters and hyphens."
     schema_property = "junction_element"
     check_type = "hms"
 
@@ -398,8 +353,6 @@ class JunctionElementPattern(AssetChecker):
 class ReservoirElementPattern(AssetChecker):
     """Checker for validating reservoir element names in GeoJSON files."""
 
-    name = "Reservoir Element"
-    criteria = "Reservoir elements should follow the pattern ''nid'_nid-id[_other-structure-id]'."
     schema_property = "reservoir_element"
     check_type = "hms"
 
@@ -407,8 +360,6 @@ class ReservoirElementPattern(AssetChecker):
 class ReachElementPattern(AssetChecker):
     """Checker for validating reach element names in GeoJSON files."""
 
-    name = "Reach Element"
-    criteria = "Reach elements should follow the pattern 'reference-name_'r'unique-id' where the reference name is all lowercase letters and hyphens."
     schema_property = "reach_element"
     check_type = "hms"
 
@@ -416,7 +367,5 @@ class ReachElementPattern(AssetChecker):
 class SubbasinElementPattern(AssetChecker):
     """Checker for validating subbasin element names in GeoJSON files."""
 
-    name = "Subbasin Element"
-    criteria = "Subbasin elements should follow the pattern 'reference-name_'s'unique-id' where the reference name is all lowercase letters and hyphens."
     schema_property = "subbasin_element"
     check_type = "hms"
