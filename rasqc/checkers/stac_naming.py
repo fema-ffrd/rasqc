@@ -265,7 +265,6 @@ class RefLinePattern(MultiSchemaChecker):
     """Checker for ref_lines values."""
 
     name = "Reference Line"
-    criteria = "Each reference line must match either the ref_line_gage or ref_line_hydro_model naming convention."
     schema_property = "ref_lines"
     valid_schema_keys = ["ref_line_gage", "ref_line_hydro_model"]
     check_type = "ras"
