@@ -25,7 +25,7 @@ def test_prj_filename_check():
     stac_item = open_stac(TEST_RAS)
     results = PrjFilenamePattern().run(stac_item)
     result = results[0]
-    assert result.name == "Project filename pattern"
+    assert result.name == "Project File Name"
     assert result.result.value == "error"
 
 
@@ -34,7 +34,7 @@ def test_initial_condition_point_check():
     result = InitialConditionPointPattern().run(stac_item)
     assert isinstance(result, list)
     assert len(result) == 17
-    assert all(r.name == "Initial Condition Point name" for r in result)
+    assert all(r.name == "Initial Condition Point Name" for r in result)
 
 
 def test_basin_title():

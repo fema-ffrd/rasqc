@@ -98,7 +98,7 @@ class CheckSuite:
             console.print("OK", style="bold green")
         if not result.result == ResultStatus.OK and result.pattern:
             console.print(
-                f"    Required pattern:",
+                f"    Required pattern: {result.pattern_description}",
                 highlight=False,
                 style="gray50",
             )
