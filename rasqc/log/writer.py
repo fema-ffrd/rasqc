@@ -72,3 +72,11 @@ def res_dict_to_html_table(
         html += "</tr>"
     html += "</table>"
     return html
+
+def remove_json_seps(json_str: str, seps: list = ["{","}","[","]",","]) -> str:
+    return json_str.translate(str.maketrans("", "", "".join(seps)))
+
+def json_to_html_cleaned(
+    json_str: str, html_color_str: str = "rgb(170, 170, 170)"
+) -> str:
+    return BeautifulSoup(f"<style>pre {{color: {html_color_str}}}</style>\n<pre>{remove_json_seps(json_str)}</pre>", features="html.parser").prettify()
