@@ -9,12 +9,26 @@ from rasqc.rasmodel import RasModel
 
 
 class ColorTheme(Enum):
-    NINETIES = {
+    ARCADE = {
         "background": "rgb(50, 50, 50)",
-        "heading1": "rgb(13, 162, 149)",
-        "heading2": "rgb(150, 111, 255)",
+        "heading1": "rgb(20, 180, 160)",
+        "heading2": "rgb(140, 140, 255)",
         "body": "rgb(170, 170, 170)",
         "shadow": "rgb(100, 100, 100)",
+    }
+    ADAMS = {
+        "background": "rgb(82, 94, 100)",
+        "heading1": "rgb(100, 60, 30)",
+        "heading2": "rgb(60, 60, 60)",
+        "body": "rgb(170, 170, 170)",
+        "shadow": "rgb(100, 100, 100)",
+    }
+    ARCTIC = {
+        "background": "rgb(255, 255, 255)",
+        "heading1": "rgb(0, 220, 200)",
+        "heading2": "rgb(200, 200, 240)",
+        "body": "rgb(160, 180, 200)",
+        "shadow": "rgb(0, 220, 200)",
     }
 
 
@@ -23,7 +37,7 @@ def to_file(
     checksuite: str,
     checks: list[RasqcResult],
     tool_version: str = "",
-    theme: ColorTheme = ColorTheme.NINETIES,
+    theme: ColorTheme = ColorTheme.ARCADE,
 ) -> Path:
     out_dir = Path(model_path).parent / "rasqc"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -67,14 +81,14 @@ def res_dict_to_html_table(
         html += f"<th valign='top' align='left'>{key} :</th>"
         if isinstance(value, dict):
             html += (
-                f"<td valign='top' align='left'>{res_dict_to_html_table(value)}</td>"
+                f"<td valign='top' align='left'>{res_dict_to_html_table(value, html_color_str)}</td>"
             )
         elif isinstance(value, list):
             html += f"<td valign='top' align='left'><table border='0'>"
             for item in value:
                 html += "<tr>"
                 if isinstance(item, dict):
-                    html += f"<td valign='top' align='left'>{res_dict_to_html_table(item)}</td>"
+                    html += f"<td valign='top' align='left'>{res_dict_to_html_table(item, html_color_str)}</td>"
                 else:
                     html += f"<td valign='top' align='left'>{item}</td>"
                 html += "</tr>"

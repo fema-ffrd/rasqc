@@ -62,7 +62,7 @@
                 {%for check in check_dict[res_status]%}
                     <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{check.name.lower()}}</span></div>
                     <table>
-                        {{res_dict_to_html_table(check.to_msg_dict())}}
+                        {{res_dict_to_html_table(check.to_msg_dict(), body)}}
                     </table>
                     <br>
                 {%endfor%}

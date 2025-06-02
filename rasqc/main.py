@@ -85,7 +85,7 @@ def run_json(ras_model: str, checksuite: str) -> dict:
 def run_files(
     ras_model: str,
     checksuite: str,
-    theme: ColorTheme = ColorTheme.NINETIES,
+    theme: ColorTheme = ColorTheme.ARCADE,
 ) -> None:
     print(BANNER.strip("\n"), f"version {VERSION}")
     results = CHECKSUITES[checksuite].run_all_silent(ras_model)
