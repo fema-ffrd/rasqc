@@ -1,35 +1,11 @@
 from jinja2 import Environment, FileSystemLoader
-from enum import Enum
 from pathlib import Path
 import subprocess
 from bs4 import BeautifulSoup
 
 from rasqc.result import RasqcResult, to_snake_case
 from rasqc.rasmodel import RasModel
-
-
-class ColorTheme(Enum):
-    ARCADE = {
-        "background": "rgb(50, 50, 50)",
-        "heading1": "rgb(20, 180, 160)",
-        "heading2": "rgb(140, 140, 255)",
-        "body": "rgb(170, 170, 170)",
-        "shadow": "rgb(100, 100, 100)",
-    }
-    ADAMS = {
-        "background": "rgb(82, 94, 100)",
-        "heading1": "rgb(100, 60, 30)",
-        "heading2": "rgb(60, 60, 60)",
-        "body": "rgb(170, 170, 170)",
-        "shadow": "rgb(100, 100, 100)",
-    }
-    ARCTIC = {
-        "background": "rgb(255, 255, 255)",
-        "heading1": "rgb(0, 220, 200)",
-        "heading2": "rgb(200, 200, 240)",
-        "body": "rgb(160, 180, 200)",
-        "shadow": "rgb(0, 220, 200)",
-    }
+from .themes import ColorTheme
 
 
 def to_file(
@@ -80,9 +56,7 @@ def res_dict_to_html_table(
         html += "<tr>"
         html += f"<th valign='top' align='left'>{key} :</th>"
         if isinstance(value, dict):
-            html += (
-                f"<td valign='top' align='left'>{res_dict_to_html_table(value, html_color_str)}</td>"
-            )
+            html += f"<td valign='top' align='left'>{res_dict_to_html_table(value, html_color_str)}</td>"
         elif isinstance(value, list):
             html += f"<td valign='top' align='left'><table border='0'>"
             for item in value:
