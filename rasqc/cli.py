@@ -115,6 +115,19 @@ def run_files(
     theme: ColorTheme = ColorTheme.ARCADE,
     show_on_complete: bool = True,
 ) -> None:
+    """Run checks and output results as an HTML log and ESRI Shapefiles if applicable.
+
+    Parameters
+    ----------
+        ras_model: str
+            Path to the HEC-RAS model .prj file.
+        checksuite: str
+            Name of the checksuite to run.
+        theme: ColorTheme
+            Color themes for use in writing the html qc log file.
+        show_on_complete: bool
+            If True, display the log file in the user's default web browser upon completion of the tool run.
+    """
     print(f"rasqc version {RASQC_VERSION}") if RASQC_VERSION else None
     results = CHECKSUITES[checksuite].run_checks(ras_model)
     out_dir = Path(ras_model).parent / "rasqc"

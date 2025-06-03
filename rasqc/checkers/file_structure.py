@@ -1,3 +1,5 @@
+"""Checks related to the file structure of a HEC-RAS model."""
+
 from ..base_checker import RasqcChecker
 from ..registry import register_check
 from ..rasmodel import RasModel
@@ -8,9 +10,25 @@ from json import dumps
 
 @register_check(["ble"])
 class FileStructure(RasqcChecker):
+    """HEC-RAS model file structure checker.
+
+    Reports the file structure of the target HEC-RAS model to be reviewed by the user. Result status is 'note'.
+    """
+
     name = "File Structure"
 
     def run(self, ras_model: RasModel) -> RasqcResult:
+        """Execute file structure check of the HEC-RAS model.
+
+        Parameters
+        ----------
+            ras_model: RasModel
+                The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
         msg_dict = {
             "title": ras_model.prj_file.title,
             "plans": {},

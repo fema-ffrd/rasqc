@@ -1,7 +1,11 @@
+"""Module containing color themes for writing the html qc log file."""
+
 from enum import Enum
 
 
 class ColorTheme(Enum):
+    """Color themes for use in writing the html qc log file."""
+
     ARCADE = {
         "background": "rgb(50, 50, 50)",
         "heading1": "rgb(20, 180, 160)",
