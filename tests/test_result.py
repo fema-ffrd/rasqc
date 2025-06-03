@@ -3,7 +3,6 @@ from rasqc.result import RasqcResult, ResultStatus, RasqcResultEncoder
 from geopandas import GeoDataFrame
 import pandas as pd
 from shapely.geometry import Point
-from dataclasses import asdict
 
 
 def test_result_status_enum():
@@ -76,7 +75,7 @@ def test_result_encoder():
         "model": "test.prj",
         "checksuite": "test",
         "timestamp": "2023-08-01T12:00:00Z",
-        "checks": [asdict(result)],
+        "checks": [result.to_dict()],
     }
 
     # Serialize to JSON
@@ -110,7 +109,7 @@ def test_result_encoder_with_gdf():
         "model": "test.prj",
         "checksuite": "test",
         "timestamp": "2023-08-01T12:00:00Z",
-        "checks": [asdict(result)],
+        "checks": [result.to_dict()],
     }
 
     # Serialize to JSON

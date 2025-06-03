@@ -10,7 +10,6 @@ from .utils import to_snake_case, results_to_html
 from rich.console import Console
 
 import argparse
-from dataclasses import asdict
 from datetime import datetime, timezone
 from importlib.metadata import version
 import json
@@ -98,7 +97,7 @@ def run_json(ras_model: str, checksuite: str) -> dict:
         dict: Dictionary containing the check results.
     """
     results = CHECKSUITES[checksuite].run_checks(ras_model)
-    results_dicts = [asdict(result) for result in results]
+    results_dicts = [result.to_dict() for result in results]
     output = {
         "version": RASQC_VERSION,
         "model": ras_model,
@@ -175,7 +174,7 @@ def main():
         type=str,
         default="NINETIES",
         choices=[t.name for t in ColorTheme],
-        help="Color theme of output log file. Only used if the '--files' argument is specified. Default: 'NINETIES'",
+        help="Color theme of output log file. Only used if the '--files' argument is specified. Default: 'ARCADE'",
     )
     args = parser.parse_args()
     if args.json:

@@ -2,7 +2,7 @@
 
 from geopandas import GeoDataFrame
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from enum import Enum
 from json import JSONEncoder
 from typing import Any, List, Optional
@@ -78,3 +78,13 @@ class RasqcResult:
     pattern_description: Optional[str] | Optional[List[str]] = None
     examples: Optional[str] | Optional[List[str]] = None
     gdf: Optional[GeoDataFrame] = None
+
+    def to_dict(self) -> dict:
+        """Convert RasqcResult object to dictionary.
+
+        Returns
+        -------
+            dict: A dictionary representation of the object.
+        """
+        # encode and decode to serialize message if valid JSON
+        return asdict(self)

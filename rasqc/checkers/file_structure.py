@@ -20,12 +20,8 @@ class FileStructure(RasqcChecker):
             flow = ras_model.unsteady_flow_files[plan.flow_file_ext]
             msg_dict["plans"][plan.path.name] = {
                 "title": plan.title,
-                "geometry": {
-                    geom.filename: {"title":geom.title}
-                },
-                "unsteady": {
-                    flow.filename: {"title":flow.title}
-                },
+                "geometry": {geom.filename: {"title": geom.title}},
+                "unsteady": {flow.filename: {"title": flow.title}},
             }
         return RasqcResult(
             name=self.name,
