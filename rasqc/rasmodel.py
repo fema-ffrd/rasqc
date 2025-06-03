@@ -220,7 +220,7 @@ class PlanFile(RasModelFile):
 
         Returns
         -------
-            GeomFile: The geometry file associated with the plan file.
+            str: The geometry file extension associated with the plan file.
         """
         match = re.search(r"(?m)Geom File\s*=\s*(.+)$", self.content)
         geom_ext = match.group(1)
@@ -232,7 +232,7 @@ class PlanFile(RasModelFile):
 
         Returns
         -------
-            UnsteadyFlowFile: The unsteady flow file associated with the plan file.
+            str: The unsteady flow file extension associated with the plan file.
         """
         match = re.search(r"(?m)Flow File\s*=\s*(.+)$", self.content)
         flow_ext = match.group(1)

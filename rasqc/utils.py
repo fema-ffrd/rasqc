@@ -10,8 +10,8 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from typing import Literal
 
-from rasqc.result import RasqcResult, ResultStatus
-from rasqc.rasmodel import RasModel
+from .result import RasqcResult, ResultStatus
+from .rasmodel import RasModel
 from .themes import ColorTheme
 
 
@@ -99,6 +99,7 @@ def dict_to_html_string(
 
 
 def dict_to_html_table(dictionary: dict, color_code: str = "rgb(170, 170, 170)") -> str:
+    """Convert a python dictionary to an HTML table string."""
     html = f'<table border="0" style="line-height:1em; border-spacing:0; color:{color_code};">'
     for key, value in dictionary.items():
         html += "<tr>"

@@ -137,7 +137,7 @@ def run_files(
         out_shp,
         SHPT="ARC",
     ) if gdfs else None
-    log_file = results_to_html(
+    results_to_html(
         results=results,
         output_path=out_shp.with_suffix(".html"),
         model_path=ras_model,
@@ -145,7 +145,7 @@ def run_files(
         tool_version=RASQC_VERSION,
         theme=theme,
     )
-    webbrowser.open(log_file) if show_on_complete else None
+    webbrowser.open(out_shp.with_suffix(".html")) if show_on_complete else None
 
 
 def main():
