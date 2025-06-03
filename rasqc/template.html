@@ -1,0 +1,95 @@
+
+<!DOCTYPE jinja-html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rasqc - {{model_title}}</title>
+    <style>
+
+        .summary-table td:nth-child(1) { padding-right: 10px; }
+        .summary-table td:nth-child(2) { padding-right:  5px; }
+        .summary-table img { display: block; }
+
+        .log-items img { display: block; }
+        .log-items td { padding-bottom: 0.1em; }
+        .log-items td:nth-child(1) { padding-right: 10px; white-space: nowrap; }
+        .log-items td:nth-child(2) { padding-right: 10px; }
+
+        pre {color: {{body}}}
+    </style>
+</head>
+
+<body style="font-family: -apple-system, 'Segoe UI', arial, Tahoma, Helvetica, sans-serif; background-color:{{background}}">
+
+    <div><span style="font-weight:600; font-size:75px; color:{{heading1}};">rasqc</span> &nbsp;<span style="white-space:nowrap; color:{{body}};">{%if tool_version and tool_version != ""%}version {{tool_version}}{%endif%}</span></div>
+
+    <div style="margin:10px 0; display:inline-block; border-radius:7px; background:{{background}}; box-shadow:1px 1px 4px {{shadow}}; overflow:hidden;">
+        <div style="background-color:{{background}}; border-bottom:1px solid {{shadow}}; font-size:larger; padding:10px;">
+            <span style="font-weight:600; font-size:25px; color:{{heading2}}; vertical-align:middle;">tool execution details</span>
+        </div>
+        <table role="presentation" style="border-spacing:0; margin-left:10px; padding:5px 10px; color:{{body}};">
+            <tr>
+                <td>user:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{username}}</span></td>
+            </tr>
+            <tr>
+                <td>date:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{day_name}}&nbsp;{{date}}</span></td>
+            </tr>
+            <tr>
+                <td>time:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{time}}</span></td>
+            </tr>
+            <tr>
+                <td>model:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{model_path}}</span></td>
+            </tr>
+            <tr>
+                <td>title:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{model_title}}</span></td>
+            </tr>
+            <tr>
+                <td>checksuite:</td>
+                <td><span style="font-weight: normal; color:{{body}};">{{checksuite}}</span></td>
+            </tr>
+        </table>
+    </div>
+
+    {%for res_status in ["note", "error", "warning", "ok"]%}
+        {%if res_status in results_dict%}
+            <div><span style="font-weight:600; font-size:40px; color:{{heading1}};">{{res_status}}</span></div>
+
+            <table>
+                {%for result in results_dict[res_status]%}
+                    <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{result.name.lower()}}</span></div>
+                    <table>
+                        {%if is_valid_json(result.message)%}
+                            {%if message_style == "table"%}
+                                {{dict_to_html_table(loads(result.message), body)}}
+                            {%elif message_style == "indent"%}
+                                {{dict_to_html_string(loads(result.message), body)}}
+                            {%endif%}
+                        {%else%}
+                            result.message
+                    </table>
+                    <br>
+                {%endfor%}
+            </table>
+        {%endif%}
+    {%endfor%}
+
+    <div style="border-bottom:1px solid {{shadow}};margin:5px 0;"></div>
+
+    <pre style="font-size:small;">
+        <span style="vertical-align:middle; color:{{heading1}};">
+   __|   _` |   __|   _` |   __| 
+  |     (   | \__ \  (   |  (    
+ _|    \__._| ____/ \__. | \___| 
+                        _|       {%if tool_version and tool_version != ""%}version {{tool_version}}{%endif%}
+        </span>
+    </pre>
+
+</body>
+</html>
+        

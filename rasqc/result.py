@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from json import JSONEncoder
 from typing import Any, List, Optional
+from datetime import datetime
 
 
 class ResultStatus(Enum):
@@ -16,11 +17,13 @@ class ResultStatus(Enum):
         OK: Check passed successfully.
         WARNING: Check passed with warnings.
         ERROR: Check failed.
+        NOTE: Note for informational purposes.
     """
 
     OK = "ok"
     WARNING = "warning"
     ERROR = "error"
+    NOTE = "note"
 
 
 class RasqcResultEncoder(JSONEncoder):
@@ -44,6 +47,8 @@ class RasqcResultEncoder(JSONEncoder):
             return obj.value
         if isinstance(obj, GeoDataFrame):
             return obj.to_json()
+        if isinstance(obj, datetime):
+            return obj.isoformat()
         return super().default(obj)
 
 
