@@ -30,16 +30,29 @@ class FileStructure(RasqcChecker):
             RasqcResult: The result of the check.
         """
         msg_dict = {
+            "filename": ras_model.prj_file.filename,
             "title": ras_model.prj_file.title,
+            "description": ras_model.prj_file.description,
             "plans": {},
         }
         for plan in ras_model.plans:
             geom = ras_model.geom_files[plan.geom_file_ext]
             flow = ras_model.unsteady_flow_files[plan.flow_file_ext]
-            msg_dict["plans"][plan.path.name] = {
+            msg_dict["plans"][plan.path.suffix.strip(".")] = {
+                "filename": plan.filename,
                 "title": plan.title,
-                "geometry": {geom.filename: {"title": geom.title}},
-                "unsteady": {flow.filename: {"title": flow.title}},
+                "short id": plan.short_id,
+                "description": plan.description,
+                "geometry": {
+                    "filename": geom.filename,
+                    "title": geom.title,
+                    "description": geom.description,
+                },
+                "unsteady": {
+                    "filename": flow.filename,
+                    "title": flow.title,
+                    "description": flow.description,
+                },
             }
         return RasqcResult(
             name=self.name,

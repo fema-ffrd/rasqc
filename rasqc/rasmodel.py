@@ -96,6 +96,17 @@ class RasModelFile:
         title = match.group(2)
         return title
 
+    @property
+    def description(self):
+        """Extract the description from the RAS file.
+
+        Returns
+        -------
+            str: The description of the RAS file.
+        """
+        match = re.search(r"BEGIN DESCRIPTION:(.*?)END DESCRIPTION:", self.content)
+        return match.group(1).strip() if match else ""
+
 
 def _obstore_protocol_url(
     store: obstore.store.ObjectStore, path: str | os.PathLike
