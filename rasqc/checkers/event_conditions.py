@@ -32,16 +32,15 @@ class MeteorologyPrecip(RasqcChecker):
         msg_dict = {}
         attrs = ["DSS Filename", "DSS Pathname"]
         for plan in ras_model.plan_files.values():
-            msg_dict[plan.path.suffix.strip(".")] = (
-                {"title": plan.title}
-                | {
+            msg_dict[plan.path.suffix.strip(".") + f" ({plan.title})"] = (
+                {
                     k: v
                     for k, v in plan.hdf.get_meteorology_precip_attrs().items()
                     if k in attrs
                 }
                 if plan.hdf
                 else "No HDF file located."
-            ) or "No meterology precip applied."
+            ) or "No meteorology precip applied."
         return RasqcResult(
             name=self.name,
             filename=ras_model.prj_file.path.name,
