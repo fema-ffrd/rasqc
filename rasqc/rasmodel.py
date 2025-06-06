@@ -104,7 +104,9 @@ class RasModelFile:
         -------
             str: The description of the RAS file.
         """
-        match = re.search(r"BEGIN DESCRIPTION:(.*?)END DESCRIPTION:", self.content)
+        match = re.search(
+            r"BEGIN DESCRIPTION:(.*?)END DESCRIPTION:", self.content, re.DOTALL
+        )
         return match.group(1).strip() if match else ""
 
 
