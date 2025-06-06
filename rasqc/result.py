@@ -7,6 +7,7 @@ from enum import Enum
 from json import JSONEncoder
 from typing import Any, List, Optional
 from datetime import datetime
+import numpy as np
 
 
 class ResultStatus(Enum):
@@ -49,6 +50,10 @@ class RasqcResultEncoder(JSONEncoder):
             return obj.to_json()
         if isinstance(obj, datetime):
             return obj.isoformat()
+        if isinstance(obj, bytes):
+            return obj.decode()
+        if isinstance(obj, (np.ndarray, np.generic)):
+            return obj.item()
         return super().default(obj)
 
 
