@@ -13,6 +13,17 @@ def test_VolumeError():
         res.filename: res.to_dict()
         for res in VolumeError().run(RasModel(BALDEAGLE_PRJ))
     } == {
+        "BaldEagleDamBrk.p13.hdf": {
+            "result": ResultStatus.WARNING,
+            "name": "Volume Accounting Error",
+            "filename": "BaldEagleDamBrk.p13.hdf",
+            "element": None,
+            "message": "Plan HDF file not found.",
+            "pattern": None,
+            "pattern_description": None,
+            "examples": None,
+            "gdf": None,
+        },
         "BaldEagleDamBrk.p18.hdf": {
             "result": ResultStatus.OK,
             "name": "Volume Accounting Error",
@@ -23,5 +34,5 @@ def test_VolumeError():
             "pattern_description": None,
             "examples": None,
             "gdf": None,
-        }
+        },
     }

@@ -145,7 +145,7 @@ def group_results(results: List[RasqcResult]) -> dict:
     Returns
     -------
         dict: A dict of RasqcResult objects in pattern {'note' or 'check': {result name: [results]}}.
-    """
+    """  # noqa D401
     results_dict = {}
     for result in results:
         results_dict.setdefault(
