@@ -38,7 +38,7 @@ class VolumeError(RasqcChecker):
                 name=self.name,
                 filename=plan_hdf_filename,
                 result=ResultStatus.WARNING,
-                message="HEC-RAS plan HDF file does not exist.",
+                message="Plan HDF file not found.",
             )
         vol_err = plan_hdf.get_results_volume_accounting_attrs()["Error Percent"]
         if vol_err > VOL_ERR_PER_TOL:
@@ -69,6 +69,5 @@ class VolumeError(RasqcChecker):
         results = []
         for plan_file in ras_model.plans:
             plan_hdf = plan_file.hdf
-            if plan_hdf:
-                results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
         return results
