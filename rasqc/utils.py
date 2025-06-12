@@ -103,7 +103,9 @@ def dict_to_html_table(dictionary: dict, color_code: str = "rgb(170, 170, 170)")
     html = f'<table border="0" style="line-height:1em; border-spacing:0; color:{color_code};">'
     for key, value in dictionary.items():
         html += "<tr>"
-        html += f"<th valign='top' align='left'>{key} :</th>"
+        html += (
+            f"<th valign='top' align='left' style='white-space: nowrap;'>{key} :</th>"
+        )
         if isinstance(value, dict):
             html += f"<td valign='top' align='left'>{dict_to_html_table(value, color_code)}</td>"
         elif isinstance(value, list):

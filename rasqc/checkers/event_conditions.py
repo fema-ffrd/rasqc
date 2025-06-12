@@ -2,296 +2,397 @@
 
 from ..base_checker import RasqcChecker
 from ..registry import register_check
-from ..rasmodel import RasModel
+from ..rasmodel import RasModel, RasPlanHdf
 from ..result import RasqcResult, ResultStatus, RasqcResultEncoder
 
 from json import dumps
+from typing import List
+from pathlib import Path
 
 BC_PATH = "/Event Conditions/Unsteady/Boundary Conditions"
 IC_PATH = "/Event Conditions/Unsteady/Initial Conditions"
 
 
-@register_check(["ble"])
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class MeteorologyPrecip(RasqcChecker):
-    """Meterology precipitation check.
+    """Checker for meterology precipitation.
 
     Reports the meterological condition precipitation applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Meteorology Precipitation"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute meterology precipitation check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute meterology precipitation check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+            plan_hdf: The HEC-RAS plan HDF file to check.
+
+            plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
-        msg_dict = {}
         attrs = ["DSS Filename", "DSS Pathname"]
-        for plan in ras_model.plan_files.values():
-            msg_dict[plan.path.suffix.strip(".") + f" ({plan.title})"] = (
-                {
-                    k: v
-                    for k, v in plan.hdf.get_meteorology_precip_attrs().items()
-                    if k in attrs
-                }
-                if plan.hdf
-                else "No HDF file located."
-            ) or "No meteorology precip applied."
+        if plan_hdf:
+            mp_attrs = plan_hdf.get_meteorology_precip_attrs()
+            if mp_attrs:
+                msg = dumps(
+                    {k: v for k, v in mp_attrs.items() if k in attrs},
+                    cls=RasqcResultEncoder,
+                )
+            else:
+                msg = "No meteorology precip applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
 
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the meterology precipitation for all RAS plan HDF files in a model.
 
-@register_check(["ble"])
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
+
+
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class PrecipHydrographs(RasqcChecker):
-    """Precipitation hydrographs check.
+    """Checker for precipitation hydrographs.
 
     Reports the boundary condition precipitation hydrographs applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Precipitation Hydrographs"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute precipitation hydrographs check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute precipitation hydrographs check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+            plan_hdf: The HEC-RAS plan HDF file to check.
+
+            plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
         precip_hydrographs_path = BC_PATH + "/Precipitation Hydrographs"
-        msg_dict = {}
         attrs = ["2D Flow Area"]
-        for plan in ras_model.plan_files.values():
-            plan_key = plan.path.suffix.strip(".") + f" ({plan.title})"
-            if plan.hdf:
-                if precip_hydrographs_path in plan.hdf:
-                    for p in plan.hdf[precip_hydrographs_path].values():
-                        msg_dict.setdefault(plan_key, []).append(
-                            {k: v for k, v in p.attrs.items() if k in attrs}
-                            | {"Depth": round(float(p[:, 1].sum()), 3)}
-                        )
-                else:
-                    msg_dict[plan_key] = "No precip hydrograph applied."
+        if plan_hdf:
+            if precip_hydrographs_path in plan_hdf:
+                for p in plan_hdf[precip_hydrographs_path].values():
+                    msg = dumps(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Depth": round(float(p[:, 1].sum()), 3)},
+                        cls=RasqcResultEncoder,
+                    )
             else:
-                msg_dict[plan_key] = "No HDF file located."
+                msg = "No precip hydrograph applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
 
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the precipitation hydrographs for all RAS plan HDF files in a model.
 
-@register_check(["ble"])
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
+
+
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class FlowHydrographs(RasqcChecker):
-    """Flow hydrographs check.
+    """Checker for flow hydrographs.
 
     Reports the boundary condition flow hydrographs applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Flow Hydrographs"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute flow hydrographs check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute flow hydrographs check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+        plan_hdf: The HEC-RAS plan HDF file to check.
+
+        plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
         flow_hydrographs_path = BC_PATH + "/Flow Hydrographs"
-        msg_dict = {}
         attrs = ["2D Flow Area", "BC Line", "EG Slope For Distributing Flow"]
-        for plan in ras_model.plan_files.values():
-            plan_key = plan.path.suffix.strip(".") + f" ({plan.title})"
-            if plan.hdf:
-                if flow_hydrographs_path in plan.hdf:
-                    for p in plan.hdf[flow_hydrographs_path].values():
-                        msg_dict.setdefault(plan_key, []).append(
-                            {k: v for k, v in p.attrs.items() if k in attrs}
-                            | {"Peak Flow": round(float(p[:, 1].max()), 3)}
-                        )
-                else:
-                    msg_dict[plan_key] = "No flow hydrograph applied."
+        if plan_hdf:
+            if flow_hydrographs_path in plan_hdf:
+                for p in plan_hdf[flow_hydrographs_path].values():
+                    msg = dumps(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Peak Flow": round(float(p[:, 1].max()), 3)},
+                        cls=RasqcResultEncoder,
+                    )
             else:
-                msg_dict[plan_key] = "No HDF file located."
+                msg = "No flow hydrograph applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
 
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the flow hydrographs for all RAS plan HDF files in a model.
 
-@register_check(["ble"])
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
+
+
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class StageHydrographs(RasqcChecker):
-    """Stage hydrographs check.
+    """Checker for stage hydrographs.
 
     Reports the boundary condition stage hydrographs applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Stage Hydrographs"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute stage hydrographs check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute stage hydrographs check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+        plan_hdf: The HEC-RAS plan HDF file to check.
+
+        plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
         stage_hydrographs_path = BC_PATH + "/Stage Hydrographs"
-        msg_dict = {}
         attrs = ["2D Flow Area", "BC Line", "Use Initial Stage"]
-        for plan in ras_model.plan_files.values():
-            plan_key = plan.path.suffix.strip(".") + f" ({plan.title})"
-            if plan.hdf:
-                if stage_hydrographs_path in plan.hdf:
-                    for p in plan.hdf[stage_hydrographs_path].values():
-                        msg_dict.setdefault(plan_key, []).append(
-                            {k: v for k, v in p.attrs.items() if k in attrs}
-                            | {"Peak Stage": round(float(p[:, 1].max()), 3)}
-                        )
-                else:
-                    msg_dict[plan_key] = "No stage hydrograph applied."
+        if plan_hdf:
+            if stage_hydrographs_path in plan_hdf:
+                for p in plan_hdf[stage_hydrographs_path].values():
+                    msg = dumps(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Peak Stage": round(float(p[:, 1].max()), 3)},
+                        cls=RasqcResultEncoder,
+                    )
             else:
-                msg_dict[plan_key] = "No HDF file located."
+                msg = "No stage hydrograph applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
 
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the stage hydrographs for all RAS plan HDF files in a model.
 
-@register_check(["ble"])
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
+
+
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class NormalDepths(RasqcChecker):
-    """Normal depths check.
+    """Checker for normal depths.
 
     Reports the boundary condition normal depths applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Normal Depths"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute normal depths check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute normal depths check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+        plan_hdf: The HEC-RAS plan HDF file to check.
+
+        plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
         normal_depths_path = BC_PATH + "/Normal Depths"
-        msg_dict = {}
         attrs = ["2D Flow Area", "BC Line", "BC Line WS"]
-        for plan in ras_model.plan_files.values():
-            plan_key = plan.path.suffix.strip(".") + f" ({plan.title})"
-            if plan.hdf:
-                if normal_depths_path in plan.hdf:
-                    for p in plan.hdf[normal_depths_path].values():
-                        msg_dict.setdefault(plan_key, []).append(
-                            {k: v for k, v in p.attrs.items() if k in attrs}
-                            | {"Normal Depth Slope": float(p[0])}
-                        )
-                else:
-                    msg_dict[plan_key] = "No normal depth applied."
+        if plan_hdf:
+            if normal_depths_path in plan_hdf:
+                for p in plan_hdf[normal_depths_path].values():
+                    msg = dumps(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Normal Depth Slope": float(p[0])},
+                        cls=RasqcResultEncoder,
+                    )
             else:
-                msg_dict[plan_key] = "No HDF file located."
+                msg = "No normal depth applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
 
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the normal depths for all RAS plan HDF files in a model.
 
-@register_check(["ble"])
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
+
+
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class RatingCurves(RasqcChecker):
-    """Rating curves check.
+    """Checker for rating curves.
 
     Reports the boundary condition rating curves applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Rating Curves"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute rating curves check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute rating curves check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+        plan_hdf: The HEC-RAS plan HDF file to check.
+
+        plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
             RasqcResult: The result of the check.
         """
         rating_curves_path = BC_PATH + "/Rating Curves"
-        msg_dict = {}
         attrs = ["2D Flow Area", "BC Line"]
-        for plan in ras_model.plan_files.values():
-            plan_key = plan.path.suffix.strip(".") + f" ({plan.title})"
-            if plan.hdf:
-                if rating_curves_path in plan.hdf:
-                    for p in plan.hdf[rating_curves_path].values():
-                        msg_dict.setdefault(plan_key, []).append(
-                            {k: v for k, v in p.attrs.items() if k in attrs}
-                        )
-                else:
-                    msg_dict[plan_key] = "No rating curve applied."
+        if plan_hdf:
+            if rating_curves_path in plan_hdf:
+                for p in plan_hdf[rating_curves_path].values():
+                    msg = dumps(
+                        {k: v for k, v in p.attrs.items() if k in attrs},
+                        cls=RasqcResultEncoder,
+                    )
             else:
-                msg_dict[plan_key] = "No HDF file located."
+                msg = "No rating curve applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
 
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the rating curves for all RAS plan HDF files in a model.
 
-@register_check(["ble"])
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
+
+
+@register_check(["ble"], dependencies=["PlanHdfExists"])
 class InitialConditions(RasqcChecker):
-    """Initial conditions check.
+    """Checker for initial conditions.
 
     Reports the initial conditions applied to the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Initial Conditions"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        """Execute initial conditions check of the HEC-RAS model.
+    def _check(self, plan_hdf: RasPlanHdf, plan_hdf_filename: str) -> RasqcResult:
+        """Execute initial conditions check for a RAS plan HDF file.
 
         Parameters
         ----------
-            ras_model: RasModel
-                The HEC-RAS model to check.
+        plan_hdf: The HEC-RAS plan HDF file to check.
+
+        plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------
@@ -299,22 +400,39 @@ class InitialConditions(RasqcChecker):
         """
         ic_name_path = IC_PATH + "/IC Point Names"
         ic_elev_path = IC_PATH + "/IC Point Elevations"
-        msg_dict = {}
-        for plan in ras_model.plan_files.values():
-            plan_key = plan.path.suffix.strip(".") + f" ({plan.title})"
-            if plan.hdf:
-                if ic_name_path in plan.hdf:
-                    msg_dict[plan_key] = {
+        if plan_hdf:
+            if ic_name_path in plan_hdf:
+                msg = dumps(
+                    {
                         k.decode(): round(v, 3)
-                        for k, v in zip(plan.hdf[ic_name_path], plan.hdf[ic_elev_path])
-                    }
-                else:
-                    msg_dict[plan_key] = "No initial conditions applied."
+                        for k, v in zip(plan_hdf[ic_name_path], plan_hdf[ic_elev_path])
+                    },
+                    cls=RasqcResultEncoder,
+                )
             else:
-                msg_dict[plan_key] = "No HDF file located."
+                msg = "No initial conditions applied."
+        else:
+            msg = "No HDF file located."
         return RasqcResult(
             name=self.name,
-            filename=ras_model.prj_file.path.name,
+            filename=plan_hdf_filename,
             result=ResultStatus.NOTE,
-            message=dumps(msg_dict, cls=RasqcResultEncoder),
+            message=msg,
         )
+
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the initial conditions for all RAS plan HDF files in a model.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        results = []
+        for plan_file in ras_model.plans:
+            plan_hdf = plan_file.hdf
+            results.append(self._check(plan_hdf, Path(plan_file.hdf_path).name))
+        return results
