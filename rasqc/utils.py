@@ -8,7 +8,7 @@ from pathlib import Path
 import subprocess
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
-from typing import Literal
+from typing import Literal, List
 
 from .result import RasqcResult, ResultStatus
 from .rasmodel import RasModel
@@ -132,6 +132,28 @@ def is_valid_json(json_str: str) -> bool:
         return False
 
 
+def group_results(results: List[RasqcResult]) -> dict:
+    """
+    Groups a list of RasqcResult objects into a dict based on
+    whether the result is from a 'note' or 'check', then based
+    on the name of the RasqcResult object.
+
+    Parameters
+    ----------
+        results: A list of RasqcResult objects.
+
+    Returns
+    -------
+        dict: A dict of RasqcResult objects in pattern {'note' or 'check': {result name: [results]}}.
+    """  # noqa D401
+    results_dict = {}
+    for result in results:
+        results_dict.setdefault(
+            "note" if result.result.value == "note" else "check", {}
+        ).setdefault(result.name, []).append(result)
+    return results_dict
+
+
 def results_to_html(
     results: list[RasqcResult],
     output_path: str,
@@ -156,9 +178,7 @@ def results_to_html(
         .decode()
         .split()
     )
-    results_dict = {}
-    for result in results:
-        results_dict.setdefault(result.result.value, []).append(result)
+    results_dict = group_results(results)
     subs = {
         "model_path": model_path,
         "model_title": RasModel(model_path).prj_file.title,
