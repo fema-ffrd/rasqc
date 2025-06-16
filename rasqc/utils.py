@@ -88,9 +88,7 @@ def remove_json_seps(json_str: str, seps: list = ["{", "}", "[", "]", ","]) -> s
     return json_str.translate(str.maketrans("", "", "".join(seps)))
 
 
-def pyobj_to_html_string(
-    obj, color_code: str = "rgb(170, 170, 170)"
-) -> str:
+def pyobj_to_html_string(obj, color_code: str = "rgb(170, 170, 170)") -> str:
     """Convert a python object to an HTML preformatted string."""
     return BeautifulSoup(
         f"<style>pre {{color: {color_code}}}</style>\n<pre>{remove_json_seps(json.dumps(obj, indent=4))}</pre>",
@@ -104,18 +102,14 @@ def pyobj_to_html_table(obj, color_code: str = "rgb(170, 170, 170)") -> str:
     if isinstance(obj, dict):
         for key, value in obj.items():
             html += "<tr>"
-            html += (
-                f"<th valign='top' align='left' style='white-space: nowrap;'>{key} :</th>"
-            )
+            html += f"<th valign='top' align='left' style='white-space: nowrap;'>{key} :</th>"
             html += f"<td valign='top' align='left'>{pyobj_to_html_table(value, color_code)}</td>"
             html += "</tr>"
-    elif isinstance(obj, (list, set)):
-        html += f"<td valign='top' align='left'><table border='0'>"
+    elif isinstance(obj, (list, set, tuple)):
         for item in obj:
             html += "<tr>"
             html += f"<td valign='top' align='left'>{pyobj_to_html_table(item, color_code)}</td>"
             html += "</tr>"
-        html += "</table></td>"
     else:
         html += f"<td valign='top' align='left'>{obj}</td>"
     html += "</table>"

@@ -99,8 +99,11 @@ class PrecipHydrographs(RasqcChecker):
         if plan_hdf:
             if precip_hydrographs_path in plan_hdf:
                 msg = dumps(
-                    list({k: v for k, v in p.attrs.items() if k in attrs}
-                    | {"Depth": round(float(p[:, 1].sum()), 3)} for p in plan_hdf[precip_hydrographs_path].values()),
+                    list(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Depth": round(float(p[:, 1].sum()), 3)}
+                        for p in plan_hdf[precip_hydrographs_path].values()
+                    ),
                     cls=RasqcResultEncoder,
                 )
             else:
@@ -158,11 +161,14 @@ class FlowHydrographs(RasqcChecker):
         attrs = ["2D Flow Area", "BC Line", "EG Slope For Distributing Flow"]
         if plan_hdf:
             if flow_hydrographs_path in plan_hdf:
-                    msg = dumps(
-                        list({k: v for k, v in p.attrs.items() if k in attrs}
-                        | {"Peak Flow": round(float(p[:, 1].max()), 3)} for p in plan_hdf[flow_hydrographs_path].values()),
-                        cls=RasqcResultEncoder,
-                    )
+                msg = dumps(
+                    list(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Peak Flow": round(float(p[:, 1].max()), 3)}
+                        for p in plan_hdf[flow_hydrographs_path].values()
+                    ),
+                    cls=RasqcResultEncoder,
+                )
             else:
                 msg = "No flow hydrograph applied."
         else:
@@ -218,11 +224,14 @@ class StageHydrographs(RasqcChecker):
         attrs = ["2D Flow Area", "BC Line", "Use Initial Stage"]
         if plan_hdf:
             if stage_hydrographs_path in plan_hdf:
-                    msg = dumps(
-                        list({k: v for k, v in p.attrs.items() if k in attrs}
-                        | {"Peak Stage": round(float(p[:, 1].max()), 3)} for p in plan_hdf[stage_hydrographs_path].values()),
-                        cls=RasqcResultEncoder,
-                    )
+                msg = dumps(
+                    list(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Peak Stage": round(float(p[:, 1].max()), 3)}
+                        for p in plan_hdf[stage_hydrographs_path].values()
+                    ),
+                    cls=RasqcResultEncoder,
+                )
             else:
                 msg = "No stage hydrograph applied."
         else:
@@ -278,11 +287,14 @@ class NormalDepths(RasqcChecker):
         attrs = ["2D Flow Area", "BC Line", "BC Line WS"]
         if plan_hdf:
             if normal_depths_path in plan_hdf:
-                    msg = dumps(
-                        list({k: v for k, v in p.attrs.items() if k in attrs}
-                        | {"Normal Depth Slope": float(p[0])} for p in plan_hdf[normal_depths_path].values()),
-                        cls=RasqcResultEncoder,
-                    )
+                msg = dumps(
+                    list(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        | {"Normal Depth Slope": float(p[0])}
+                        for p in plan_hdf[normal_depths_path].values()
+                    ),
+                    cls=RasqcResultEncoder,
+                )
             else:
                 msg = "No normal depth applied."
         else:
@@ -338,10 +350,13 @@ class RatingCurves(RasqcChecker):
         attrs = ["2D Flow Area", "BC Line"]
         if plan_hdf:
             if rating_curves_path in plan_hdf:
-                    msg = dumps(
-                        list({k: v for k, v in p.attrs.items() if k in attrs} for p in plan_hdf[rating_curves_path].values()),
-                        cls=RasqcResultEncoder,
-                    )
+                msg = dumps(
+                    list(
+                        {k: v for k, v in p.attrs.items() if k in attrs}
+                        for p in plan_hdf[rating_curves_path].values()
+                    ),
+                    cls=RasqcResultEncoder,
+                )
             else:
                 msg = "No rating curve applied."
         else:
