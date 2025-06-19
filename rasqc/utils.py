@@ -186,3 +186,33 @@ def results_to_html(
     }
     with open(output_path, mode="w", encoding="utf-8") as log_file:
         log_file.write(BeautifulSoup(template.render(subs), "html.parser").prettify())
+
+
+def chunk_text(text: str, chunk_size: int) -> List[str]:
+    """Split text into chunks based on character length."""
+    return list(text[i : i + chunk_size] for i in range(0, len(text), chunk_size))
+
+
+def get_text_between_keywords(text: str, start_keyword: str, end_keyword: str) -> str:
+    """Return text between user-specified keywords."""
+    pattern = re.compile(rf"{start_keyword}(.*?){end_keyword}", re.DOTALL)
+    match = pattern.search(text)
+    return match.group(1) if match else ""
+
+
+def get_lines_between_keywords(
+    text: str, start_keyword: str, end_keyword: str
+) -> List[str]:
+    """Return a list of lines of text between lines containing user-specified keywords."""
+    pattern = re.compile(rf"{start_keyword}.*?{end_keyword}", re.DOTALL)
+    match = pattern.search(text)
+    return match.group(0).splitlines()[1:-1] if match else []
+
+
+def is_valid_number(text: str) -> bool:
+    """Check if a string can be serialized to a float."""
+    try:
+        float(text)
+        return True
+    except:
+        return False
