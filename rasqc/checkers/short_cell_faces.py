@@ -1,39 +1,74 @@
-from rasqc.checkers.base_checker import RasqcChecker
-from rasqc.checksuite import register_check
-from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult, ResultStatus
+"""Checks related to 2D mesh cell face length."""
+
+from ..base_checker import RasqcChecker
+from ..registry import register_check
+from ..rasmodel import RasModel
+from ..result import RasqcResult, ResultStatus
 
 from rashdf import RasGeomHdf
+from pathlib import Path
+
+MIN_FACE_LENGTH = 10
 
 
-@register_check(["ble"])
+@register_check(["ble"], dependencies=["GeomHdfExists"])
 class ShortCellFaces(RasqcChecker):
+    """Checker for short 2D mesh cell faces.
+
+    Checks the current geometry within a RAS model and returns a `GeoDataFrame` of short cell faces that can cause instabilities.
+    """
+
     name = "Short Cell Faces"
 
-    def run(self, ras_model: RasModel) -> RasqcResult:
-        geom_hdf_path = ras_model.current_geometry.hdf_path
-        filename = geom_hdf_path.name
-        if not geom_hdf_path.exists():
+    def _check(self, geom_hdf: RasGeomHdf, geom_hdf_filename: str) -> RasqcResult:
+        """Execute short 2D mesh cell faces check for a RAS geometry HDF file.
+
+        Parameters
+        ----------
+            geom_hdf: The HEC-RAS geometry HDF file to check.
+
+            geom_hdf_filename: The file name of the HEC-RAS geometry HDF file to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        if not geom_hdf:
             return RasqcResult(
                 name=self.name,
-                filename=filename,
+                filename=geom_hdf_filename,
                 result=ResultStatus.WARNING,
-                message=f"{filename} does not exist within the specified directory",
+                message="Geometry HDF file not found.",
             )
-        with RasGeomHdf(geom_hdf_path) as geom_hdf:
-            mesh_faces = geom_hdf.mesh_cell_faces()
-            flags = mesh_faces.loc[mesh_faces["geometry"].length < 10].copy()
+        mesh_faces = geom_hdf.mesh_cell_faces()
+        flags = mesh_faces.loc[mesh_faces["geometry"].length < MIN_FACE_LENGTH].copy()
         if flags.empty:
             return RasqcResult(
                 name=self.name,
-                filename=filename,
+                filename=geom_hdf_filename,
                 result=ResultStatus.OK,
                 message="no short cell faces found",
             )
         return RasqcResult(
             name=self.name,
-            filename=filename,
+            filename=geom_hdf_filename,
             result=ResultStatus.WARNING,
             message=f"{flags.shape[0]} short cell faces found",
             gdf=flags,
+        )
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        """Execute short 2D mesh cell faces check for a HEC-RAS model.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        return self._check(
+            ras_model.current_geometry.hdf,
+            Path(ras_model.current_geometry.hdf_path).name,
         )

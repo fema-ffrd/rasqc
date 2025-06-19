@@ -2,7 +2,7 @@ from pathlib import Path
 
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.structures import BridgeXsData
+from rasqc.checkers.structures import BridgeXsData, OverflowMethod
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
@@ -36,3 +36,10 @@ def test_BridgeXsData():
             "gdf": None,
         },
     }
+
+
+def test_OverflowMethod():
+    assert (
+        OverflowMethod().run(RasModel(BALDEAGLE_PRJ)).message
+        == "any applicable structures found use 2d for overflow comps"
+    )
