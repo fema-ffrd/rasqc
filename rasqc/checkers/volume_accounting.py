@@ -27,7 +27,9 @@ class VolumeError(RasqcChecker):
 
         Parameters
         ----------
-            geom_hdf: The HEC-RAS plan HDF file to check.
+            plan_hdf: The HEC-RAS plan HDF file to check.
+
+            plan_hdf_filename: The file name of the HEC-RAS plan HDF file to check.
 
         Returns
         -------

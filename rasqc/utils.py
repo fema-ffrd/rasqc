@@ -88,37 +88,30 @@ def remove_json_seps(json_str: str, seps: list = ["{", "}", "[", "]", ","]) -> s
     return json_str.translate(str.maketrans("", "", "".join(seps)))
 
 
-def dict_to_html_string(
-    dictionary: dict, color_code: str = "rgb(170, 170, 170)"
-) -> str:
-    """Convert a python dictionary to an HTML string with a clean look."""
+def pyobj_to_html_string(obj, color_code: str = "rgb(170, 170, 170)") -> str:
+    """Convert a python object to an HTML preformatted string."""
     return BeautifulSoup(
-        f"<style>pre {{color: {color_code}}}</style>\n<pre>{remove_json_seps(json.dumps(dictionary, indent=4))}</pre>",
+        f"<style>pre {{color: {color_code}}}</style>\n<pre>{remove_json_seps(json.dumps(obj, indent=4))}</pre>",
         features="html.parser",
     ).prettify()
 
 
-def dict_to_html_table(dictionary: dict, color_code: str = "rgb(170, 170, 170)") -> str:
-    """Convert a python dictionary to an HTML table string."""
+def pyobj_to_html_table(obj, color_code: str = "rgb(170, 170, 170)") -> str:
+    """Convert a python object to an HTML table string."""
     html = f'<table border="0" style="line-height:1em; border-spacing:0; color:{color_code};">'
-    for key, value in dictionary.items():
-        html += "<tr>"
-        html += f"<th valign='top' align='left'>{key} :</th>"
-        if isinstance(value, dict):
-            html += f"<td valign='top' align='left'>{dict_to_html_table(value, color_code)}</td>"
-        elif isinstance(value, list):
-            html += f"<td valign='top' align='left'><table border='0'>"
-            for item in value:
-                html += "<tr>"
-                if isinstance(item, dict):
-                    html += f"<td valign='top' align='left'>{dict_to_html_table(item, color_code)}</td>"
-                else:
-                    html += f"<td valign='top' align='left'>{item}</td>"
-                html += "</tr>"
-            html += "</table></td>"
-        else:
-            html += f"<td valign='top' align='left'>{value}</td>"
-        html += "</tr>"
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            html += "<tr>"
+            html += f"<th valign='top' align='left' style='white-space: nowrap;'>{key} :</th>"
+            html += f"<td valign='top' align='left'>{pyobj_to_html_table(value, color_code)}</td>"
+            html += "</tr>"
+    elif isinstance(obj, (list, set, tuple)):
+        for item in obj:
+            html += "<tr>"
+            html += f"<td valign='top' align='left'>{pyobj_to_html_table(item, color_code)}</td>"
+            html += "</tr>"
+    else:
+        html += f"<td valign='top' align='left'>{obj}</td>"
     html += "</table>"
     return BeautifulSoup(html, features="html.parser").prettify()
 
@@ -166,8 +159,8 @@ def results_to_html(
     """Create an HTML file from a list of RasqcResults."""
     env = Environment(loader=FileSystemLoader(Path(__file__).parent.resolve()))
     env.globals.update(
-        dict_to_html_table=dict_to_html_table,
-        dict_to_html_string=dict_to_html_string,
+        pyobj_to_html_table=pyobj_to_html_table,
+        pyobj_to_html_string=pyobj_to_html_string,
         message_style=message_style,
         is_valid_json=is_valid_json,
         loads=json.loads,
@@ -193,3 +186,33 @@ def results_to_html(
     }
     with open(output_path, mode="w", encoding="utf-8") as log_file:
         log_file.write(BeautifulSoup(template.render(subs), "html.parser").prettify())
+
+
+def chunk_text(text: str, chunk_size: int) -> List[str]:
+    """Split text into chunks based on character length."""
+    return list(text[i : i + chunk_size] for i in range(0, len(text), chunk_size))
+
+
+def get_text_between_keywords(text: str, start_keyword: str, end_keyword: str) -> str:
+    """Return text between user-specified keywords."""
+    pattern = re.compile(rf"{start_keyword}(.*?){end_keyword}", re.DOTALL)
+    match = pattern.search(text)
+    return match.group(1) if match else ""
+
+
+def get_lines_between_keywords(
+    text: str, start_keyword: str, end_keyword: str
+) -> List[str]:
+    """Return a list of lines of text between lines containing user-specified keywords."""
+    pattern = re.compile(rf"{start_keyword}.*?{end_keyword}", re.DOTALL)
+    match = pattern.search(text)
+    return match.group(0).splitlines()[1:-1] if match else []
+
+
+def is_valid_number(text: str) -> bool:
+    """Check if a string can be serialized to a float."""
+    try:
+        float(text)
+        return True
+    except:
+        return False

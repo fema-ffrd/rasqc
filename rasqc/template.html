@@ -69,9 +69,9 @@
                                     <td valign='top' align='left'>ok</td>
                                 {%elif is_valid_json(result.message)%}
                                     {%if message_style == "table"%}
-                                        <td valign='top' align='left'>{{dict_to_html_table(loads(result.message), body)}}</td>
+                                        <td valign='top' align='left'>{{pyobj_to_html_table(loads(result.message), body)}}</td>
                                     {%elif message_style == "indent"%}
-                                        <td valign='top' align='left'>{{dict_to_html_string(loads(result.message), body)}}</td>
+                                        <td valign='top' align='left'>{{pyobj_to_html_string(loads(result.message), body)}}</td>
                                     {%endif%}
                                 {%else%}
                                     <td valign='top' align='left'>{{result.message}}</td>
