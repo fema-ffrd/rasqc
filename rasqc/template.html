@@ -16,7 +16,6 @@
         .log-items td:nth-child(1) { padding-right: 10px; white-space: nowrap; }
         .log-items td:nth-child(2) { padding-right: 10px; }
 
-        pre {color: {{body}}}
     </style>
 </head>
 
@@ -56,24 +55,30 @@
         </table>
     </div>
 
-    {%for res_status in ["note", "error", "warning", "ok"]%}
-        {%if res_status in results_dict%}
-            <div><span style="font-weight:600; font-size:40px; color:{{heading1}};">{{res_status}}</span></div>
-
+    {%for res_type in ["note", "check"]%}
+        {%if res_type in results_dict%}
+            <div><span style="font-weight:600; font-size:40px; color:{{heading1}};">{{res_type}}</span></div>
             <table>
-                {%for result in results_dict[res_status]%}
-                    <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{result.name.lower()}}</span></div>
-                    <table>
-                        {%if is_valid_json(result.message)%}
-                            {%if message_style == "table"%}
-                                {{dict_to_html_table(loads(result.message), body)}}
-                            {%elif message_style == "indent"%}
-                                {{dict_to_html_string(loads(result.message), body)}}
-                            {%endif%}
-                        {%else%}
-                            result.message
-                        {%endif%}
-                    </table>
+                {%for res_name, results in results_dict[res_type].items()%}
+                    <div><span style="font-weight:600; font-size:25px; color:{{heading2}};">{{res_name.lower()}}</span></div>
+                    {%for result in results%} 
+                        <table style="color:{{body}};">
+                            <tr>
+                                <th valign='top' align='left' style="white-space: nowrap;">{{result.filename}} | </th>
+                                {%if not result.message and result.result.value == "ok"%}
+                                    <td valign='top' align='left'>ok</td>
+                                {%elif is_valid_json(result.message)%}
+                                    {%if message_style == "table"%}
+                                        <td valign='top' align='left'>{{pyobj_to_html_table(loads(result.message), body)}}</td>
+                                    {%elif message_style == "indent"%}
+                                        <td valign='top' align='left'>{{pyobj_to_html_string(loads(result.message), body)}}</td>
+                                    {%endif%}
+                                {%else%}
+                                    <td valign='top' align='left'>{{result.message}}</td>
+                                {%endif%}
+                            </tr>
+                        </table>
+                    {%endfor%}
                     <br>
                 {%endfor%}
             </table>

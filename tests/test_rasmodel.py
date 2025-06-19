@@ -1,5 +1,6 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel, RasModelFile
+import re
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
@@ -10,6 +11,11 @@ def test_RasModelFile():
     assert rmf.path == BALDEAGLE_PRJ
     assert rmf.hdf_path == None
     assert rmf.title == "Bald Eagle Creek Example Dam Break Study"
+    assert re.sub(r"\s+", "", rmf.description) == re.sub(
+        r"\s+",
+        "",
+        r"""The United States Army Corps of Engineers has granted access to the information in this model for instructional purposes only.  Do not copy, forward, or release the information without United States Army Corps of Engineers approval.  The results of this model do not deppict the data and final results from an official Corps of engineers study of this area.  These models have been develped for demonstration purposes only. This model is not a detailed model of this area.  The examples in this data set are put together to show the various ways you can link 1D and 2D elements.  The 2D areas are not detailed models (i.e. not a lot of time was spent laying out breaklines and testing cell size, time step, etc...  So this is not meant to be an example of best practices for modeling, just an example of all the different ways you can use 1D and 2D elements to model a system like this.""",
+    )
 
 
 def test_RasModel():
