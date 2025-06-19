@@ -39,6 +39,13 @@ class BridgeXsData(RasqcChecker):
         -------
             RasqcResult: The result of the check.
         """
+        if not re.search("Conn Routing Type= 32", geom.content):  # if no bridges
+            return RasqcResult(
+                result=ResultStatus.OK,
+                name=self.name,
+                filename=geom.filename,
+                message="No bridges located within geometry.",
+            )
         struct_info = geom.content.split("Connection=")[1:]
 
         # args = (text, start delimeter)
@@ -54,6 +61,7 @@ class BridgeXsData(RasqcChecker):
         )
 
         bridge_info = {}
+        msg_dict = {}
         for si in struct_info:
             if re.search("Conn Routing Type= 32", si):  # if struct is a bridge
                 bridge_name = si.split(",", 1)[0].strip()
@@ -120,23 +128,22 @@ class BridgeXsData(RasqcChecker):
                     }
                 }
 
-                msg_dict = {}
                 for xs in bridge_info[bridge_name].values():
                     mann_dict = {sta: val for sta, val in xs["mann"]}
                     mann_sta_set = set(mann_dict.keys())
                     interior_se_sta_set = set(list(sta for sta, elev in xs["se"])[1:-1])
                     if not set(xs["banks"]).issubset(mann_sta_set):
-                        msg_dict.setdefault(
-                            "bridges with XSs without manning's breaks at the banks", []
-                        ).append(bridge_name)
-                    elif mann_dict[xs["banks"][0]] > 0.6:
-                        msg_dict.setdefault(
-                            "bridges with XSs with elevated channel n value(s)", []
-                        ).append(bridge_name)
+                        msg_dict.setdefault(bridge_name, set()).add(
+                            "bridge XSs without manning's breaks at the banks"
+                        )
+                    if mann_dict.get(xs["banks"][0]) > 0.06:
+                        msg_dict.setdefault(bridge_name, set()).add(
+                            "bridge XSs with elevated channel n value(s)"
+                        )
                     if not set(xs["banks"]).issubset(interior_se_sta_set):
-                        msg_dict.setdefault(
-                            "bridges with XSs without banks set to valid stations", []
-                        ).append(bridge_name)
+                        msg_dict.setdefault(bridge_name, set()).add(
+                            "bridge XSs without banks set to valid stations"
+                        )
 
         if msg_dict:
             return RasqcResult(

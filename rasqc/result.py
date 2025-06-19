@@ -54,6 +54,8 @@ class RasqcResultEncoder(JSONEncoder):
             return obj.decode()
         if isinstance(obj, (np.ndarray, np.generic)):
             return obj.item()
+        if isinstance(obj, set):
+            return list(obj)
         return super().default(obj)
 
 
