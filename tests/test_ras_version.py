@@ -1,26 +1,19 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.projection import GeomProjection, GeomProjectionNote
+from rasqc.checkers.ras_version import RasVersion
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 
 
-def test_GeomProjection():
-    results = GeomProjection().run(RasModel(BALDEAGLE_PRJ))
-    result = results[0]
-    assert result.result.value == "error"
-
-
-def test_GeomProjectionNote():
+def test_RasVersion():
     assert {
-        res.filename: res.to_dict()
-        for res in GeomProjectionNote().run(RasModel(BALDEAGLE_PRJ))
+        res.filename: res.to_dict() for res in RasVersion().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
             "result": ResultStatus.NOTE,
-            "name": "Geometry Projection",
+            "name": "HEC-RAS Version",
             "filename": "BaldEagleDamBrk.g06.hdf",
             "element": None,
             "message": "Geometry HDF file not found.",
@@ -31,10 +24,10 @@ def test_GeomProjectionNote():
         },
         "BaldEagleDamBrk.g11.hdf": {
             "result": ResultStatus.NOTE,
-            "name": "Geometry Projection",
+            "name": "HEC-RAS Version",
             "filename": "BaldEagleDamBrk.g11.hdf",
             "element": None,
-            "message": "NAD83 / Pennsylvania North (ftUS)",
+            "message": "HEC-RAS 6.5 February 2024",
             "pattern": None,
             "pattern_description": None,
             "examples": None,

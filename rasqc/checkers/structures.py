@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import List
 import re
 from json import dumps
+from rashdf import RasGeomHdf
 
 
 @register_check(["ble"])
@@ -169,3 +170,77 @@ class BridgeXsData(RasqcChecker):
             List[RasqcResult]: A list of the results of the checks.
         """
         return list(self._check(geom_file) for geom_file in ras_model.geometries)
+
+
+@register_check(["ble"], dependencies=["GeomHdfExists"])
+class OverflowMethod(RasqcChecker):
+    """Checker for structure overflow method selection.
+
+    Checks the overflow method set for non-bridge structures within the current
+    geometry of a RAS model to ensure they are set to the normal 2D equation and
+    lists any flagged structures to investigate.
+    """
+
+    name = "Structure Overflow Method"
+
+    def _check(self, geom_hdf: RasGeomHdf, geom_hdf_filename: str) -> RasqcResult:
+        """Execute structure overflow method selection check for a RAS geometry HDF file.
+
+        Parameters
+        ----------
+            geom_hdf: The HEC-RAS geometry HDF file to check.
+
+            geom_hdf_filename: The file name of the HEC-RAS geometry HDF file to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        if not geom_hdf:
+            return RasqcResult(
+                name=self.name,
+                filename=geom_hdf_filename,
+                result=ResultStatus.WARNING,
+                message="Geometry HDF file not found.",
+            )
+        structs = geom_hdf.structures()
+        flags = (
+            structs.loc[
+                (structs["Use 2D for Overflow"] == 0)
+                & (structs["Mode"] == "Weir/Gate/Culverts")
+            ]["Connection"]
+            if not structs.empty
+            else structs
+        )
+        if flags.empty:
+            return RasqcResult(
+                name=self.name,
+                filename=geom_hdf_filename,
+                result=ResultStatus.OK,
+                message="any applicable structures found use 2d for overflow comps",
+            )
+        return RasqcResult(
+            name=self.name,
+            filename=geom_hdf_filename,
+            result=ResultStatus.WARNING,
+            message={
+                "message": f"{flags.shape[0]} applicable structures found not using 2d for overflow comps",
+                "structure names": flags.to_list(),
+            },
+        )
+
+    def run(self, ras_model: RasModel) -> RasqcResult:
+        """Execute structure overflow method selection check for a HEC-RAS model.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        return self._check(
+            ras_model.current_geometry.hdf,
+            Path(ras_model.current_geometry.hdf_path).name,
+        )
