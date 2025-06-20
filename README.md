@@ -47,7 +47,7 @@ Install dev dependencies:
 ## Build Console App
 
 ```shell
-(venv-rasqc) $ pyinstaller "./rasqc/cli.py" --name rasqc --onefile --collect-all pyogrio
+(venv-rasqc) $ pyinstaller "./rasqc/cli.py" --name rasqc --onefile --collect-all pyogrio --add-data "./rasqc/template.html:./rasqc"
 ```
 
 ## CLI
