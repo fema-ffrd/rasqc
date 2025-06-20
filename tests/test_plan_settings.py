@@ -26,7 +26,7 @@ def test_EquationSet2DNote():
         for res in EquationSet2DNote().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
-            "result": ResultStatus.WARNING,
+            "result": ResultStatus.NOTE,
             "name": "2D Equation Set",
             "filename": "BaldEagleDamBrk.p13.hdf",
             "element": None,
@@ -56,7 +56,7 @@ def test_CompSettings():
         for res in CompSettings().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
-            "result": ResultStatus.WARNING,
+            "result": ResultStatus.NOTE,
             "name": "Computation Settings",
             "filename": "BaldEagleDamBrk.p13.hdf",
             "element": None,

@@ -99,7 +99,8 @@ class GeomProjection(RasqcChecker):
 class GeomProjectionNote(RasqcChecker):
     """Checker for geometry projection settings.
 
-    Reports the projection of the current geometry of a RAS model as a 'note' to be reviewed by the user.
+    Reports the projection of the current geometry of a RAS model as a
+    'note' to be reviewed by the user.
     """
 
     name = "Geometry Projection"
@@ -121,7 +122,7 @@ class GeomProjectionNote(RasqcChecker):
             return RasqcResult(
                 name=self.name,
                 filename=geom_hdf_filename,
-                result=ResultStatus.WARNING,
+                result=ResultStatus.NOTE,
                 message="Geometry HDF file not found.",
             )
         projection = geom_hdf.projection()
@@ -129,7 +130,7 @@ class GeomProjectionNote(RasqcChecker):
             return RasqcResult(
                 name=self.name,
                 filename=geom_hdf_filename,
-                result=ResultStatus.ERROR,
+                result=ResultStatus.NOTE,
                 message="HEC-RAS geometry HDF file does not have a projection defined.",
             )
         return RasqcResult(

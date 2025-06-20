@@ -86,7 +86,8 @@ class EquationSet2D(RasqcChecker):
 class EquationSet2DNote(RasqcChecker):
     """Checker for 2D equation set settings.
 
-    Reports the selected 2D equation set for the current geometry of a RAS model as a 'note' to be reviewed by the user.
+    Reports the selected 2D equation set for the current geometry of a RAS
+    model as a 'note' to be reviewed by the user.
     """
 
     name = "2D Equation Set"
@@ -108,7 +109,7 @@ class EquationSet2DNote(RasqcChecker):
             return RasqcResult(
                 name=self.name,
                 filename=plan_hdf_filename,
-                result=ResultStatus.WARNING,
+                result=ResultStatus.NOTE,
                 message="Plan HDF file not found.",
             )
         else:
@@ -152,7 +153,8 @@ class EquationSet2DNote(RasqcChecker):
 class CompSettings(RasqcChecker):
     """Checker for computational timestep settings.
 
-    Reports the computational timestep settings for each plan of a RAS model as a 'note' to be reviewed by the user.
+    Reports the computational timestep settings for each plan of a RAS model
+    as a 'note' to be reviewed by the user.
     """
 
     name = "Computation Settings"
@@ -185,7 +187,7 @@ class CompSettings(RasqcChecker):
             return RasqcResult(
                 name=self.name,
                 filename=plan_hdf_filename,
-                result=ResultStatus.WARNING,
+                result=ResultStatus.NOTE,
                 message="Plan HDF file not found.",
             )
         else:
@@ -206,7 +208,7 @@ class CompSettings(RasqcChecker):
         )
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
-        """Check the computational timestep settings used for all RAS plan HDF files in a model.
+        """Check the comp settings used for all RAS plans in a model.
 
         Parameters
         ----------

@@ -13,7 +13,9 @@ from pathlib import Path
 class ErroneousCells(RasqcChecker):
     """Checker for erroneous 2D mesh cells.
 
-    Checks the current geometry within a RAS model and returns a `GeoDataFrame` of erroneous 2D mesh cells (those with the center point outside the cell boundary).
+    Checks the current geometry within a RAS model and returns a `GeoDataFrame`
+    of erroneous 2D mesh cells (those with the center point outside the cell
+    boundary).
     """
 
     name = "Erroneous Cells"

@@ -12,7 +12,7 @@ def test_RasVersion():
         res.filename: res.to_dict() for res in RasVersion().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
-            "result": ResultStatus.WARNING,
+            "result": ResultStatus.NOTE,
             "name": "HEC-RAS Version",
             "filename": "BaldEagleDamBrk.g06.hdf",
             "element": None,

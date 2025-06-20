@@ -16,7 +16,8 @@ MIN_FLAG_LENGTH = 10
 class BreaklineEnforcement(RasqcChecker):
     """Checker for breakline enforcement.
 
-    Checks the breakline enforcement within the current geometry and returns a `GeoDataFrame` of delinquent breaklines.
+    Checks the breakline enforcement within the current geometry
+    and returns a `GeoDataFrame` of delinquent breaklines.
     """
 
     name = "Breakline Enforcement"
@@ -68,7 +69,7 @@ class BreaklineEnforcement(RasqcChecker):
         return RasqcResult(
             name=self.name,
             filename=geom_hdf_filename,
-            result=ResultStatus.WARNING,
+            result=ResultStatus.ERROR,
             message=f"{flags_filtered.shape[0]} breakline enforcement flags found",
             gdf=flags_filtered,
         )

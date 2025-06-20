@@ -16,7 +16,8 @@ MIN_FLAG_LENGTH = 10
 class RefRegionEnforcement(RasqcChecker):
     """Checker for refinement region enforcement.
 
-    Checks the refinement region enforcement within the current geometry and returns a `GeoDataFrame` of delinquent refinement regions.
+    Checks the refinement region enforcement within the current geometry and
+    returns a `GeoDataFrame` of delinquent refinement regions.
     """
 
     name = "Refinement Region Enforcement"
@@ -67,7 +68,7 @@ class RefRegionEnforcement(RasqcChecker):
         return RasqcResult(
             name=self.name,
             filename=geom_hdf_filename,
-            result=ResultStatus.WARNING,
+            result=ResultStatus.ERROR,
             message=f"{flags_filtered.shape[0]} refinement region enforcement flags found",
             gdf=flags_filtered,
         )

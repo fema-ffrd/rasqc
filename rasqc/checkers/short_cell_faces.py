@@ -15,7 +15,8 @@ MIN_FACE_LENGTH = 10
 class ShortCellFaces(RasqcChecker):
     """Checker for short 2D mesh cell faces.
 
-    Checks the current geometry within a RAS model and returns a `GeoDataFrame` of short cell faces that can cause instabilities.
+    Checks the current geometry within a RAS model and returns a `GeoDataFrame`
+    of short cell faces that can cause instabilities.
     """
 
     name = "Short Cell Faces"
@@ -52,7 +53,7 @@ class ShortCellFaces(RasqcChecker):
         return RasqcResult(
             name=self.name,
             filename=geom_hdf_filename,
-            result=ResultStatus.WARNING,
+            result=ResultStatus.ERROR,
             message=f"{flags.shape[0]} short cell faces found",
             gdf=flags,
         )

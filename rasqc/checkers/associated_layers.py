@@ -16,7 +16,8 @@ from pathlib import Path
 class AssociatedLayers(RasqcChecker):
     """Checker for associated model layers.
 
-    Reports the layers (e.g., terrain, land cover, etc.) associated with each geometry as a 'note' to be reviewed by the user.
+    Reports the layers (e.g., terrain, land cover, etc.) associated
+    with each geometry as a 'note' to be reviewed by the user.
     """
 
     name = "Associated Layers"
@@ -38,7 +39,7 @@ class AssociatedLayers(RasqcChecker):
             return RasqcResult(
                 name=self.name,
                 filename=geom_hdf_filename,
-                result=ResultStatus.WARNING,
+                result=ResultStatus.NOTE,
                 message="Geometry HDF file not found.",
             )
         else:

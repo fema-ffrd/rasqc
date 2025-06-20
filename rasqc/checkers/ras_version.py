@@ -15,7 +15,8 @@ from pathlib import Path
 class RasVersion(RasqcChecker):
     """Checker for the HEC-RAS version used.
 
-    Reports the RAS version used to develop a RAS model as a 'note' to be reviewed by the user.
+    Reports the RAS version used to develop a RAS model as a 'note' to be
+    reviewed by the user.
     """
 
     name = "HEC-RAS Version"
@@ -37,7 +38,7 @@ class RasVersion(RasqcChecker):
             return RasqcResult(
                 name=self.name,
                 filename=geom_hdf_filename,
-                result=ResultStatus.WARNING,
+                result=ResultStatus.NOTE,
                 message="Geometry HDF file not found.",
             )
         return RasqcResult(
@@ -48,7 +49,7 @@ class RasVersion(RasqcChecker):
         )
 
     def run(self, ras_model: RasModel) -> List[RasqcResult]:
-        """Check the HEC-RAS version used to develop each geometry within a HEC-RAS model.
+        """Execute the check for each geometry within a HEC-RAS model.
 
         Parameters
         ----------

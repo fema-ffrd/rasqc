@@ -138,9 +138,9 @@ def run_files(
             shp_dir = out_dir / "shapes"
             shp_dir.mkdir(parents=True, exist_ok=True)
             res.gdf.to_file(
-                (shp_dir / to_snake_case(res.name))
-                .with_suffix(res.filename)
-                .with_suffix(".shp"),
+                (
+                    shp_dir / f"{to_snake_case(res.name)}_{to_snake_case(res.filename)}"
+                ).with_suffix(".shp"),
                 SHPT="ARC",
             )
             res.gdf["filename"] = res.filename

@@ -176,7 +176,9 @@ class BridgeXsData(RasqcChecker):
 class OverflowMethod(RasqcChecker):
     """Checker for structure overflow method selection.
 
-    Checks the overflow method set for non-bridge structures within the current geometry of a RAS model to ensure they are set to the normal 2D equation and lists any flagged structures to investigate.
+    Checks the overflow method set for non-bridge structures within the current
+    geometry of a RAS model to ensure they are set to the normal 2D equation and
+    lists any flagged structures to investigate.
     """
 
     name = "Structure Overflow Method"

@@ -3,7 +3,9 @@
 from ..base_checker import RasqcChecker
 from ..registry import register_check
 from ..rasmodel import RasModel
-from ..result import RasqcResult, ResultStatus
+from ..result import RasqcResult, ResultStatus, RasqcResultEncoder
+
+from json import dumps
 
 
 @register_check(["ble"])
@@ -30,8 +32,11 @@ class CurrentPlan(RasqcChecker):
             name=self.name,
             filename=ras_model.prj_file.path.name,
             result=ResultStatus.NOTE,
-            message={
-                "file": ras_model.current_plan.path.name,
-                "title": ras_model.current_plan.title,
-            },
+            message=dumps(
+                {
+                    "file": ras_model.current_plan.path.name,
+                    "title": ras_model.current_plan.title,
+                },
+                cls=RasqcResultEncoder,
+            ),
         )

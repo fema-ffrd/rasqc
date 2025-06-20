@@ -12,7 +12,8 @@ from json import dumps
 class FileStructure(RasqcChecker):
     """HEC-RAS model file structure checker.
 
-    Reports the file structure of the target HEC-RAS model to be reviewed by the user. Result status is 'note'.
+    Reports the file structure of the target HEC-RAS model to be reviewed
+    by the user. Result status is 'note'.
     """
 
     name = "File Structure"

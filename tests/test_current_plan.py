@@ -13,7 +13,7 @@ def test_CurrentPlan():
         "name": "Current Saved Plan",
         "filename": "BaldEagleDamBrk.prj",
         "element": None,
-        "message": {"file": "BaldEagleDamBrk.p18", "title": "2D to 2D Run"},
+        "message": '{"file": "BaldEagleDamBrk.p18", "title": "2D to 2D Run"}',
         "pattern": None,
         "pattern_description": None,
         "examples": None,

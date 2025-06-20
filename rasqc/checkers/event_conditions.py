@@ -17,7 +17,8 @@ IC_PATH = "/Event Conditions/Unsteady/Initial Conditions"
 class MeteorologyPrecip(RasqcChecker):
     """Checker for meterology precipitation.
 
-    Reports the meterological condition precipitation applied to the HEC-RAS model. Result status is 'note'.
+    Reports the meterological condition precipitation applied to the
+    HEC-RAS model. Result status is 'note'.
     """
 
     name = "Meteorology Precipitation"
@@ -46,7 +47,7 @@ class MeteorologyPrecip(RasqcChecker):
             else:
                 msg = "No meteorology precip applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,
@@ -76,7 +77,8 @@ class MeteorologyPrecip(RasqcChecker):
 class PrecipHydrographs(RasqcChecker):
     """Checker for precipitation hydrographs.
 
-    Reports the boundary condition precipitation hydrographs applied to the HEC-RAS model. Result status is 'note'.
+    Reports the boundary condition precipitation hydrographs applied to
+    the HEC-RAS model. Result status is 'note'.
     """
 
     name = "Precipitation Hydrographs"
@@ -109,7 +111,7 @@ class PrecipHydrographs(RasqcChecker):
             else:
                 msg = "No precip hydrograph applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,
@@ -139,7 +141,8 @@ class PrecipHydrographs(RasqcChecker):
 class FlowHydrographs(RasqcChecker):
     """Checker for flow hydrographs.
 
-    Reports the boundary condition flow hydrographs applied to the HEC-RAS model. Result status is 'note'.
+    Reports the boundary condition flow hydrographs applied to the
+    HEC-RAS model. Result status is 'note'.
     """
 
     name = "Flow Hydrographs"
@@ -172,7 +175,7 @@ class FlowHydrographs(RasqcChecker):
             else:
                 msg = "No flow hydrograph applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,
@@ -202,7 +205,8 @@ class FlowHydrographs(RasqcChecker):
 class StageHydrographs(RasqcChecker):
     """Checker for stage hydrographs.
 
-    Reports the boundary condition stage hydrographs applied to the HEC-RAS model. Result status is 'note'.
+    Reports the boundary condition stage hydrographs applied to the HEC-RAS
+    model. Result status is 'note'.
     """
 
     name = "Stage Hydrographs"
@@ -235,7 +239,7 @@ class StageHydrographs(RasqcChecker):
             else:
                 msg = "No stage hydrograph applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,
@@ -265,7 +269,8 @@ class StageHydrographs(RasqcChecker):
 class NormalDepths(RasqcChecker):
     """Checker for normal depths.
 
-    Reports the boundary condition normal depths applied to the HEC-RAS model. Result status is 'note'.
+    Reports the boundary condition normal depths applied to the HEC-RAS model.
+    Result status is 'note'.
     """
 
     name = "Normal Depths"
@@ -298,7 +303,7 @@ class NormalDepths(RasqcChecker):
             else:
                 msg = "No normal depth applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,
@@ -328,7 +333,8 @@ class NormalDepths(RasqcChecker):
 class RatingCurves(RasqcChecker):
     """Checker for rating curves.
 
-    Reports the boundary condition rating curves applied to the HEC-RAS model. Result status is 'note'.
+    Reports the boundary condition rating curves applied to the HEC-RAS model.
+    Result status is 'note'.
     """
 
     name = "Rating Curves"
@@ -360,7 +366,7 @@ class RatingCurves(RasqcChecker):
             else:
                 msg = "No rating curve applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,
@@ -390,7 +396,8 @@ class RatingCurves(RasqcChecker):
 class InitialConditions(RasqcChecker):
     """Checker for initial conditions.
 
-    Reports the initial conditions applied to the HEC-RAS model. Result status is 'note'.
+    Reports the initial conditions applied to the HEC-RAS model. Result status
+    is 'note'.
     """
 
     name = "Initial Conditions"
@@ -422,7 +429,7 @@ class InitialConditions(RasqcChecker):
             else:
                 msg = "No initial conditions applied."
         else:
-            msg = "No HDF file located."
+            msg = "Plan HDF file not found."
         return RasqcResult(
             name=self.name,
             filename=plan_hdf_filename,

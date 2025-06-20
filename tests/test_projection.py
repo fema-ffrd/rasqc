@@ -19,7 +19,7 @@ def test_GeomProjectionNote():
         for res in GeomProjectionNote().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
-            "result": ResultStatus.WARNING,
+            "result": ResultStatus.NOTE,
             "name": "Geometry Projection",
             "filename": "BaldEagleDamBrk.g06.hdf",
             "element": None,

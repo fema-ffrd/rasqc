@@ -13,7 +13,7 @@ def test_AssociatedLayers():
         for res in AssociatedLayers().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
-            "result": ResultStatus.WARNING,
+            "result": ResultStatus.NOTE,
             "name": "Associated Layers",
             "filename": "BaldEagleDamBrk.g06.hdf",
             "element": None,
