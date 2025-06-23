@@ -22,7 +22,7 @@ STABILITY_VARS_POINT = [
 UNSTABLE_THRESHOLD = 0.002  # 0.002 is the default for hydrostab
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "ble"])
 class ReflineStability(RasqcChecker):
     """Reference lines stability checker.
 
@@ -105,7 +105,7 @@ class ReflineStability(RasqcChecker):
         return results
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "ble"])
 class RefpointStability(RasqcChecker):
     """Reference points stability checker.
 
