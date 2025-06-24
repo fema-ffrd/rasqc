@@ -223,10 +223,13 @@ class OverflowMethod(RasqcChecker):
             name=self.name,
             filename=geom_hdf_filename,
             result=ResultStatus.WARNING,
-            message={
-                "message": f"{flags.shape[0]} applicable structures found not using 2d for overflow comps",
-                "structure names": flags.to_list(),
-            },
+            message=dumps(
+                {
+                    "message": f"{flags.shape[0]} applicable structures found not using 2d for overflow comps",
+                    "structure names": flags.to_list(),
+                },
+                cls=RasqcResultEncoder,
+            ),
         )
 
     def run(self, ras_model: RasModel) -> RasqcResult:
