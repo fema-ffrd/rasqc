@@ -1,7 +1,7 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.projection import GeomProjection, GeomProjectionNote
+from rasqc.checkers.projection import GeomProjection, NoteGeomProjection
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
@@ -16,7 +16,7 @@ def test_GeomProjection():
 def test_GeomProjectionNote():
     assert {
         res.filename: res.to_dict()
-        for res in GeomProjectionNote().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteGeomProjection().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
             "result": ResultStatus.NOTE,

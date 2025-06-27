@@ -5,7 +5,8 @@ from collections import defaultdict
 import re
 from bs4 import BeautifulSoup
 from pathlib import Path
-import subprocess
+from datetime import datetime
+from getpass import getuser
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from typing import Literal, List
@@ -167,11 +168,7 @@ def results_to_html(
         loads=json.loads,
     )
     template = env.get_template("template.html")
-    details = (
-        subprocess.check_output(["echo", "%USERNAME%", "%DATE%", "%TIME%"], shell=True)
-        .decode()
-        .split()
-    )
+    dt = datetime.now()
     results_dict = group_results(results)
     subs = {
         "model_path": model_path,
@@ -179,10 +176,10 @@ def results_to_html(
         "checksuite": checksuite,
         "results_dict": results_dict,
         "tool_version": tool_version,
-        "username": details[0],
-        "day_name": details[1],
-        "date": details[2],
-        "time": details[3][:5],
+        "username": getuser(),
+        "day_name": dt.strftime(r"%A"),
+        "date": dt.strftime(r"%d/%m/%Y"),
+        "time": dt.strftime(r"%H:%M:%S"),
         **theme.value,
     }
     with open(output_path, mode="w", encoding="utf-8") as log_file:
@@ -215,5 +212,5 @@ def is_valid_number(text: str) -> bool:
     try:
         float(text)
         return True
-    except:
+    except ValueError:
         return False

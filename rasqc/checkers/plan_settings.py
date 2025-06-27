@@ -83,7 +83,7 @@ class EquationSet2D(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class EquationSet2DNote(RasqcChecker):
+class NoteEquationSet2D(RasqcChecker):
     """Checker for 2D equation set settings.
 
     Reports the selected 2D equation set for the current geometry of a RAS
@@ -118,11 +118,11 @@ class EquationSet2DNote(RasqcChecker):
                 {
                     n: e
                     for n, e in zip(
-                        plan_params["2D Names"], plan_params["2D Equation Set"]
+                        plan_params.get("2D Names"), plan_params.get("2D Equation Set")
                     )
                 }
-                if not isinstance(plan_params["2D Names"], (str, int, float))
-                else plan_params["2D Equation Set"],
+                if not isinstance(plan_params.get("2D Names"), (str, int, float))
+                else plan_params.get("2D Equation Set"),
                 cls=RasqcResultEncoder,
             )
         return RasqcResult(
@@ -150,7 +150,7 @@ class EquationSet2DNote(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class CompSettings(RasqcChecker):
+class NoteCompSettings(RasqcChecker):
     """Checker for computational timestep settings.
 
     Reports the computational timestep settings for each plan of a RAS model

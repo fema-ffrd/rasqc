@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 @register_check(["ble"], dependencies=["GeomHdfExists"])
-class AssociatedLayers(RasqcChecker):
+class NoteAssociatedLayers(RasqcChecker):
     """Checker for associated model layers.
 
     Reports the layers (e.g., terrain, land cover, etc.) associated
@@ -46,15 +46,9 @@ class AssociatedLayers(RasqcChecker):
             geom_attrs = geom_hdf.get_geom_attrs()
             msg = dumps(
                 {
-                    "terrain": geom_attrs["Terrain Filename"]
-                    if "Terrain Filename" in geom_attrs
-                    else None,
-                    "land cover": geom_attrs["Land Cover Filename"]
-                    if "Land Cover Filename" in geom_attrs
-                    else None,
-                    "infiltration": geom_attrs["Infiltration Filename"]
-                    if "Infiltration Filename" in geom_attrs
-                    else None,
+                    "terrain": geom_attrs.get("Terrain Filename"),
+                    "land cover": geom_attrs.get("Land Cover Filename"),
+                    "infiltration": geom_attrs.get("Infiltration Filename"),
                 },
                 cls=RasqcResultEncoder,
             )

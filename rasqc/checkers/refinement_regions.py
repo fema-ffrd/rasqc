@@ -8,16 +8,22 @@ from ..result import RasqcResult, ResultStatus
 from rashdf import RasGeomHdf
 from pathlib import Path
 
-ENFORCEMENT_TOLERANCE = 5
-MIN_FLAG_LENGTH = 10
+ENFORCEMENT_TOLERANCE_FEET = 5
+MIN_FLAG_LENGTH_FEET = 10
 
 
 @register_check(["ble"], dependencies=["GeomHdfExists"])
 class RefRegionEnforcement(RasqcChecker):
     """Checker for refinement region enforcement.
 
-    Checks the refinement region enforcement within the current geometry and
-    returns a `GeoDataFrame` of delinquent refinement regions.
+    Checks the refinement region enforcement within the current
+    geometry and returns a `GeoDataFrame` of delinquent refinement
+    regions. The general process is to buffer the mesh cell faces
+    by the `ENFORCEMENT_TOLERANCE_FEET`, then get the overlayed
+    difference relative to the boundary of refinement region
+    features and return any remaining polyline features with a
+    lenth >= `MIN_FLAG_LENGTH_FEET` as a `GeoDataFrame` within
+    the `RasqcResult` object.
     """
 
     name = "Refinement Region Enforcement"
@@ -53,11 +59,11 @@ class RefRegionEnforcement(RasqcChecker):
             )
         rrs.geometry = rrs.geometry.apply(lambda g: getattr(g, "exterior", None))
         flags_all = rrs.overlay(
-            mesh_faces.buffer(ENFORCEMENT_TOLERANCE).to_frame(),
+            mesh_faces.buffer(ENFORCEMENT_TOLERANCE_FEET).to_frame(),
             how="difference",
             keep_geom_type=True,
         ).explode()
-        flags_filtered = flags_all[flags_all["geometry"].length >= MIN_FLAG_LENGTH]
+        flags_filtered = flags_all[flags_all["geometry"].length >= MIN_FLAG_LENGTH_FEET]
         if flags_filtered.empty:
             return RasqcResult(
                 name=self.name,

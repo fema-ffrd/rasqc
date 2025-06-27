@@ -10,7 +10,7 @@ BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 def test_MeteorologyPrecip():
     assert {
         res.filename: res.to_dict()
-        for res in MeteorologyPrecip().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteMeteorologyPrecip().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -40,7 +40,7 @@ def test_MeteorologyPrecip():
 def test_PrecipHydrographs():
     assert {
         res.filename: res.to_dict()
-        for res in PrecipHydrographs().run(RasModel(BALDEAGLE_PRJ))
+        for res in NotePrecipHydrographs().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -70,7 +70,7 @@ def test_PrecipHydrographs():
 def test_FlowHydrographs():
     assert {
         res.filename: res.to_dict()
-        for res in FlowHydrographs().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteFlowHydrographs().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -100,7 +100,7 @@ def test_FlowHydrographs():
 def test_StageHydrographs():
     assert {
         res.filename: res.to_dict()
-        for res in StageHydrographs().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteStageHydrographs().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -130,7 +130,7 @@ def test_StageHydrographs():
 def test_NormalDepths():
     assert {
         res.filename: res.to_dict()
-        for res in NormalDepths().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteNormalDepths().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -160,7 +160,7 @@ def test_NormalDepths():
 def test_RatingCurves():
     assert {
         res.filename: res.to_dict()
-        for res in RatingCurves().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteRatingCurves().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -190,7 +190,7 @@ def test_RatingCurves():
 def test_InitialConditions():
     assert {
         res.filename: res.to_dict()
-        for res in InitialConditions().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteInitialConditions().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,

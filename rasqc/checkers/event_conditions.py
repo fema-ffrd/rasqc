@@ -14,7 +14,7 @@ IC_PATH = "/Event Conditions/Unsteady/Initial Conditions"
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class MeteorologyPrecip(RasqcChecker):
+class NoteMeteorologyPrecip(RasqcChecker):
     """Checker for meterology precipitation.
 
     Reports the meterological condition precipitation applied to the
@@ -74,7 +74,7 @@ class MeteorologyPrecip(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class PrecipHydrographs(RasqcChecker):
+class NotePrecipHydrographs(RasqcChecker):
     """Checker for precipitation hydrographs.
 
     Reports the boundary condition precipitation hydrographs applied to
@@ -138,7 +138,7 @@ class PrecipHydrographs(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class FlowHydrographs(RasqcChecker):
+class NoteFlowHydrographs(RasqcChecker):
     """Checker for flow hydrographs.
 
     Reports the boundary condition flow hydrographs applied to the
@@ -202,7 +202,7 @@ class FlowHydrographs(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class StageHydrographs(RasqcChecker):
+class NoteStageHydrographs(RasqcChecker):
     """Checker for stage hydrographs.
 
     Reports the boundary condition stage hydrographs applied to the HEC-RAS
@@ -266,7 +266,7 @@ class StageHydrographs(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class NormalDepths(RasqcChecker):
+class NoteNormalDepths(RasqcChecker):
     """Checker for normal depths.
 
     Reports the boundary condition normal depths applied to the HEC-RAS model.
@@ -330,7 +330,7 @@ class NormalDepths(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class RatingCurves(RasqcChecker):
+class NoteRatingCurves(RasqcChecker):
     """Checker for rating curves.
 
     Reports the boundary condition rating curves applied to the HEC-RAS model.
@@ -393,7 +393,7 @@ class RatingCurves(RasqcChecker):
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
-class InitialConditions(RasqcChecker):
+class NoteInitialConditions(RasqcChecker):
     """Checker for initial conditions.
 
     Reports the initial conditions applied to the HEC-RAS model. Result status

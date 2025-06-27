@@ -1,7 +1,7 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.ras_version import RasVersion
+from rasqc.checkers.ras_version import NoteRasVersion
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
@@ -9,7 +9,8 @@ BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 
 def test_RasVersion():
     assert {
-        res.filename: res.to_dict() for res in RasVersion().run(RasModel(BALDEAGLE_PRJ))
+        res.filename: res.to_dict()
+        for res in NoteRasVersion().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
             "result": ResultStatus.NOTE,

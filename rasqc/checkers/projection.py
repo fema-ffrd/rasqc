@@ -96,7 +96,7 @@ class GeomProjection(RasqcChecker):
 
 
 @register_check(["ble"])
-class GeomProjectionNote(RasqcChecker):
+class NoteGeomProjection(RasqcChecker):
     """Checker for geometry projection settings.
 
     Reports the projection of the current geometry of a RAS model as a

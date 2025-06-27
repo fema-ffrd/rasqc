@@ -1,14 +1,14 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.current_plan import CurrentPlan
+from rasqc.checkers.current_plan import NoteCurrentPlan
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 
 
 def test_CurrentPlan():
-    assert CurrentPlan().run(RasModel(BALDEAGLE_PRJ)).to_dict() == {
+    assert NoteCurrentPlan().run(RasModel(BALDEAGLE_PRJ)).to_dict() == {
         "result": ResultStatus.NOTE,
         "name": "Current Saved Plan",
         "filename": "BaldEagleDamBrk.prj",

@@ -8,15 +8,18 @@ from ..result import RasqcResult, ResultStatus
 from rashdf import RasGeomHdf
 from pathlib import Path
 
-MIN_FACE_LENGTH = 10
+MIN_FACE_LENGTH_FEET = 10
 
 
 @register_check(["ble"], dependencies=["GeomHdfExists"])
 class ShortCellFaces(RasqcChecker):
     """Checker for short 2D mesh cell faces.
 
-    Checks the current geometry within a RAS model and returns a `GeoDataFrame`
-    of short cell faces that can cause instabilities.
+    Checks the current geometry within a RAS model for short
+    cell faces that can be a source of instabilities.
+    Any polyline features with a lenth < `MIN_FACE_LENGTH_FEET`
+    are returned as a `GeoDataFrame` within the `RasqcResult`
+    object.
     """
 
     name = "Short Cell Faces"
@@ -42,7 +45,9 @@ class ShortCellFaces(RasqcChecker):
                 message="Geometry HDF file not found.",
             )
         mesh_faces = geom_hdf.mesh_cell_faces()
-        flags = mesh_faces.loc[mesh_faces["geometry"].length < MIN_FACE_LENGTH].copy()
+        flags = mesh_faces.loc[
+            mesh_faces["geometry"].length < MIN_FACE_LENGTH_FEET
+        ].copy()
         if flags.empty:
             return RasqcResult(
                 name=self.name,

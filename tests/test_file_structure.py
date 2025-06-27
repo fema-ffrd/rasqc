@@ -1,6 +1,6 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
-from rasqc.checkers.file_structure import FileStructure
+from rasqc.checkers.file_structure import NoteFileStructure
 from rasqc.result import ResultStatus
 
 TEST_DATA = Path("./tests/data")
@@ -8,7 +8,7 @@ BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 
 
 def test_FileStructure():
-    assert FileStructure().run(RasModel(BALDEAGLE_PRJ)).to_dict() == {
+    assert NoteFileStructure().run(RasModel(BALDEAGLE_PRJ)).to_dict() == {
         "result": ResultStatus.NOTE,
         "name": "File Structure",
         "filename": "BaldEagleDamBrk.prj",

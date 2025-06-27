@@ -9,7 +9,7 @@ from json import dumps
 
 
 @register_check(["ble"])
-class CurrentPlan(RasqcChecker):
+class NoteCurrentPlan(RasqcChecker):
     """Checker for the current saved plan.
 
     Reports the name and title of the plan saved as the current plan within a RAS model.

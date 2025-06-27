@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 @register_check(["ble"], dependencies=["GeomHdfExists"])
-class RasVersion(RasqcChecker):
+class NoteRasVersion(RasqcChecker):
     """Checker for the HEC-RAS version used.
 
     Reports the RAS version used to develop a RAS model as a 'note' to be

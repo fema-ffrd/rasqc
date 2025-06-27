@@ -1,7 +1,7 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.associated_layers import AssociatedLayers
+from rasqc.checkers.associated_layers import NoteAssociatedLayers
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
@@ -10,7 +10,7 @@ BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 def test_AssociatedLayers():
     assert {
         res.filename: res.to_dict()
-        for res in AssociatedLayers().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteAssociatedLayers().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.g06.hdf": {
             "result": ResultStatus.NOTE,

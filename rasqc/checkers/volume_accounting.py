@@ -10,7 +10,7 @@ from rashdf import RasPlanHdf
 from pathlib import Path
 from typing import List
 
-VOL_ERR_PER_TOL = 2
+VOLUME_ERROR_PERCENT_TOLERANCE = 2
 
 
 @register_check(["ble"], dependencies=["PlanHdfExists"])
@@ -43,14 +43,14 @@ class VolumeError(RasqcChecker):
                 message="Plan HDF file not found.",
             )
         vol_err = plan_hdf.get_results_volume_accounting_attrs()["Error Percent"]
-        if vol_err > VOL_ERR_PER_TOL:
+        if vol_err > VOLUME_ERROR_PERCENT_TOLERANCE:
             return RasqcResult(
                 name=self.name,
                 filename=plan_hdf_filename,
                 result=ResultStatus.ERROR,
                 message=(
                     f"Volume accounting error percent of '{vol_err}' is greater than"
-                    f" the acceptable tolerance of {VOL_ERR_PER_TOL}."
+                    f" the acceptable tolerance of {VOLUME_ERROR_PERCENT_TOLERANCE}."
                 ),
             )
         return RasqcResult(

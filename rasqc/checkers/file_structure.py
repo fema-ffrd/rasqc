@@ -9,7 +9,7 @@ from json import dumps
 
 
 @register_check(["ble"])
-class FileStructure(RasqcChecker):
+class NoteFileStructure(RasqcChecker):
     """HEC-RAS model file structure checker.
 
     Reports the file structure of the target HEC-RAS model to be reviewed

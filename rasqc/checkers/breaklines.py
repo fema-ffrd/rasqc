@@ -8,8 +8,8 @@ from ..result import RasqcResult, ResultStatus
 from rashdf import RasGeomHdf
 from pathlib import Path
 
-ENFORCEMENT_TOLERANCE = 5
-MIN_FLAG_LENGTH = 10
+ENFORCEMENT_TOLERANCE_FEET = 5
+MIN_FLAG_LENGTH_FEET = 10
 
 
 @register_check(["ble"], dependencies=["GeomHdfExists"])
@@ -17,7 +17,12 @@ class BreaklineEnforcement(RasqcChecker):
     """Checker for breakline enforcement.
 
     Checks the breakline enforcement within the current geometry
-    and returns a `GeoDataFrame` of delinquent breaklines.
+    and returns a `GeoDataFrame` of delinquent breaklines. The
+    general process is to buffer the mesh cell faces by the
+    `ENFORCEMENT_TOLERANCE_FEET`, then get the overlayed difference
+    relative to the breakline features and return any remaining
+    polyline features with a lenth >= `MIN_FLAG_LENGTH_FEET` as
+    a `GeoDataFrame` within the `RasqcResult` object.
     """
 
     name = "Breakline Enforcement"
@@ -52,12 +57,12 @@ class BreaklineEnforcement(RasqcChecker):
                 message="no breaklines found within the model geometry",
             )
         flags_all = bls.overlay(
-            mesh_faces.buffer(ENFORCEMENT_TOLERANCE).to_frame(),
+            mesh_faces.buffer(ENFORCEMENT_TOLERANCE_FEET).to_frame(),
             how="difference",
             keep_geom_type=True,
         ).explode()
         flags_filtered = flags_all.loc[
-            flags_all["geometry"].length >= MIN_FLAG_LENGTH
+            flags_all["geometry"].length >= MIN_FLAG_LENGTH_FEET
         ].copy()
         if flags_filtered.empty:
             return RasqcResult(

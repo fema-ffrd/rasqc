@@ -1,7 +1,11 @@
 from pathlib import Path
 from rasqc.rasmodel import RasModel
 from rasqc.result import ResultStatus
-from rasqc.checkers.plan_settings import EquationSet2D, EquationSet2DNote, CompSettings
+from rasqc.checkers.plan_settings import (
+    EquationSet2D,
+    NoteEquationSet2D,
+    NoteCompSettings,
+)
 
 TEST_DATA = Path("./tests/data")
 BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
@@ -20,10 +24,10 @@ def test_EquationSet2D_b():
     assert result.result.value == "ok"
 
 
-def test_EquationSet2DNote():
+def test_EquationSet2DNote_a():
     assert {
         res.filename: res.to_dict()
-        for res in EquationSet2DNote().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteEquationSet2D().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,
@@ -50,10 +54,29 @@ def test_EquationSet2DNote():
     }
 
 
+def test_EquationSet2DNote_b():
+    assert {
+        res.filename: res.to_dict()
+        for res in NoteEquationSet2D().run(RasModel(MUNCIE_PRJ))
+    } == {
+        "Muncie.p03.hdf": {
+            "result": ResultStatus.NOTE,
+            "name": "2D Equation Set",
+            "filename": "Muncie.p03.hdf",
+            "element": None,
+            "message": '"Diffusion Wave"',
+            "pattern": None,
+            "pattern_description": None,
+            "examples": None,
+            "gdf": None,
+        }
+    }
+
+
 def test_CompSettings():
     assert {
         res.filename: res.to_dict()
-        for res in CompSettings().run(RasModel(BALDEAGLE_PRJ))
+        for res in NoteCompSettings().run(RasModel(BALDEAGLE_PRJ))
     } == {
         "BaldEagleDamBrk.p13.hdf": {
             "result": ResultStatus.NOTE,

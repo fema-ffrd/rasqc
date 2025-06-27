@@ -128,7 +128,6 @@ def run_files(
         show_on_complete: bool
             If True, display the log file in the user's default web browser upon completion of the tool run.
     """
-    print(f"rasqc version {RASQC_VERSION}") if RASQC_VERSION else None
     results = CHECKSUITES[checksuite].run_checks(ras_model)
     out_dir = Path(ras_model).parent / "rasqc"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -184,12 +183,16 @@ def main():
     parser.add_argument(
         "--files",
         action="store_true",
-        help="Output results to disk as HTML log and ESRI Shapefiles",
-    )
+        help=(
+            "Write results to an HTML log and ESRI Shapefiles (if applicable) "
+            "located within a 'rasqc' folder within the parent directory "
+            "containing the `ras_model`."
+        ),
+    )  # TODO add ability to specify a custom output location
     parser.add_argument(
         "--theme",
         type=str,
-        default="NINETIES",
+        default="ARCADE",
         choices=[t.name for t in ColorTheme],
         help="Color theme of output log file. Only used if the '--files' argument is specified. Default: 'ARCADE'",
     )
