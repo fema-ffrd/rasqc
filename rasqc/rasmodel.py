@@ -96,6 +96,19 @@ class RasModelFile:
         title = match.group(2)
         return title
 
+    @property
+    def description(self):
+        """Extract the description from the RAS file.
+
+        Returns
+        -------
+            str: The description of the RAS file.
+        """
+        match = re.search(
+            r"BEGIN DESCRIPTION:(.*?)END DESCRIPTION:", self.content, re.DOTALL
+        )
+        return match.group(1).strip() if match else ""
+
 
 def _obstore_protocol_url(
     store: obstore.store.ObjectStore, path: str | os.PathLike
@@ -220,7 +233,7 @@ class PlanFile(RasModelFile):
 
         Returns
         -------
-            GeomFile: The geometry file associated with the plan file.
+            str: The geometry file extension associated with the plan file.
         """
         match = re.search(r"(?m)Geom File\s*=\s*(.+)$", self.content)
         geom_ext = match.group(1)
@@ -232,7 +245,7 @@ class PlanFile(RasModelFile):
 
         Returns
         -------
-            UnsteadyFlowFile: The unsteady flow file associated with the plan file.
+            str: The unsteady flow file extension associated with the plan file.
         """
         match = re.search(r"(?m)Flow File\s*=\s*(.+)$", self.content)
         flow_ext = match.group(1)

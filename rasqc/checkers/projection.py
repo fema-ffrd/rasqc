@@ -1,4 +1,4 @@
-"""Checker for FFRD geometry projection settings."""
+"""Checkers for geometry projection settings."""
 
 from ..base_checker import RasqcChecker
 from ..registry import register_check
@@ -93,3 +93,65 @@ class GeomProjection(RasqcChecker):
             if ghdf:
                 results.append(self._check(ghdf, Path(geom_file.hdf_path).name))
         return results
+
+
+@register_check(["ble"])
+class NoteGeomProjection(RasqcChecker):
+    """Checker for geometry projection settings.
+
+    Reports the projection of the current geometry of a RAS model as a
+    'note' to be reviewed by the user.
+    """
+
+    name = "Geometry Projection"
+
+    def _check(self, geom_hdf: RasGeomHdf, geom_hdf_filename: str) -> RasqcResult:
+        """Check the geometry projection for a RAS geometry.
+
+        Parameters
+        ----------
+            geom_hdf: The HEC-RAS geometry HDF file to check.
+
+            geom_hdf_filename: The file name of the HEC-RAS geometry HDF file to check.
+
+        Returns
+        -------
+            RasqcResult: The result of the check.
+        """
+        if not geom_hdf:
+            return RasqcResult(
+                name=self.name,
+                filename=geom_hdf_filename,
+                result=ResultStatus.NOTE,
+                message="Geometry HDF file not found.",
+            )
+        projection = geom_hdf.projection()
+        if not projection:
+            return RasqcResult(
+                name=self.name,
+                filename=geom_hdf_filename,
+                result=ResultStatus.NOTE,
+                message="HEC-RAS geometry HDF file does not have a projection defined.",
+            )
+        return RasqcResult(
+            name=self.name,
+            filename=geom_hdf_filename,
+            result=ResultStatus.NOTE,
+            message=projection.name,
+        )
+
+    def run(self, ras_model: RasModel) -> List[RasqcResult]:
+        """Check the projection used for all RAS geometry HDF files in a model.
+
+        Parameters
+        ----------
+            ras_model: The HEC-RAS model to check.
+
+        Returns
+        -------
+            List[RasqcResult]: A list of the results of the checks.
+        """
+        return list(
+            self._check(geom_file.hdf, Path(geom_file.hdf_path).name)
+            for geom_file in ras_model.geometries
+        )

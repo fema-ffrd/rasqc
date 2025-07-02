@@ -3,17 +3,26 @@
 from . import checkers  # noqa: F401
 from .registry import CHECKSUITES
 from .result import RasqcResultEncoder, ResultStatus
+from .themes import ColorTheme
+from .rasmodel import RasModel
+from .utils import to_snake_case, results_to_html
 
 from rich.console import Console
 
 import argparse
-from dataclasses import asdict
 from datetime import datetime, timezone
 from importlib.metadata import version
 import json
 import sys
+from pathlib import Path
+import pandas as pd
+import geopandas as gpd
+import webbrowser
 
-RASQC_VERSION = version("rasqc")
+try:
+    RASQC_VERSION = version("rasqc")
+except:
+    RASQC_VERSION = None
 
 
 def run_console(ras_model: str, checksuite: str) -> None:
@@ -88,7 +97,7 @@ def run_json(ras_model: str, checksuite: str) -> dict:
         dict: Dictionary containing the check results.
     """
     results = CHECKSUITES[checksuite].run_checks(ras_model)
-    results_dicts = [asdict(result) for result in results]
+    results_dicts = [result.to_dict() for result in results]
     output = {
         "version": RASQC_VERSION,
         "model": ras_model,
@@ -98,6 +107,60 @@ def run_json(ras_model: str, checksuite: str) -> dict:
     }
     print(json.dumps(output, cls=RasqcResultEncoder))
     return output
+
+
+def run_files(
+    ras_model: str,
+    checksuite: str,
+    theme: ColorTheme = ColorTheme.ARCADE,
+    show_on_complete: bool = True,
+) -> None:
+    """Run checks and output results as an HTML log and ESRI Shapefiles if applicable.
+
+    Parameters
+    ----------
+        ras_model: str
+            Path to the HEC-RAS model .prj file.
+        checksuite: str
+            Name of the checksuite to run.
+        theme: ColorTheme
+            Color themes for use in writing the html qc log file.
+        show_on_complete: bool
+            If True, display the log file in the user's default web browser upon completion of the tool run.
+    """
+    results = CHECKSUITES[checksuite].run_checks(ras_model)
+    out_dir = Path(ras_model).parent / "rasqc"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    gdfs = []
+    for res in results:
+        if res.gdf is not None:
+            shp_dir = out_dir / "shapes"
+            shp_dir.mkdir(parents=True, exist_ok=True)
+            res.gdf.to_file(
+                (
+                    shp_dir / f"{to_snake_case(res.name)}_{to_snake_case(res.filename)}"
+                ).with_suffix(".shp"),
+                SHPT="ARC",
+            )
+            res.gdf["filename"] = res.filename
+            res.gdf["check"] = res.name
+            gdfs.append(res.gdf)
+    out_shp = (
+        out_dir / f"rasqc_{to_snake_case(RasModel(ras_model).prj_file.title)}"
+    ).with_suffix(".shp")
+    gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True)).to_file(
+        out_shp,
+        SHPT="ARC",
+    ) if gdfs else None
+    results_to_html(
+        results=results,
+        output_path=out_shp.with_suffix(".html"),
+        model_path=ras_model,
+        checksuite=checksuite,
+        tool_version=RASQC_VERSION,
+        theme=theme,
+    )
+    webbrowser.open(out_shp.with_suffix(".html")) if show_on_complete else None
 
 
 def main():
@@ -117,9 +180,31 @@ def main():
         help="Checksuite to run. Default: ffrd",
     )
     parser.add_argument("--json", action="store_true", help="Output results as JSON")
+    parser.add_argument(
+        "--files",
+        action="store_true",
+        help=(
+            "Write results to an HTML log and ESRI Shapefiles (if applicable) "
+            "located within a 'rasqc' folder within the parent directory "
+            "containing the `ras_model`."
+        ),
+    )  # TODO add ability to specify a custom output location
+    parser.add_argument(
+        "--theme",
+        type=str,
+        default="ARCADE",
+        choices=[t.name for t in ColorTheme],
+        help="Color theme of output log file. Only used if the '--files' argument is specified. Default: 'ARCADE'",
+    )
     args = parser.parse_args()
     if args.json:
         run_json(args.ras_model, args.checksuite)
+    elif args.files:
+        run_files(
+            args.ras_model,
+            args.checksuite,
+            {ct.name: ct for ct in ColorTheme}[args.theme],
+        )
     else:
         run_console(args.ras_model, args.checksuite)
 

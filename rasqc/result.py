@@ -2,10 +2,12 @@
 
 from geopandas import GeoDataFrame
 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from enum import Enum
 from json import JSONEncoder
 from typing import Any, List, Optional
+from datetime import datetime
+import numpy as np
 
 
 class ResultStatus(Enum):
@@ -16,11 +18,13 @@ class ResultStatus(Enum):
         OK: Check passed successfully.
         WARNING: Check passed with warnings.
         ERROR: Check failed.
+        NOTE: Note for informational purposes.
     """
 
     OK = "ok"
     WARNING = "warning"
     ERROR = "error"
+    NOTE = "note"
 
 
 class RasqcResultEncoder(JSONEncoder):
@@ -44,6 +48,14 @@ class RasqcResultEncoder(JSONEncoder):
             return obj.value
         if isinstance(obj, GeoDataFrame):
             return obj.to_json()
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        if isinstance(obj, bytes):
+            return obj.decode()
+        if isinstance(obj, (np.ndarray, np.generic)):
+            return obj.item()
+        if isinstance(obj, set):
+            return list(obj)
         return super().default(obj)
 
 
@@ -73,3 +85,13 @@ class RasqcResult:
     pattern_description: Optional[str] | Optional[List[str]] = None
     examples: Optional[str] | Optional[List[str]] = None
     gdf: Optional[GeoDataFrame] = None
+
+    def to_dict(self) -> dict:
+        """Convert RasqcResult object to dictionary.
+
+        Returns
+        -------
+            dict: A dictionary representation of the object.
+        """
+        # encode and decode to serialize message if valid JSON
+        return asdict(self)

@@ -1,7 +1,7 @@
 """Base class for all quality control checkers."""
 
-from rasqc.rasmodel import RasModel
-from rasqc.result import RasqcResult
+from .rasmodel import RasModel
+from .result import RasqcResult
 
 from typing import List
 

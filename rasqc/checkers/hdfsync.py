@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "ble"])
 class GeomHdfExists(RasqcChecker):
     """Check if each Geometry file has a corresponding HDF file."""
 
@@ -52,7 +52,7 @@ class GeomHdfExists(RasqcChecker):
         return results
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "ble"], dependencies=["GeomHdfExists"])
 class GeomHdfDatetime(RasqcChecker):
     """Check if the HDF file datetime aligns with Geometry file datetime."""
 
@@ -102,7 +102,7 @@ class GeomHdfDatetime(RasqcChecker):
         return [self._check(geom_file) for geom_file in ras_model.geometries]
 
 
-@register_check(["ffrd"])
+@register_check(["ffrd", "ble"])
 class PlanHdfExists(RasqcChecker):
     """Check if each Plan file has a corresponding HDF file."""
 
@@ -143,7 +143,7 @@ class PlanHdfExists(RasqcChecker):
         return results
 
 
-@register_check(["ffrd"], dependencies=["PlanHdfExists"])
+@register_check(["ffrd", "ble"], dependencies=["PlanHdfExists"])
 class PlanHdfDatetime(RasqcChecker):
     """Check if the Plan HDF datetime aligns with the associated Geometry file datetime."""
 
