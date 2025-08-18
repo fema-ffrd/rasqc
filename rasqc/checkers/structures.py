@@ -137,7 +137,7 @@ class BridgeXsData(RasqcChecker):
                         msg_dict.setdefault(bridge_name, set()).add(
                             "bridge XSs without manning's breaks at the banks"
                         )
-                    if mann_dict.get(xs["banks"][0]) > 0.06:
+                    elif mann_dict.get(xs["banks"][0]) > 0.06:
                         msg_dict.setdefault(bridge_name, set()).add(
                             "bridge XSs with elevated channel n value(s)"
                         )
