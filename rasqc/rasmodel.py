@@ -182,6 +182,12 @@ class GeomFile(RasModelFile):
             except ValueError:
                 pass
             try:
+                dt = datetime.strptime(m, "%b-%d-%Y %H:%M:%S")
+                datetimes.append(dt)
+                continue
+            except ValueError:
+                pass
+            try:
                 dt = datetime.strptime(m, "%d%b%Y %H:%M:%S")
                 datetimes.append(dt)
                 continue
