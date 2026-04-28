@@ -1,9 +1,9 @@
 """Checks to confirm if HDF5 output files are in sync with HEC-RAS model."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel, RasModelFile, GeomFile, PlanFile
-from ..result import RasqcResult, ResultStatus
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel, RasModelFile, GeomFile, PlanFile
+from rasqc.result import RasqcResult, ResultStatus
 
 from rashdf import RasGeomHdf, RasPlanHdf
 
@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List
 
 
-@register_check(["ffrd", "ble"])
+@register_check(["ffrd", "ble", "mesh"])
 class GeomHdfExists(RasqcChecker):
     """Check if each Geometry file has a corresponding HDF file."""
 
@@ -102,7 +102,7 @@ class GeomHdfDatetime(RasqcChecker):
         return [self._check(geom_file) for geom_file in ras_model.geometries]
 
 
-@register_check(["ffrd", "ble"])
+@register_check(["ffrd", "ble", "stability"])
 class PlanHdfExists(RasqcChecker):
     """Check if each Plan file has a corresponding HDF file."""
 
@@ -187,8 +187,8 @@ class PlanHdfDatetime(RasqcChecker):
         run_time_window = phdf_attrs.get("Run Time Window")
         if run_time_window:
             run_time_start = run_time_window[0]
-            if run_time_start > ghdf_datetime:
-                err_msg = f"'{plan_file.path.name}': {self.criteria} ({run_time_start} > {ghdf_datetime})"
+            if run_time_start < ghdf_datetime:
+                err_msg = f"'{plan_file.path.name}': {self.criteria} ({run_time_start} < {ghdf_datetime})"
                 return RasqcResult(
                     name=self.name,
                     filename=Path(plan_file.hdf_path).name,

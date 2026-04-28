@@ -1,8 +1,8 @@
 """Module for defining and managing check suites for HEC-RAS model quality control."""
 
-from .base_checker import RasqcChecker
-from .rasmodel import RasModel
-from .result import RasqcResult, ResultStatus
+from rasqc.base_checker import RasqcChecker
+from rasqc.rasmodel import RasModel
+from rasqc.result import RasqcResult, ResultStatus
 
 import networkx as nx
 from rich.console import Console

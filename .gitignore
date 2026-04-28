@@ -1,5 +1,6 @@
 venv*
 mock_user.py
+TestRun.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

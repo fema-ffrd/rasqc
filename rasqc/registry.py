@@ -1,6 +1,6 @@
 """Module for registering and managing check suites."""
 
-from .checksuite import CheckSuite, StacCheckSuite
+from rasqc.checksuite import CheckSuite, StacCheckSuite
 
 from typing import Dict, List
 
@@ -10,6 +10,8 @@ CHECKSUITES: Dict[str, "CheckSuite"] = {
     "ras_stac_ffrd": StacCheckSuite(),
     "hms_stac_ffrd": StacCheckSuite(),
     "ble": CheckSuite(),
+    "stability": CheckSuite(),
+    "mesh": CheckSuite(),
 }
 
 

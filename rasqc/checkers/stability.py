@@ -1,10 +1,10 @@
 """Classes for checking stability of model runs."""
 
 import hydrostab.ras
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel
-from ..result import RasqcResult, ResultStatus
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel
+from rasqc.result import RasqcResult, ResultStatus
 
 from rashdf import RasPlanHdf
 

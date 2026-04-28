@@ -6,9 +6,9 @@ standards, particularly for FFRD (Federal Flood Risk Determination) models.
 """
 
 # Import registry first to avoid circular imports
-from .registry import *
-from .checkers import *
-from .check import *
+from rasqc.registry import *
+from rasqc.checkers import *
+from rasqc.check import *
 
 from typing import List
 

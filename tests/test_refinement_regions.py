@@ -8,4 +8,4 @@ BALDEAGLE_PRJ = TEST_DATA / "ras/BaldEagleDamBrk.prj"
 
 def test_RefRegionEnforcement():
     res = RefRegionEnforcement().run(RasModel(BALDEAGLE_PRJ))
-    assert res.message == "no refinement regions found within the model geometry"
+    assert res.message == "No refinement regions found within the model geometry"

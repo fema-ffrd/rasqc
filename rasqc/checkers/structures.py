@@ -1,10 +1,10 @@
 """Module for structure checks."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel, GeomFile
-from ..result import RasqcResult, ResultStatus, RasqcResultEncoder
-from ..utils import (
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel, GeomFile
+from rasqc.result import RasqcResult, ResultStatus, RasqcResultEncoder
+from rasqc.utils import (
     chunk_text,
     get_lines_between_keywords,
     get_text_between_keywords,
@@ -18,7 +18,7 @@ from json import dumps
 from rashdf import RasGeomHdf
 
 
-@register_check(["ble"])
+@register_check(["ble", "mesh"])
 class BridgeXsData(RasqcChecker):
     """Checker for 2D bridge cross section data.
 

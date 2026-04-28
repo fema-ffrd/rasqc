@@ -1,9 +1,9 @@
 """Checks related to 2D mesh cell face length."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel
-from ..result import RasqcResult, ResultStatus
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel
+from rasqc.result import RasqcResult, ResultStatus
 
 from rashdf import RasGeomHdf
 from pathlib import Path
@@ -11,7 +11,7 @@ from pathlib import Path
 MIN_FACE_LENGTH_FEET = 10
 
 
-@register_check(["ble"], dependencies=["GeomHdfExists"])
+@register_check(["mesh"], dependencies=["GeomHdfExists"])
 class ShortCellFaces(RasqcChecker):
     """Checker for short 2D mesh cell faces.
 

@@ -8,12 +8,15 @@ from pathlib import Path
 from datetime import datetime
 from getpass import getuser
 import pandas as pd
+import numpy as np
 from jinja2 import Environment, FileSystemLoader
 from typing import Literal, List
+from rashdf import RasGeomHdf, RasPlanHdf
+from shapely.geometry import LineString
 
-from .result import RasqcResult, ResultStatus
-from .rasmodel import RasModel
-from .themes import ColorTheme
+from rasqc.result import RasqcResult, ResultStatus
+from rasqc.rasmodel import RasModel
+from rasqc.themes import ColorTheme
 
 
 def summarize_results(results: list[RasqcResult]) -> dict:
@@ -214,3 +217,44 @@ def is_valid_number(text: str) -> bool:
         return True
     except ValueError:
         return False
+
+
+def calculate_min_angle(line_geom: LineString):
+    """Calculate the minimum angle in a LineString geometry.
+
+    For a line with two points, returns 180 (straight line).
+    For lines with more points, calculates angles at each interior vertex.
+    """
+    coords = list(line_geom.coords)
+
+    # If only 2 points, it's a straight line
+    if len(coords) == 2:
+        return 180.0
+
+    # Calculate angles at each interior vertex
+    angles = []
+    for i in range(1, len(coords) - 1):
+        p1 = np.array(coords[i - 1])
+        p2 = np.array(coords[i])
+        p3 = np.array(coords[i + 1])
+
+        # Vectors from vertex to adjacent points
+        v1 = p1 - p2
+        v2 = p3 - p2
+
+        # Calculate angle using dot product
+        cos_angle = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+        # Clamp to avoid numerical errors
+        cos_angle = np.clip(cos_angle, -1.0, 1.0)
+        angle_rad = np.arccos(cos_angle)
+        angle_deg = np.degrees(angle_rad)
+
+        angles.append(angle_deg)
+
+    return min(angles) if angles else 180.0
+
+
+def get_units_system(hdf: RasPlanHdf) -> str:
+    """Get the units system from a RasPlanHdf object."""
+    attributes = hdf.get_attrs("/")
+    return attributes.get("Units System", "Unknown")

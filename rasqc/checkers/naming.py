@@ -1,10 +1,10 @@
 """Naming convention checkers for FFRD HEC-RAS models."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel, RasModelFile
-from ..result import RasqcResult, ResultStatus
-from ..constants import RAS_SCHEMA_URL, HMS_SCHEMA_URL
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel, RasModelFile
+from rasqc.result import RasqcResult, ResultStatus
+from rasqc.constants import RAS_SCHEMA_URL, HMS_SCHEMA_URL
 
 from jsonschema import validate, ValidationError
 from geopandas import GeoDataFrame

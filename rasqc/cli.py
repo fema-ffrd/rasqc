@@ -1,11 +1,11 @@
 """Main entry point for the rasqc command-line tool."""
 
-from . import checkers  # noqa: F401
-from .registry import CHECKSUITES
-from .result import RasqcResultEncoder, ResultStatus
-from .themes import ColorTheme
-from .rasmodel import RasModel
-from .utils import to_snake_case, results_to_html
+from rasqc import checkers  # noqa: F401
+from rasqc.registry import CHECKSUITES
+from rasqc.result import RasqcResultEncoder, ResultStatus
+from rasqc.themes import ColorTheme
+from rasqc.rasmodel import RasModel
+from rasqc.utils import to_snake_case, results_to_html
 
 from rich.console import Console
 

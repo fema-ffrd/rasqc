@@ -1,9 +1,9 @@
 """Plan settings checkers for FFRD HEC-RAS models."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel
-from ..result import RasqcResult, ResultStatus, RasqcResultEncoder
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel
+from rasqc.result import RasqcResult, ResultStatus, RasqcResultEncoder
 
 from rashdf import RasPlanHdf
 

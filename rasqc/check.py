@@ -6,20 +6,20 @@ from typing import Dict, List
 
 from pystac import Item
 
-from .checkers.stac_naming import (
+from rasqc.checkers.stac_naming import (
     JunctionElementPattern,
     ReachElementPattern,
     ReservoirElementPattern,
     SinkElementPattern,
     SubbasinElementPattern,
 )
-from .checksuite import CheckSuite
+from rasqc.checksuite import CheckSuite
 
-from .rasmodel import RasModel
+from rasqc.rasmodel import RasModel
 
 # TODO: Lets discuss RasModel in this lib
-from .registry import CHECKSUITES
-from .result import RasqcResult
+from rasqc.registry import CHECKSUITES
+from rasqc.result import RasqcResult
 
 
 def check(

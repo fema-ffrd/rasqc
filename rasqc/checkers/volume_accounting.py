@@ -1,9 +1,9 @@
 """Module for simulation volume accounting checks."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel
-from ..result import RasqcResult, ResultStatus
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel
+from rasqc.result import RasqcResult, ResultStatus
 
 from rashdf import RasPlanHdf
 
@@ -13,7 +13,7 @@ from typing import List
 VOLUME_ERROR_PERCENT_TOLERANCE = 2
 
 
-@register_check(["ble"], dependencies=["PlanHdfExists"])
+@register_check(["ble", "stability"], dependencies=["PlanHdfExists"])
 class VolumeError(RasqcChecker):
     """Checker for volume accounting errors.
 

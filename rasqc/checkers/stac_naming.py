@@ -1,9 +1,9 @@
 """Naming convention checkers for FFRD HEC-RAS STAC Items."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..result import RasqcResult, ResultStatus
-from .naming import load_hms_schema, load_ras_schema, get_schema_property
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.result import RasqcResult, ResultStatus
+from rasqc.checkers.naming import load_hms_schema, load_ras_schema, get_schema_property
 
 from jsonschema import validate, ValidationError
 

@@ -1,15 +1,15 @@
 """Checks related to erroneous 2D mesh cells within a HEC-RAS model."""
 
-from ..base_checker import RasqcChecker
-from ..registry import register_check
-from ..rasmodel import RasModel
-from ..result import RasqcResult, ResultStatus
+from rasqc.base_checker import RasqcChecker
+from rasqc.registry import register_check
+from rasqc.rasmodel import RasModel
+from rasqc.result import RasqcResult, ResultStatus
 
 from rashdf import RasGeomHdf
 from pathlib import Path
 
 
-@register_check(["ble"], dependencies=["GeomHdfExists"])
+@register_check(["mesh"], dependencies=["GeomHdfExists"])
 class ErroneousCells(RasqcChecker):
     """Checker for erroneous 2D mesh cells.
 
