@@ -11,9 +11,11 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
-version = "0.0.7"
-dependencies = ["rashdf", "hydrostab", "fsspec", "rich", "networkx", "jsonschema", "openpyxl","pystac", "obstore==0.6.0", "beautifulsoup4", "Jinja2"]
+version = "0.0.8"
+dependencies = ["rashdf", "hydrostab", "fsspec", "rich", "networkx", "jsonschema", "openpyxl","pystac", "obstore", "beautifulsoup4", "Jinja2"]
 
 [project.optional-dependencies]
 dev = ["pre-commit", "ruff", "pytest", "pytest-cov", "pyinstaller"]
